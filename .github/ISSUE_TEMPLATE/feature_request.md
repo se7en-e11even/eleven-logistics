@@ -1,9 +1,10 @@
+
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
+name: Feat
+about: 프로젝트에 관한 모든 아이디어, 기능을 적어주세요!
+title: "[Feat]"
 labels: ''
-assignees: hansg0325
+assignees: ''
 
 ---
 
