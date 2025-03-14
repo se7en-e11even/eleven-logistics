@@ -1,6 +1,1 @@
-rootProject.name = 'eleven-logistics'
 
-include 'common'
-include 'delivery'
-include 'eureka'
-include 'gateway'
