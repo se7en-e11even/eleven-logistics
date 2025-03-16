@@ -2,7 +2,7 @@ package com.eleven.logistics.delivery.presentation.controller;
 
 import com.eleven.logistics.delivery.application.service.delivery.DeliveryService;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryRequest;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryResponse;
+import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +20,10 @@ public class DeliveryController {
   private final DeliveryService deliveryService;
 
   @PostMapping
-  public ResponseEntity<CreateDeliveryResponse> createDelivery(@Valid @RequestBody CreateDeliveryRequest request) {
-    CreateDeliveryResponse response =  deliveryService.createDelivery(request);
+  public ResponseEntity<DeliveryResponse> createDelivery(
+      @Valid @RequestBody CreateDeliveryRequest request
+  ) {
+    DeliveryResponse response = deliveryService.createDelivery(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 }
