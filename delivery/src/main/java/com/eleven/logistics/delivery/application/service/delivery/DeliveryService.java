@@ -17,6 +17,27 @@ public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
 
+  public DeliveryResponse getDelivery(UUID deliveryId) {
+    // 사용자 권한 체크
+
+    // delivery 체크
+    Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() ->
+        new IllegalArgumentException("Delivery not found"));
+
+    // delivery 본인 권한 체크
+
+    return new DeliveryResponse(
+        deliveryId,
+        delivery.getOrderId(),
+        delivery.getDepartureHubId(),
+        delivery.getDestinationHubId(),
+        delivery.getDeliveryAddress(),
+        delivery.getReceiver(),
+        delivery.getReceiverSnsId(),
+        delivery.getCompanyDeliveryManagerId(),
+        delivery.getDeliveryStatus());
+  }
+
   @Transactional
   public DeliveryResponse createDelivery(CreateDeliveryRequest request) {
     Delivery delivery = deliveryRepository.save(new Delivery(request));
