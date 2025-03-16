@@ -32,12 +32,27 @@ public class DeliveryService {
     Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() ->
         new IllegalArgumentException("Delivery not found"));
 
-    // delivery 권한 체크
+    // delivery 본인 권한 체크
 
     // delivery 업데이트
     delivery.update(request);
     deliveryRepository.save(delivery);
 
     return new DeliveryResponse(delivery);
+  }
+
+  @Transactional
+  public void deleteDelivery(UUID deliveryId) {
+    // 사용자 권한 체크
+
+    // delivery 체크
+    Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() ->
+        new IllegalArgumentException("Delivery not found"));
+
+    // delivery 본인 권한 체크
+
+    // delivery 삭제(base entity에서 soft delete 구현)
+//    delivery.delete();
+    deliveryRepository.save(delivery);
   }
 }
