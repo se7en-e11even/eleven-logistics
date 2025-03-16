@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateDeliveryResponse {
+public class DeliveryResponse {
 
   private UUID id;
   private UUID orderId;
@@ -22,7 +22,7 @@ public class CreateDeliveryResponse {
   private UUID companyDeliveryManagerId;
   private DeliveryStatus deliveryStatus;
 
-  public CreateDeliveryResponse(Delivery delivery) {
+  public DeliveryResponse(Delivery delivery) {
     this.id = delivery.getId();
     this.orderId = delivery.getOrderId();
     this.departureHubId = delivery.getDepartureHubId();
