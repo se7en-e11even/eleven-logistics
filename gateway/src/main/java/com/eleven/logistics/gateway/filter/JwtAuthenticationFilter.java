@@ -2,7 +2,6 @@ package com.eleven.logistics.gateway.filter;
 
 import com.eleven.logistics.gateway.exception.UnAuthorizedException;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -11,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -19,17 +18,19 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Component
-public class JwtAuthenticationFilter implements GlobalFilter {
+public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     @Value("${service.jwt.secret-key}")
     private String secretKey;
 
+    public static final int AUTHENTICATION_FILTER_ORDER = 100;
     private static final String HEADER_USERNAME = "X-Username";
     private static final String HEADER_ROLE = "X-Role";
+    private static final String JWT_USERNAME = "username";
+    private static final String JWT_ROLE = "role";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -42,8 +43,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         Claims payload = parsePayload(token);
         validateExpirationDate(payload.getExpiration());
 
-        String username = payload.get(HEADER_USERNAME, String.class);
-        String role = payload.get(HEADER_ROLE, String.class);
+        String username = payload.get(JWT_USERNAME, String.class);
+        String role = payload.get(JWT_ROLE, String.class);
 
         ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                 .header(HEADER_USERNAME, String.valueOf(username))
@@ -54,7 +55,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
                 .request(mutatedRequest)
                 .build();
 
-        return chain.filter(exchange);
+        return chain.filter(mutatedExchange);
     }
 
     private String extractToken(ServerWebExchange exchange) {
@@ -80,5 +81,10 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         if (currentDate.after(expirationDate)) {
             throw new UnAuthorizedException("만료된 토큰");
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return AUTHENTICATION_FILTER_ORDER;
     }
 }
