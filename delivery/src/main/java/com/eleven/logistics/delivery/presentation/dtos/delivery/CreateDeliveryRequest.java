@@ -1,5 +1,6 @@
 package com.eleven.logistics.delivery.presentation.dtos.delivery;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -11,25 +12,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateDeliveryRequest {
 
-  @NotNull
+  @NotBlank
   private UUID orderId;
 
-  @NotNull
+  @NotBlank
   private UUID departureHubId;
 
-  @NotNull
+  @NotBlank
   private UUID destinationHubId;
 
-  @NotNull
+  @NotBlank
   private String deliveryAddress;
 
-  @NotNull
+  @NotBlank
   private String receiver;
 
-  @NotNull
+  @NotBlank
   private UUID receiverSnsId;
 
-  @NotNull
+  @NotBlank
   private UUID companyDeliveryManagerId;
 
 }
