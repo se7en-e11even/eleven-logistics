@@ -1,5 +1,6 @@
 package com.eleven.logistics.delivery.domain.entity;
 
+import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -50,4 +51,14 @@ public class Delivery {
   @Enumerated(EnumType.STRING)
   private DeliveryStatus deliveryStatus;
 
+  public Delivery(CreateDeliveryRequest request) {
+    this.orderId = request.getOrderId();
+    this.departureHubId = request.getDepartureHubId();
+    this.destinationHubId = request.getDestinationHubId();
+    this.deliveryAddress = request.getDeliveryAddress();
+    this.receiver = request.getReceiver();
+    this.receiverSnsId = request.getReceiverSnsId();
+    this.companyDeliveryManagerId = request.getCompanyDeliveryManagerId();
+    this.deliveryStatus = DeliveryStatus.PENDING_AT_HUB;
+  }
 }
