@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "p_delivery")
-public class Delivery {
+public class Delivery extends Timestamped{
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
