@@ -38,6 +38,7 @@ public class User {
                 .build();
     }
 
+
     public User tryToSignIn(SignInRequestDto signInRequestDto, PasswordEncoder passwordEncoder) {
         if (matchesPassword(signInRequestDto.getPassword(), passwordEncoder) &&
                 matchesUsername(signInRequestDto.getUsername())) {
