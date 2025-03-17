@@ -33,20 +33,4 @@ public class User {
                 .role(role)
                 .build();
     }
-
-
-    public void update(String username, String password, String slackAccount, Role role) {
-        if (username != null) {
-            this.username = username;
-        }
-        if (password != null) {
-            this.password = password;
-        }
-        if (slackAccount != null) {
-            this.slackAccount = slackAccount;
-        }
-        if (role != null) {
-            this.role = role;
-        }
-    }
 }
