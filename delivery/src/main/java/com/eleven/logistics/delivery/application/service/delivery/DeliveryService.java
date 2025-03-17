@@ -78,6 +78,7 @@ public class DeliveryService {
   public DeliveryResponse createDelivery(CreateDeliveryRequest request) {
     Delivery delivery = deliveryRepository.save(new Delivery(request));
 
+//    delivery.updateCreatedBy(username);
     return new DeliveryResponse(delivery);
   }
 
@@ -93,6 +94,7 @@ public class DeliveryService {
 
     // delivery 업데이트
     delivery.update(request);
+//    delivery.updateModificationInfo(username);
     deliveryRepository.save(delivery);
 
     return new DeliveryResponse(delivery);
@@ -109,6 +111,7 @@ public class DeliveryService {
     // delivery 본인 권한 체크
 
     // delivery 삭제(사용자 id로 체크)
+//    delivery.updateDeletionInfo(username);
     deliveryRepository.save(delivery);
   }
 }
