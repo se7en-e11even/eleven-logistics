@@ -6,6 +6,7 @@ import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryRe
 import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryResponse;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliverySearchResponse;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.UpdateDeliveryRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,17 +31,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class DeliveryController {
 
   private final DeliveryService deliveryService;
+  private final HttpServletRequest httpServletRequest;
 
   @GetMapping("/{deliveryId}")
   public ResponseEntity<DeliveryResponse> getDelivery(
+      @RequestHeader HttpServletRequest httpServletRequest,
       @PathVariable UUID deliveryId
   ) {
-    DeliveryResponse response = deliveryService.getDelivery(deliveryId);
+    String username = httpServletRequest.getHeader("X-Username");
+    String userRole = httpServletRequest.getHeader("X-Role");
+
+    DeliveryResponse response = deliveryService.getDelivery(username, userRole, deliveryId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   @GetMapping("/search")
   public ResponseEntity<Page<DeliverySearchResponse>> getDeliveries(
+      @RequestHeader HttpServletRequest httpServletRequest,
       @RequestParam(required = false) UUID orderId,
       @RequestParam(required = false) UUID departureHubId,
       @RequestParam(required = false) UUID destinationHubId,
@@ -50,33 +58,52 @@ public class DeliveryController {
       @RequestParam(value = "sortedBy", defaultValue = "createdAt") String sortedBy,
       @RequestParam(value = "direction", defaultValue = "DESC") Sort.Direction direction
   ) {
+    String username = httpServletRequest.getHeader("X-Username");
+    String userRole = httpServletRequest.getHeader("X-Role");
+
     Page<DeliverySearchResponse> deliveries = deliveryService.getDeliveriesByKeyword(
-        orderId, departureHubId, destinationHubId, keyword, deliveryStatus, page, size, sortedBy, direction);
+        username, userRole,
+        orderId, departureHubId, destinationHubId, keyword, deliveryStatus, page, size, sortedBy,
+        direction);
     return ResponseEntity.status(HttpStatus.OK).body(deliveries);
   }
 
   @PostMapping
   public ResponseEntity<DeliveryResponse> createDelivery(
+      @RequestHeader HttpServletRequest httpServletRequest,
       @Valid @RequestBody CreateDeliveryRequest request
   ) {
-    DeliveryResponse response = deliveryService.createDelivery(request);
+    String username = httpServletRequest.getHeader("X-Username");
+    String userRole = httpServletRequest.getHeader("X-Role");
+
+    DeliveryResponse response = deliveryService.createDelivery(username, userRole, request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @PatchMapping("/{deliveryId}")
   public ResponseEntity<DeliveryResponse> updateDelivery(
+      @RequestHeader HttpServletRequest httpServletRequest,
       @PathVariable UUID deliveryId,
       @Valid @RequestBody UpdateDeliveryRequest request
   ) {
-    DeliveryResponse response = deliveryService.updateDelivery(deliveryId, request);
+    String username = httpServletRequest.getHeader("X-Username");
+    String userRole = httpServletRequest.getHeader("X-Role");
+
+    DeliveryResponse response = deliveryService.updateDelivery(username, userRole, deliveryId,
+        request);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   @DeleteMapping("/{deliveryId}")
   public ResponseEntity<?> deleteDelivery(
+      @RequestHeader HttpServletRequest httpServletRequest,
       @PathVariable UUID deliveryId
   ) {
-    deliveryService.deleteDelivery(deliveryId);
+    String username = httpServletRequest.getHeader("X-Username");
+    String userRole = httpServletRequest.getHeader("X-Role");
+
+    deliveryService.deleteDelivery(username, userRole, deliveryId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
+
 }
