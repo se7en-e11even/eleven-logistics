@@ -30,6 +30,7 @@ public class DeliveryResponse {
     this.deliveryAddress = delivery.getDeliveryAddress();
     this.receiver = delivery.getReceiver();
     this.receiverSnsId = delivery.getReceiverSnsId();
+    this.companyDeliveryManagerId = delivery.getCompanyDeliveryManagerId();
     this.deliveryStatus = delivery.getDeliveryStatus();
   }
 }
