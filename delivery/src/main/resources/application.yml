@@ -1,0 +1,37 @@
+server:
+  port: 19096
+
+spring:
+  application:
+    name: delivery-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eleven
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type: trace
+
+service:
+  jwt:
+    secret-key: ${JET_SECRET_KEY}
