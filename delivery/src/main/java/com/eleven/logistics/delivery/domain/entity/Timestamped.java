@@ -41,4 +41,18 @@ public abstract class Timestamped {
 
   @Column
   private String deletedBy;
+
+  public void updateCreatedBy(String username) {
+    this.createdBy = username;
+  }
+
+  public void updateModificationInfo(String username) {
+    this.updatedAt = LocalDateTime.now();
+    this.updatedBy = username;
+  }
+
+  public void updateDeletionInfo(String username) {
+    this.deletedAt = LocalDateTime.now();
+    this.deletedBy = username;
+  }
 }
