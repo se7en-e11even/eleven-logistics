@@ -1,6 +1,7 @@
 package com.eleven.logistics.hub.presentation.dto.hub;
 
 import com.eleven.logistics.hub.application.dto.hub.HubDto;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

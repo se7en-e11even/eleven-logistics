@@ -58,7 +58,7 @@ public class GeocodingService {
                 double longitude = root.path("addresses").get(0).path("x").asDouble();
                 return new double[]{latitude, longitude};
             } else if (root.has("status") && "OK".equals(root.path("status").asText())) {
-                log.warn("실제 주소 정보가 없습니다.");
+                throw new IllegalArgumentException("실제 주소 정보가 없습니다.");
             }
             return new double[]{0.0, 0.0};
 

@@ -44,8 +44,7 @@ public class HubService {
         double[] coordinates = geocodingService.getCoordinates(hub.getAddress());
 
         if (coordinates != null && coordinates.length == 2) {
-            hub.setLatitude(coordinates[0]);
-            hub.setLongitude(coordinates[1]);
+            hub.updateCoordinates(coordinates[0], coordinates[1]);
         } else {
             throw new IllegalArgumentException("위도, 경도를 찾을 수 없습니다.");
         }
@@ -104,10 +103,9 @@ public class HubService {
         double[] coordinates = geocodingService.getCoordinates(dto.getAddress());
 
         if (coordinates != null && coordinates.length == 2) {
-            hub.setLatitude(coordinates[0]);
-            hub.setLongitude(coordinates[1]);
+            hub.updateCoordinates(coordinates[0], coordinates[1]);
         } else {
-            throw new IllegalArgumentException("위도, 경도를 찾을 수 없습니다.");
+            throw new IllegalArgumentException("실제 주소 정보가 없습니다.");
         }
 
         hub.update(dto.getName(), dto.getAddress());

@@ -1,19 +1,20 @@
 package com.eleven.logistics.hub.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseSystemFieldEntity {
 
     @CreationTimestamp
@@ -24,11 +25,11 @@ public abstract class BaseSystemFieldEntity {
     @Column(updatable = false, nullable = false)
     private String createdBy = "admin";
 
-    //    @UpdateTimestamp
+    @UpdateTimestamp
     @Column(nullable = true)
     private LocalDateTime updatedAt;
 
-    //    @LastModifiedBy
+    @LastModifiedBy
     @Column(nullable = true)
     private String updatedBy;
 
@@ -38,26 +39,6 @@ public abstract class BaseSystemFieldEntity {
     @Column
     private String deletedBy;
 
-    // CREATE 시에는 updateAt과 updateBy를 설정하지 않음
-    @PrePersist
-    public void prePersist() {
-        LocalDateTime now = LocalDateTime.now();
-        if (createdAt == null) {
-            createdAt = now;
-        }
-        updatedAt = null;
-        updatedBy = null;
-        // CREATE 시에는 updateAt과 updateBy를 설정하지 않음
-    }
-
-    // UPDATE 시에만 updateAt과 updateBy를 갱신
-    @PreUpdate
-    public void preUpdate() {
-        if (updatedAt == null) {
-            updatedAt = LocalDateTime.now();
-            updatedBy = "admin";
-        }
-    }
     // 소프트 삭제 처리
     public void delete(String deletedBy) {
         this.deletedBy = deletedBy;

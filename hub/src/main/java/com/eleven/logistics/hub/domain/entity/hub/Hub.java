@@ -46,6 +46,10 @@ public class Hub extends BaseSystemFieldEntity {
                 .build();
         return hub;
     }
+    public void updateCoordinates(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     public void update(String name, String address) {
         this.name = name;
