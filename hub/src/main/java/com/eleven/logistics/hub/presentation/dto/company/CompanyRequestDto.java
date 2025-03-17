@@ -19,9 +19,10 @@ public class CompanyRequestDto {
     private String address;
     @NotBlank(message = "업체의 타입을 입력해주세요.")
     private Company.CompanyType type;
-    @NotBlank(message = "업체를 담당하는 허브를 입력해주세요.")
-    private UUID hubId;
-//    private UUID userId;
 
-    public CompanyDto toDto() {return CompanyDto.create(this.name, this.address, this.type, this.hubId);}
+    private UUID hubId;
+
+    private String username;
+
+    public CompanyDto toDto() {return CompanyDto.create(this.name, this.address, this.type, this.hubId, this.username);}
 }

@@ -20,8 +20,8 @@ public class Company extends BaseSystemFieldEntity {
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-//    @Column(name = "user_id", nullable = false)
-//    private UUID userId;
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
@@ -41,18 +41,20 @@ public class Company extends BaseSystemFieldEntity {
     @JoinColumn(name = "hub_id")
     private Hub hub;
 
-    public static Company create(String name, String address, CompanyType type, Hub hubId) {
+    public static Company create(String name, String address, CompanyType type, Hub hubId, String username) {
         return Company.builder()
                 .name(name)
                 .address(address)
                 .type(type)
+                .username(username)
                 .hub(hubId)
                 .build();
     }
-    public void update(String name, String address, CompanyType type, Hub hubId) {
+    public void update(String name, String address, CompanyType type, Hub hubId, String username) {
         this.name = name;
         this.address = address;
         this.type = type;
         this.hub = hubId;
+        this.username = username;
     }
 }

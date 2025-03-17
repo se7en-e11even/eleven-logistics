@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
+//@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseSystemFieldEntity {
 
     @CreationTimestamp
@@ -23,7 +23,7 @@ public abstract class BaseSystemFieldEntity {
 
     @CreatedBy
     @Column(updatable = false, nullable = false)
-    private String createdBy = "admin";
+    private String createdBy;
 
     @UpdateTimestamp
     @Column(nullable = true)
@@ -43,5 +43,12 @@ public abstract class BaseSystemFieldEntity {
     public void delete(String deletedBy) {
         this.deletedBy = deletedBy;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void getCreatedBy(String username) {
+        this.createdBy = username;
+    }
+    public void getUpdatedBy(String username) {
+        this.updatedBy = username;
     }
 }

@@ -69,5 +69,10 @@ public class GlobalExceptionHandler {
     public ApiResponseDto<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ApiResponseDto.failure(404, ex.getMessage());  // 예외 메시지 그대로 반환
     }
+    @ExceptionHandler(SecurityException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiResponseDto<String> handleForbiddenException(SecurityException ex) {
+        return ApiResponseDto.failure(403, "접근 권한이 없습니다.", ex.getMessage());
+    }
 }
 

@@ -1,5 +1,6 @@
 package com.eleven.logistics.hub.application.service.company;
 
+import com.eleven.logistics.hub.application.dto.PageResponseDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyResponseDto;
 import com.eleven.logistics.hub.domain.entity.company.Company;
@@ -26,7 +27,7 @@ public class CompanyService {
     private final HubRepository hubRepository;
 
     @Transactional
-    public CompanyResponseDto createCompany(CompanyDto dto) {
+    public CompanyResponseDto createCompany(String username, CompanyDto dto) {
         Hub hubId = hubRepository.findById(dto.getHubId())
                 .orElseThrow(()->new IllegalArgumentException("해당 허브를 찾을 수 없습니다."));
 
@@ -35,8 +36,9 @@ public class CompanyService {
         }
 
         Company company = Company.create(
-                dto.getName(),dto.getAddress(),
-                dto.getType(),hubId);
+                        dto.getName(),dto.getAddress(),
+                        dto.getType(),hubId,username);
+        company.getCreatedBy(username);
 
         companyRepository.save(company);
 
@@ -56,7 +58,7 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CompanyResponseDto> findByAll(int page, int size) {
+    public PageResponseDto<CompanyResponseDto> findByAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "deletedAt"));
 
         Page<Company> companies = companyRepository.findByDeletedAtIsNull(pageable);
@@ -64,11 +66,12 @@ public class CompanyService {
         if(companies.isEmpty()){
             throw new IllegalArgumentException("업체를 찾을 수 없습니다.");
         }
-        return companies.map(CompanyResponseDto::of);
+        Page<CompanyResponseDto> pageDto = companies.map(CompanyResponseDto::of);
+        return PageResponseDto.of(pageDto);
     }
 
     @Transactional
-    public CompanyResponseDto updateCompany(UUID companyId, CompanyDto dto) {
+    public CompanyResponseDto updateCompany(UUID companyId, CompanyDto dto, String username) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 업체를 찾을 수 없습니다."));
 
@@ -81,13 +84,14 @@ public class CompanyService {
 
         company.update(
                 dto.getName(),dto.getAddress(),
-                dto.getType(),hubId);
+                dto.getType(),hubId,username);
+        company.getUpdatedBy(username);
 
         return CompanyResponseDto.of(company);
     }
 
     @Transactional
-    public void deleteCompany(UUID companyId) {
+    public void deleteCompany(UUID companyId, String username) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(()->new IllegalArgumentException("찾으시는 업체가 없습니다."));
 
@@ -95,6 +99,6 @@ public class CompanyService {
             throw new IllegalArgumentException("이미 사리진 업체입니다.");
         }
 
-        company.delete("admin");
+        company.delete(username);
     }
 }

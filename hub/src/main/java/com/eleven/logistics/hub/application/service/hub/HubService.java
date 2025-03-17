@@ -32,7 +32,7 @@ public class HubService {
     private final GeocodingService geocodingService;
 
     @Transactional
-    public HubResponseDto createHub(HubDto dto) {
+    public HubResponseDto createHub(HubDto dto, String username) {
         if(hubRepository.existsByAddress(dto.getAddress())){
             throw new IllegalArgumentException("해당 위치에 이미 허브가 존재합니다.");
         }
@@ -41,6 +41,8 @@ public class HubService {
                 dto.getName(),
                 dto.getAddress()
         );
+        hub.setCreatedBy(username);
+
         double[] coordinates = geocodingService.getCoordinates(hub.getAddress());
 
         if (coordinates != null && coordinates.length == 2) {
@@ -92,7 +94,7 @@ public class HubService {
     }
 
     @Transactional
-    public HubResponseDto updateHub(UUID hubId, HubDto dto) {
+    public HubResponseDto updateHub(UUID hubId, HubDto dto, String username) {
         Hub hub = hubRepository.findById(hubId)
                 .orElseThrow(() -> new IllegalArgumentException("허브를 찾을 수 없습니다."));
 
@@ -109,12 +111,13 @@ public class HubService {
         }
 
         hub.update(dto.getName(), dto.getAddress());
+        hub.getUpdatedBy(username);
 
         return HubResponseDto.of(hub);
     }
 
     @Transactional
-    public void deleteHub(UUID hubId) {
+    public void deleteHub(UUID hubId, String username) {
         Hub hub = hubRepository.findById(hubId)
                 .orElseThrow(() -> new IllegalArgumentException("허브를 찾을 수 없습니다."));
 
@@ -122,6 +125,6 @@ public class HubService {
             throw new IllegalArgumentException("허브를 찾을 수 없습니다.");
         }
 
-        hub.delete("admin");
+        hub.delete(username);
     }
 }

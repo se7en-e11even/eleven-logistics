@@ -16,7 +16,7 @@ public class CompanyResponseDto {
     private String address;
     private Company.CompanyType type;
     private UUID hubId;
-//    private UUID userId;
+    private String username;
 
     public static CompanyResponseDto of(Company company) {
         return CompanyResponseDto.builder()
@@ -24,6 +24,7 @@ public class CompanyResponseDto {
                 .address(company.getAddress())
                 .type(company.getType())
                 .hubId(company.getHub().getId())
+                .username(company.getUsername())
                 .build();
     }
 }
