@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 @RestController
 public class ValidationExceptionHandler {
 
