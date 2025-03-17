@@ -23,14 +23,13 @@ public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
 
-  public DeliveryResponse getDelivery(UUID deliveryId) {
-    // 사용자 권한 체크
+  public DeliveryResponse getDelivery(String username, String userRole, UUID deliveryId) {
+    // 사용자 권한 체크 검증로직 추가 예정
 
-    // delivery 체크
     Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() ->
         new IllegalArgumentException("Delivery not found"));
 
-    // delivery 본인 권한 체크
+    // 배송담당자 - 본인 배송만 수정 가능, 본인 배송만 조회 및 검색 가능 검증로직 추가 예정
 
     return new DeliveryResponse(
         deliveryId,
@@ -45,6 +44,8 @@ public class DeliveryService {
   }
 
   public Page<DeliverySearchResponse> getDeliveriesByKeyword(
+      String username,
+      String userRole,
       UUID orderId,
       UUID departureHubId,
       UUID destinationHubId,
@@ -55,14 +56,13 @@ public class DeliveryService {
       String sortedBy,
       Sort.Direction direction
   ) {
-    // 사용자 권한 체크
+    // 사용자 권한 체크 검증로직 추가 예정
 
-    // delivery 체크
     Pageable pageable = PageRequest.of(page, size, direction, sortedBy);
     Page<Delivery> deliveryPage = deliveryRepository.findAllByKeyword(
         orderId, departureHubId, destinationHubId, keyword, deliveryStatus, pageable);
 
-    // delivery 본인 권한 체크
+    // delivery 본인 권한 체크 검증로직 추가 예정
 
     return deliveryPage.map((delivery ->
         new DeliverySearchResponse(
@@ -75,43 +75,45 @@ public class DeliveryService {
   }
 
   @Transactional
-  public DeliveryResponse createDelivery(CreateDeliveryRequest request) {
+  public DeliveryResponse createDelivery(String username, String userRole,
+      CreateDeliveryRequest request) {
+    // 사용자 권한 체크 검증로직 추가 예정
+
     Delivery delivery = deliveryRepository.save(new Delivery(request));
 
-//    delivery.updateCreatedBy(username);
+    delivery.updateCreatedBy(username);
     return new DeliveryResponse(delivery);
   }
 
   @Transactional
-  public DeliveryResponse updateDelivery(UUID deliveryId, UpdateDeliveryRequest request) {
-    // 사용자 권한 체크
+  public DeliveryResponse updateDelivery(String username, String userRole, UUID deliveryId,
+      UpdateDeliveryRequest request) {
+    // 사용자 권한 체크 검증로직 추가 예정
 
     // delivery 체크
     Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() ->
         new IllegalArgumentException("Delivery not found"));
 
-    // delivery 본인 권한 체크
+    // delivery 본인 권한 체크 검증로직 추가 예정
 
-    // delivery 업데이트
     delivery.update(request);
-//    delivery.updateModificationInfo(username);
+    delivery.updateModificationInfo(username);
     deliveryRepository.save(delivery);
 
     return new DeliveryResponse(delivery);
   }
 
   @Transactional
-  public void deleteDelivery(UUID deliveryId) {
-    // 사용자 권한 체크
+  public void deleteDelivery(String username, String userRole, UUID deliveryId) {
+    // 사용자 권한 체크 검증로직 추가 예정
 
     // delivery 체크
     Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() ->
         new IllegalArgumentException("Delivery not found"));
 
-    // delivery 본인 권한 체크
+    // delivery 본인 권한 체크 검증로직 추가 예정
 
-    // delivery 삭제(사용자 id로 체크)
-//    delivery.updateDeletionInfo(username);
+    delivery.updateDeletionInfo(username);
     deliveryRepository.save(delivery);
   }
 }
