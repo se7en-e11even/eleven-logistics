@@ -48,14 +48,14 @@ public class ProductService {
     }
 
     public ResponseDto readProduct(UUID productId) {
-        return repository.findById(productId)
+        return repository.findByProductIdAndDeletedAtIsNull(productId)
                 .map(ResponseDto::of)
                 .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
     }
 
     @Transactional
     public void updateProduct(UpdateDto dto) {
-        Product updateProduct = repository.findById(dto.productId())
+        Product updateProduct = repository.findByProductIdAndDeletedAtIsNull(dto.productId())
                 .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
 
         updateProduct.updateOf(
@@ -69,7 +69,7 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(UUID productId) {
-        Product deleteProduct = repository.findById(productId)
+        Product deleteProduct = repository.findByProductIdAndDeletedAtIsNull(productId)
                 .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
         // TODO: 삭제자 정보 가져오기
         deleteProduct.deleteOf("userId");
