@@ -25,7 +25,7 @@ public abstract class Timestamped {
 
   @Column
   @CreatedBy
-  private Long createdBy;
+  private String createdBy;
 
   @LastModifiedDate
   @Column
@@ -34,16 +34,11 @@ public abstract class Timestamped {
 
   @Column
   @LastModifiedBy
-  private Long updatedBy;
+  private String updatedBy;
 
   @Column
   private LocalDateTime deletedAt;
 
   @Column
-  private Long deletedBy;
-
-  public void delete(Long userId) {
-    this.deletedAt = LocalDateTime.now();
-    this.deletedBy = userId;
-  }
+  private String deletedBy;
 }
