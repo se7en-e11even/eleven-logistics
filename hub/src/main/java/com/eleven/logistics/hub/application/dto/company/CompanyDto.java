@@ -9,7 +9,6 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Builder(access = AccessLevel.PRIVATE)
 // 비즈니스 로직을 처리하는 서비스 레이어에서 사용하기 위한 객체
 public class CompanyDto {

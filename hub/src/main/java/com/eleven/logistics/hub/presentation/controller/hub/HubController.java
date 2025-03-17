@@ -17,19 +17,19 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api")
+@RequestMapping("/api/hub")
 public class HubController {
 
     private final HubService hubService;
 
-    @PostMapping("/hub")
+    @PostMapping
     public ResponseEntity<ApiResponseDto<HubResponseDto>> createHub(@RequestBody HubRequestDto requestDto){
         HubResponseDto responseDto = hubService.createHub(requestDto.toDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @GetMapping("/hub/{hubId}")
+    @GetMapping("/{hubId}")
     public ResponseEntity<ApiResponseDto<HubResponseDto>> findByHubId(@PathVariable("hubId") UUID hubId,
                                                                       @RequestParam(defaultValue = "1") int page,
                                                                       @RequestParam(defaultValue = "10")int size){
@@ -38,7 +38,7 @@ public class HubController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @GetMapping("/hub")
+    @GetMapping
     public ResponseEntity<ApiResponseDto<PageResponseDto<HubResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10")int size){
@@ -47,7 +47,7 @@ public class HubController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @PutMapping("/hub/{hubId}")
+    @PutMapping("{hubId}")
     public ResponseEntity<ApiResponseDto<HubResponseDto>> updateHub(@PathVariable("hubId") UUID hubId,
                                                                     @RequestBody HubRequestDto requestDto){
         HubResponseDto responseDto = hubService.updateHub(hubId, requestDto.toDto());
@@ -55,7 +55,7 @@ public class HubController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @DeleteMapping("/hub/{hubId}")
+    @DeleteMapping
     public ResponseEntity<ApiResponseDto<Void>> deleteHub(@PathVariable("hubId") UUID hubId){
         hubService.deleteHub(hubId);
         return ResponseEntity.ok()

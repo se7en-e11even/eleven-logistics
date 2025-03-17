@@ -11,7 +11,6 @@ import org.springframework.data.annotation.CreatedBy;
 
 import java.time.LocalDateTime;
 
-//@EntityListeners(AuditingEntityListener.class) //UserAuditorAware 사용 삭제
 @MappedSuperclass
 @Getter
 @Setter

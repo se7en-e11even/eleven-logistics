@@ -17,26 +17,26 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api")
+@RequestMapping("/api/company")
 public class CompanyController {
 
     private final CompanyService companyService;
 
-    @PostMapping("/company")
+    @PostMapping
     public ResponseEntity<ApiResponseDto<CompanyResponseDto>> createCompany(@RequestBody CompanyRequestDto requestDto){
         CompanyResponseDto responseDto = companyService.createCompany(requestDto.toDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @GetMapping("/company/{companyId}")
+    @GetMapping("/{companyId}")
     public ResponseEntity<ApiResponseDto<CompanyResponseDto>> findByCompanyId(@PathVariable("companyId") UUID companyId){
         CompanyResponseDto responseDto = companyService.findByCompanyId(companyId);
         return ResponseEntity.ok()
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @GetMapping("/company")
+    @GetMapping
     public ResponseEntity<ApiResponseDto<Page<CompanyResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10")int size){
@@ -45,7 +45,7 @@ public class CompanyController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @PutMapping("/company/{companyId}")
+    @PutMapping("/{companyId}")
     public ResponseEntity<ApiResponseDto<CompanyResponseDto>> updateCompany(@PathVariable("companyId") UUID companyId,
                                                                     @RequestBody CompanyRequestDto requestDto){
         CompanyResponseDto responseDto = companyService.updateCompany(companyId, requestDto.toDto());
@@ -53,7 +53,7 @@ public class CompanyController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @DeleteMapping("/company/{companyId}")
+    @DeleteMapping("/{companyId}")
     public ResponseEntity<ApiResponseDto<Void>> deleteCompany(@PathVariable("companyId") UUID companyId){
         companyService.deleteCompany(companyId);
         return ResponseEntity.ok()

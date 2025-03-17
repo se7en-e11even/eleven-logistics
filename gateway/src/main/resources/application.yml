@@ -20,6 +20,10 @@ spring:
           predicates:
             - Path=/product/**  # /auth/** 경로로 들어오는 요청을 이 라우트로 처리
 
+        - id: hub-service
+          uri: lb://hub-service
+          predicates:
+            - Path=/api/hub/**
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정

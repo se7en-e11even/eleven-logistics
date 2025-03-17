@@ -12,7 +12,6 @@ import java.util.UUID;
 @Builder(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL) // NULL 값 필드는 제거
 public class CompanyResponseDto {
-
     private String name;
     private String address;
     private Company.CompanyType type;
