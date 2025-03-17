@@ -12,18 +12,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateDeliveryRequest {
 
+  private UUID departureHubId;
+
+  private UUID destinationHubId;
+
   @NotBlank
   private String deliveryAddress;
 
   @NotBlank
   private String receiver;
 
-  @NotBlank
   private UUID receiverSnsId;
 
-  @NotBlank
   private UUID companyDeliveryManagerId;
 
-  @NotBlank
   private DeliveryStatus deliveryStatus;
 }
