@@ -1,6 +1,7 @@
 package com.eleven.logistics.delivery.application.service.delivery;
 
 import com.eleven.logistics.delivery.domain.entity.Delivery;
+import com.eleven.logistics.delivery.domain.entity.DeliveryStatus;
 import com.eleven.logistics.delivery.domain.repository.DeliveryRepository;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryRequest;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryResponse;
@@ -44,7 +45,11 @@ public class DeliveryService {
   }
 
   public Page<DeliverySearchResponse> getDeliveriesByKeyword(
+      UUID orderId,
+      UUID departureHubId,
+      UUID destinationHubId,
       String keyword,
+      DeliveryStatus deliveryStatus,
       int page,
       int size,
       String sortedBy,
@@ -54,7 +59,8 @@ public class DeliveryService {
 
     // delivery 체크
     Pageable pageable = PageRequest.of(page, size, direction, sortedBy);
-    Page<Delivery> deliveryPage = deliveryRepository.findAllByKeyword(keyword, pageable);
+    Page<Delivery> deliveryPage = deliveryRepository.findAllByKeyword(
+        orderId, departureHubId, destinationHubId, keyword, deliveryStatus, pageable);
 
     // delivery 본인 권한 체크
 
@@ -103,7 +109,6 @@ public class DeliveryService {
     // delivery 본인 권한 체크
 
     // delivery 삭제(사용자 id로 체크)
-//    delivery.delete();
     deliveryRepository.save(delivery);
   }
 }

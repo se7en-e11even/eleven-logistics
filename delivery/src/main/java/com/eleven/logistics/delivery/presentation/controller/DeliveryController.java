@@ -1,6 +1,7 @@
 package com.eleven.logistics.delivery.presentation.controller;
 
 import com.eleven.logistics.delivery.application.service.delivery.DeliveryService;
+import com.eleven.logistics.delivery.domain.entity.DeliveryStatus;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryRequest;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryResponse;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliverySearchResponse;
@@ -37,16 +38,20 @@ public class DeliveryController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-  @GetMapping("/search/{keyword}")
+  @GetMapping("/search")
   public ResponseEntity<Page<DeliverySearchResponse>> getDeliveries(
-      @PathVariable String keyword,
+      @RequestParam(required = false) UUID orderId,
+      @RequestParam(required = false) UUID departureHubId,
+      @RequestParam(required = false) UUID destinationHubId,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) DeliveryStatus deliveryStatus,
       @RequestParam(value = "page", defaultValue = "0") int page,
       @RequestParam(value = "size", defaultValue = "10") int size,
       @RequestParam(value = "sortedBy", defaultValue = "createdAt") String sortedBy,
       @RequestParam(value = "direction", defaultValue = "DESC") Sort.Direction direction
   ) {
     Page<DeliverySearchResponse> deliveries = deliveryService.getDeliveriesByKeyword(
-        keyword, page, size, sortedBy, direction);
+        orderId, departureHubId, destinationHubId, keyword, deliveryStatus, page, size, sortedBy, direction);
     return ResponseEntity.status(HttpStatus.OK).body(deliveries);
   }
 
