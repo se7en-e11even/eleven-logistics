@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: slack-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eleven
+    username: root
+    password: 1234
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+slack:
+  token: ${Slack_Token}
+
+gemini:
+  api:
+    key: ${Gemini_Token}
+
+server:
+  port: 19099
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
