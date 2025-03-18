@@ -33,7 +33,7 @@ spring:
           uri: lb://hub-service
           predicates:
             - Path=/api/company/**
-            -
+
         - id: hub-route-service
           uri: lb://hub-route-service
           predicates:
