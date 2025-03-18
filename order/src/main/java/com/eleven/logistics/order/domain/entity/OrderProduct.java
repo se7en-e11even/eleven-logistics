@@ -40,7 +40,7 @@ public class OrderProduct extends BaseTimeEntity {
         this.quantity = quantity;
     }
 
-    public void setOrder(Order order) {
+    public void addOrder(Order order) {
         this.order = order;
     }
 }
