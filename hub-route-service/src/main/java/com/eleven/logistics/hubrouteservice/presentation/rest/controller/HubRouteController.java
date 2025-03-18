@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/hub-routes")
+@RequestMapping("/api/hub-routes")
 public class HubRouteController {
     private final HubRouteService hubRouteService;
 

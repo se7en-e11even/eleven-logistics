@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 public class KakaoMapClient implements RouteService {
     private static final String KAKAO_API_URL = "https://apis-navi.kakaomobility.com/v1/directions";
-    private static final String API_KEY = "KakaoAK {REST_API_KEY}"; // 실제 API 키로 변경
+    private static final String API_KEY = "KakaoAK a7c04319b95dd26cf09d9af2b55a1fe3";
 
     private final RestTemplate restTemplate;
 
@@ -42,8 +42,8 @@ public class KakaoMapClient implements RouteService {
             Map<String, Object> route = ((Map<String, Object>) ((java.util.List<?>) responseBody.get("routes")).get(0));
             Map<String, Object> summary = (Map<String, Object>) route.get("summary");
 
-            int distance = (int) summary.get("distance");
-            int duration = (int) summary.get("duration");
+            int distance = (int) summary.get("distance"); // 미터
+            int duration = (int) summary.get("duration"); // 초
 
             return new MapDto(distance, duration);
         } catch (Exception e) {
