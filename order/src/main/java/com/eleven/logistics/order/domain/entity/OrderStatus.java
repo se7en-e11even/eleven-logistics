@@ -5,10 +5,11 @@ public enum OrderStatus {
     APPROVED,
     DELIVERING,
     COMPLETED,
-    CANCELLED
+    CANCELED
     ;
 
     public static OrderStatus of(String status) {
         return valueOf(status);
     }
+
 }

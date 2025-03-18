@@ -75,7 +75,18 @@ public class OrderController {
     }
 
     /**
+     * 주문 취소 API
+     * 주문 당사자가 취소 했을 때는 주문 상태만 변경한다.
+     * 취소된 주문도 검색이 가능하며 전체 목록에도 보인다.
+     */
+    @PatchMapping("/{order_id}/cancel")
+    public ResponseEntity<?> cancelOrder(@PathVariable UUID order_id) {
+        return ResponseEntity.ok(orderService.cancelOrder(order_id));
+    }
+
+    /**
      * 주문 삭제 API
+     * 삭제 요청을 했을 때에만 deletedAt 을 업데이트 한다.
      */
     @DeleteMapping("/{order_id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable UUID order_id) {

@@ -4,6 +4,7 @@ import com.eleven.logistics.order.domain.entity.Order;
 import lombok.AccessLevel;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ public record ResponseDto(
         UUID deliveryId,
         String orderStatus,
         String request,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
         List<OrderProductDto> orderProductDtoList
 ) {
     public static ResponseDto of(Order order) {
@@ -36,6 +39,8 @@ public record ResponseDto(
                 .deliveryId(order.getDeliveryId())
                 .orderStatus(order.getOrderStatus().name())
                 .request(order.getRequest())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
                 .orderProductDtoList(orderProductList)
                 .build();
     }

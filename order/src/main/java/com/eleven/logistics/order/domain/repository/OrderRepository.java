@@ -1,9 +1,7 @@
 package com.eleven.logistics.order.domain.repository;
 
 import com.eleven.logistics.order.domain.entity.Order;
-import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderRepository {
@@ -11,6 +9,9 @@ public interface OrderRepository {
 
     Order save(Order order);
 
-    @Query("SELECT o FROM Order o JOIN FETCH o.orderProductList WHERE o.orderId = :orderId")
-    Optional<Order> findByOrderIdAndDeletedAtIsNull(UUID orderId);
+    Order findByOrderId(UUID orderId);
+
+    // queryDSL 사용으로 변경함.
+//    @Query("SELECT o FROM Order o JOIN FETCH o.orderProductList WHERE o.orderId = :orderId")
+//    Optional<Order> findByOrderIdAndDeletedAtIsNull(UUID orderId);
 }

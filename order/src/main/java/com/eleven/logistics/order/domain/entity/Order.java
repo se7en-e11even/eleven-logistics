@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ public class Order extends BaseTimeEntity {
     private String request;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderProduct> orderProductList;
+    private List<OrderProduct> orderProductList = new ArrayList<>();
 
     @Builder
     private Order(UUID supplyId, UUID receiverId, UUID deliveryId,
@@ -48,16 +49,12 @@ public class Order extends BaseTimeEntity {
         this.orderProductList = orderProductList;
     }
 
-    public void updateOf(UUID supplyId, UUID receiverId, UUID deliveryId, OrderStatus orderStatus, String request) {
-        this.supplyId = supplyId;
-        this.receiverId = receiverId;
-        this.deliveryId = deliveryId;
-        this.orderStatus = orderStatus;
+    public void updateOf(String request) {
         this.request = request;
     }
 
-    public void updateState(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
+    public void changeOrderStatus(String orderStatus) {
+        this.orderStatus = OrderStatus.valueOf(orderStatus);
     }
 
     public void deleteOf(String deletedBy) {
@@ -67,6 +64,6 @@ public class Order extends BaseTimeEntity {
     // 연관관계 편의 메소드
     public void addOrderProduct(OrderProduct orderProduct) {
         orderProductList.add(orderProduct);
-        orderProduct.addOrder(this);
+        orderProduct.setOrder(this);
     }
 }

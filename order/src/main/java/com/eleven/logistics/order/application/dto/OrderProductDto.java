@@ -10,14 +10,14 @@ import java.util.UUID;
 public record OrderProductDto(
         UUID orderProductId,
         UUID productId,
-        int price,
-        int quantity
+        Integer price,
+        Integer quantity
 ) {
     public static OrderProductDto create(
             UUID orderProductId,
             UUID productId,
-            int price,
-            int quantity
+            Integer price,
+            Integer quantity
     ) {
         return OrderProductDto.builder()
                 .orderProductId(orderProductId)
