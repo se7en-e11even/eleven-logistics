@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KakaoMapDto {
+public class MapDto {
     @JsonProperty("distance")
     private int distance; // 전체 거리 (미터 단위)
 
     @JsonProperty("duration")
     private int duration; // 소요 시간 (초 단위)
 
-    public KakaoMapDto(int distance, int duration) {
+    public MapDto(int distance, int duration) {
         this.distance = distance;
         this.duration = duration;
     }

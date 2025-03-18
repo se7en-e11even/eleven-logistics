@@ -21,13 +21,13 @@ public class HubRouteController {
 
     @PostMapping
     public ResponseEntity<HubRouteResponseDto> createHubRoute(@RequestBody HubRouteRequestDto requestDto) {
-        return ResponseEntity.ok(hubRouteService.createHubRoute(requestDto));
+        return ResponseEntity.ok(hubRouteService.createHubRoute(requestDto.toCommand()));
     }
 
     // 출발 허브 → 도착 허브까지 최적 경로 찾기
     @GetMapping
     public ResponseEntity<List<Map<String, UUID>>> findOptimalRoute(@RequestBody HubRouteRequestDto requestDto) {
-        return ResponseEntity.ok(hubRouteService.findOptimalRoute(requestDto));
+        return ResponseEntity.ok(hubRouteService.findOptimalRoute(requestDto.toCommand()));
     }
 
 }

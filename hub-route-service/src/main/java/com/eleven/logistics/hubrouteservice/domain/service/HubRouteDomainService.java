@@ -2,21 +2,12 @@ package com.eleven.logistics.hubrouteservice.domain.service;
 
 import com.eleven.logistics.hubrouteservice.domain.entity.HubRoute;
 import com.eleven.logistics.hubrouteservice.domain.exception.HubRouteNotFoundException;
-import com.eleven.logistics.hubrouteservice.domain.repository.HubRouteRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
 public class HubRouteDomainService {
-    private final HubRouteRepository hubRouteRepository;
 
-    public HubRouteDomainService(HubRouteRepository hubRouteRepository) {
-        this.hubRouteRepository = hubRouteRepository;
-    }
-
-    public List<Map<String, UUID>> findOptimalRoute(UUID originHubId, UUID destinationHubId) {
-        List<HubRoute> routes = hubRouteRepository.findAll();
+    public List<Map<String, UUID>> findOptimalRoute(List<HubRoute> routes, UUID originHubId, UUID destinationHubId) {
 
         // Graph 모델링: 출발 허브 ID → [인접한 도착 허브 목록]
         Map<UUID, List<HubRoute>> graph = new HashMap<>();
