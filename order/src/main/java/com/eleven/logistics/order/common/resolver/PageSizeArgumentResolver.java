@@ -1,6 +1,5 @@
 package com.eleven.logistics.order.common.resolver;
 
-import com.eleven.logistics.product.common.resolver.PageSize;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
