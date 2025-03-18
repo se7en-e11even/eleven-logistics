@@ -92,6 +92,33 @@ public class SlackService {
     public SlackMessageResponse updateSlackMessage(UUID slackId, SlackDto dto, String username) {
         Slack slack = slackRepository.findById(slackId)
                 .orElseThrow(()->new IllegalArgumentException("찾으시는 메시지가 없습니다."));
-        return null;
+        try {
+            String userId = slackConfig.getUserIdByName(dto.getUsername());
+
+            if (userId == null) {
+                throw new IllegalArgumentException("사용자를 찾을 수 없습니다");
+            }
+            String result = slackConfig.sendMessage(userId, dto.getMessage());
+
+            JSONObject jsonObject = new JSONObject(result);
+            if (!jsonObject.getBoolean("ok")) {
+                throw new IllegalArgumentException("메시지 전송에 실패했습니다.");
+            }
+
+            slack.update(dto.getUsername(), dto.getMessage());
+            slack.getUpdatedBy(username);
+
+        } catch (Exception e) {
+            throw new RuntimeException("메시지 전송 중 오류가 발생했습니다", e);
+        }
+        return SlackMessageResponse.of(slack);
+    }
+
+    @Transactional
+    public void deleteSlackMessage(UUID slackId, String username) {
+        Slack slack = slackRepository.findById(slackId)
+                .orElseThrow(()->new IllegalArgumentException("찾으시는 메시지가 없습니다."));
+
+        slack.delete(username);
     }
 }

@@ -37,4 +37,8 @@ public class Slack extends BaseSystemFieldEntity{
                 .message(message)
                 .build();
     }
+    public void update(String username, String message) {
+        this.message = message;
+        this.username = username;
+    }
 }
