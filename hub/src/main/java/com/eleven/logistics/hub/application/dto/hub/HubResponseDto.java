@@ -5,11 +5,8 @@ import com.eleven.logistics.hub.application.dto.company.CompanyResponseDto;
 import com.eleven.logistics.hub.domain.entity.hub.Hub;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
