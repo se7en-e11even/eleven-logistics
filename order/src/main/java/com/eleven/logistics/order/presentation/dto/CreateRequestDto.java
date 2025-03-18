@@ -34,6 +34,7 @@ public record CreateRequestDto(
     ) {
         public static OrderProductDto toDto(OrderProductCreateDto createDto) {
             return OrderProductDto.create(
+                    null,
                     createDto.productId,
                     createDto.price,
                     createDto.quantity

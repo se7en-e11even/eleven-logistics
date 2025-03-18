@@ -4,6 +4,7 @@ import com.eleven.logistics.order.application.dto.CreateDto;
 import com.eleven.logistics.order.application.dto.OrderProductDto;
 import com.eleven.logistics.order.application.dto.ResponseDto;
 import com.eleven.logistics.order.application.dto.UpdateDto;
+import com.eleven.logistics.order.common.exception.CustomException;
 import com.eleven.logistics.order.common.resolver.dto.PageRequestDto;
 import com.eleven.logistics.order.common.resolver.dto.PageResponseDto;
 import com.eleven.logistics.order.domain.entity.Order;
@@ -14,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
+
+import static com.eleven.logistics.order.domain.exception.OrderErrorCode.ORDER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -31,19 +34,24 @@ public class OrderService {
         // 배송 id 는 배송 서비스에서 받아와야 한다.
         // 상품 정보를 주문에 넣어야 하므로 상품 먼저 생성
 
-        // 계층간 역 의존성을 방지하기 위해 application 계층에도 dto...
-        List<OrderProductDto> orderProductDtoList = dto.orderProductDtoList();
-        List<OrderProduct> orderProductList = orderProductDtoList.stream()
-                .map(OrderProductDto::toEntity)
-                .toList();
+        // 주문 생성
         Order order = Order.builder()
                 .supplyId(dto.supplyId())
                 .receiverId(dto.receiverId())
                 .orderStatus(OrderStatus.PENDING)
                 .request(dto.request())
-                .orderProductList(orderProductList)
+                .orderProductList(new ArrayList<>())
                 .build();
 
+        // 주문 상품 추가
+        for (OrderProductDto orderProductDto : dto.orderProductDtoList()) {
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .productId(orderProductDto.productId())
+                    .price(orderProductDto.price())
+                    .quantity(orderProductDto.quantity())
+                    .build();
+            order.addOrderProduct(orderProduct);
+        }
         repository.save(order);
         return order.getOrderId();
     }
@@ -53,8 +61,11 @@ public class OrderService {
         return null;
     }
 
-    public Object readOrder(UUID orderId) {
-        return null;
+    @Transactional(readOnly = true)
+    public ResponseDto readOrder(UUID orderId) {
+        return repository.findByOrderIdAndDeletedAtIsNull(orderId)
+                .map(ResponseDto::of)
+                .orElseThrow(()->new CustomException(ORDER_NOT_FOUND));
     }
 
     @Transactional

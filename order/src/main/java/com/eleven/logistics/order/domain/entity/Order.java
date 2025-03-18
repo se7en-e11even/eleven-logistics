@@ -34,7 +34,7 @@ public class Order extends BaseTimeEntity {
 
     private String request;
 
-    @OneToMany(mappedBy = "orderProductId", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProductList;
 
     @Builder
@@ -62,5 +62,11 @@ public class Order extends BaseTimeEntity {
 
     public void deleteOf(String deletedBy) {
         super.deleteOf(deletedBy);
+    }
+
+    // 연관관계 편의 메소드
+    public void addOrderProduct(OrderProduct orderProduct) {
+        orderProductList.add(orderProduct);
+        orderProduct.setOrder(this);
     }
 }

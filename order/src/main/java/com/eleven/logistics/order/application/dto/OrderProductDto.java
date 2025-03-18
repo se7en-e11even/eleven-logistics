@@ -8,16 +8,19 @@ import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record OrderProductDto(
+        UUID orderProductId,
         UUID productId,
         int price,
         int quantity
 ) {
     public static OrderProductDto create(
+            UUID orderProductId,
             UUID productId,
             int price,
             int quantity
     ) {
         return OrderProductDto.builder()
+                .orderProductId(orderProductId)
                 .productId(productId)
                 .price(price)
                 .quantity(quantity)
