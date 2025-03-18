@@ -39,9 +39,9 @@ public class User {
     }
 
 
-    public User tryToSignIn(SignInRequestDto signInRequestDto, PasswordEncoder passwordEncoder) {
-        if (matchesPassword(signInRequestDto.getPassword(), passwordEncoder) &&
-                matchesUsername(signInRequestDto.getUsername())) {
+    public User tryToSignIn(String username, String password, PasswordEncoder passwordEncoder) {
+        if (matchesPassword(password, passwordEncoder) &&
+                matchesUsername(username)) {
             return this;
         }
         throw new IllegalArgumentException("유효하지 않은 username 혹은 passoword");

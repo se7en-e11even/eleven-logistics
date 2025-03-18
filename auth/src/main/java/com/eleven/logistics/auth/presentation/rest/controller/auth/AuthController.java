@@ -23,12 +23,12 @@ public class AuthController {
 
     @PostMapping("/signUp")
     public ResponseEntity<UserResponseDto> signUp(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
-        return ResponseEntity.ok(authService.signUp(signUpRequestDto));
+        return ResponseEntity.ok(authService.signUp(signUpRequestDto.toCommand()));
     }
 
     @PostMapping("/signIn")
     public ResponseEntity<String> signIn(@Valid @RequestBody SignInRequestDto signInRequestDto) {
-        String accessToken = authService.signIn(signInRequestDto);
+        String accessToken = authService.signIn(signInRequestDto.toCommand());
         // 응답 헤더에 accessToken 추가
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);

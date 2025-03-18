@@ -1,6 +1,7 @@
 package com.eleven.logistics.auth.presentation.rest.dto;
 
 
+import com.eleven.logistics.auth.application.dto.SignUpCommand;
 import com.eleven.logistics.auth.domain.vo.Role;
 import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.NotBlank;
@@ -49,5 +50,10 @@ public class SignUpRequestDto {
     // 외부에서 호출할 필요가 없다면 private으로 사용
     public Role getRole() {
         return convertRole(this.role);
+    }
+
+    // `SignUpCommand`로 변환하는 메서드 추가
+    public SignUpCommand toCommand() {
+        return new SignUpCommand(username, password, slackAccount, convertRole(role));
     }
 }
