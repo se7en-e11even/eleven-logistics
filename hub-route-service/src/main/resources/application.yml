@@ -1,0 +1,29 @@
+server:
+  port: 19097
+
+spring:
+  application:
+    name: hub-route-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eleven_logistics_hub_route
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: localhost  # Redis 서버 주소
+      port: 6379       # Redis 기본 포트
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
