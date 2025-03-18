@@ -1,11 +1,7 @@
 package com.eleven.logistics.auth.domain.repository;
 
 import com.eleven.logistics.auth.domain.entity.User;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import org.springframework.stereotype.Repository;
-
 
 import java.util.List;
 import java.util.Optional;

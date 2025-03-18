@@ -1,7 +1,6 @@
 package com.eleven.logistics.auth.presentation.rest.dto;
 
 import com.eleven.logistics.auth.application.dto.SignInCommand;
-import com.eleven.logistics.auth.application.dto.SignUpCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
