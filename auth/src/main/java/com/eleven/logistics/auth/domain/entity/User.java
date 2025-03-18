@@ -1,7 +1,6 @@
 package com.eleven.logistics.auth.domain.entity;
 
 import com.eleven.logistics.auth.domain.vo.Role;
-import com.eleven.logistics.auth.presentation.rest.dto.SignInRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,12 +38,12 @@ public class User {
     }
 
 
-    public User tryToSignIn(SignInRequestDto signInRequestDto, PasswordEncoder passwordEncoder) {
-        if (matchesPassword(signInRequestDto.getPassword(), passwordEncoder) &&
-                matchesUsername(signInRequestDto.getUsername())) {
+    public User tryToSignIn(String username, String password, PasswordEncoder passwordEncoder) {
+        if (matchesPassword(password, passwordEncoder) &&
+                matchesUsername(username)) {
             return this;
         }
-        throw new IllegalArgumentException("유효하지 않은 username 혹은 passoword");
+        throw new IllegalArgumentException("유효하지 않은 username 혹은 password");
     }
 
     private boolean matchesPassword(String password, PasswordEncoder passwordEncoder) {

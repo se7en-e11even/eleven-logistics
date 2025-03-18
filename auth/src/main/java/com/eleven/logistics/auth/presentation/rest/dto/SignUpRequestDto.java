@@ -1,12 +1,10 @@
 package com.eleven.logistics.auth.presentation.rest.dto;
 
 
-import com.eleven.logistics.auth.domain.vo.Role;
-import jakarta.validation.ValidationException;
+import com.eleven.logistics.auth.application.dto.SignUpCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,18 +34,8 @@ public class SignUpRequestDto {
     private String role;
 
 
-
-    private Role convertRole(String requestRole) {
-        for (Role role : Role.values()) {
-            if (Objects.equals(role.name(), requestRole)) {
-                return role;
-            }
-        }
-        throw new ValidationException("유효하지 않은 role값 입니다.");
-    }
-
-    // 외부에서 호출할 필요가 없다면 private으로 사용
-    public Role getRole() {
-        return convertRole(this.role);
+    // `SignUpCommand`로 변환하는 메서드 추가
+    public SignUpCommand toCommand() {
+        return new SignUpCommand(username, password, slackAccount, role);
     }
 }
