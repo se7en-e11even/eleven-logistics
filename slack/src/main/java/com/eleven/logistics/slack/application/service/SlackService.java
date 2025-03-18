@@ -3,9 +3,9 @@ package com.eleven.logistics.slack.application.service;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
 import com.eleven.logistics.slack.application.dto.SlackDto;
 import com.eleven.logistics.slack.application.dto.SlackMessageResponse;
+import com.eleven.logistics.slack.domain.config.SlackConfig;
 import com.eleven.logistics.slack.domain.entity.Slack;
 import com.eleven.logistics.slack.domain.repository.SlackRepository;
-import com.eleven.logistics.slack.presentation.config.SlackConfigImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -27,7 +27,7 @@ public class SlackService {
 
     private final SlackRepository slackRepository;
 
-    private final SlackConfigImpl slackConfig;
+    private final SlackConfig slackConfig;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
