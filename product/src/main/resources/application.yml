@@ -1,0 +1,19 @@
+server:
+  port: 19096
+
+spring:
+  application:
+    name: product-service
+
+  datasource:
+    username: admin
+    url: jdbc:postgresql://localhost:5432/postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
