@@ -44,6 +44,11 @@ spring:
           predicates:
             - Path=/api/delivery/**
 
+        - id: slack-service
+          uri: lb://slack-service
+          predicates:
+            - Path=/api/slack/**
+
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
