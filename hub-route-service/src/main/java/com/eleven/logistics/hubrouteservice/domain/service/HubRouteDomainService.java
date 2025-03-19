@@ -2,9 +2,11 @@ package com.eleven.logistics.hubrouteservice.domain.service;
 
 import com.eleven.logistics.hubrouteservice.domain.entity.HubRoute;
 import com.eleven.logistics.hubrouteservice.domain.exception.HubRouteNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+@Slf4j
 public class HubRouteDomainService {
 
     public List<Map<String, UUID>> findOptimalRoute(List<HubRoute> routes, UUID originHubId, UUID destinationHubId) {
