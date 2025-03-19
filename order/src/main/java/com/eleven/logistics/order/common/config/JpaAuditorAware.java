@@ -1,22 +1,33 @@
 package com.eleven.logistics.order.common.config;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Optional;
 
-@Configuration
-@EnableJpaAuditing
-@RequiredArgsConstructor
+@Slf4j(topic = "Order Service JpaAuditor")
+@Component
 public class JpaAuditorAware implements AuditorAware<String> {
-
-    private final HttpServletRequest request;
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        return Optional.ofNullable(request.getHeader("X-Username"));
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        if (attributes == null) {
+            log.info("RequestAttributes is null");
+
+            // 필요한 정보가 없을 경우 Optional.empty() 를 반환하여 예외 방지.
+            return Optional.empty();
+        }
+
+        HttpServletRequest request = attributes.getRequest();
+        String username = request.getHeader("X-Username");
+        log.info("X-Username: {}", username);
+        return Optional.ofNullable(username);
     }
 }

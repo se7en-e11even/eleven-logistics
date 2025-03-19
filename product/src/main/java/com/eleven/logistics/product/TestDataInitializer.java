@@ -22,21 +22,21 @@ public class TestDataInitializer implements CommandLineRunner {
                 .hubId(UUID.randomUUID())
                 .name("notebook")
                 .price(1000000)
-                .quantity(5)
+                .stockQuantity(5)
                 .build();
         Product macbook = Product.builder()
                 .companyId(UUID.randomUUID())
                 .hubId(UUID.randomUUID())
                 .name("macbook")
                 .price(1500000)
-                .quantity(10)
+                .stockQuantity(10)
                 .build();
         Product ipad = Product.builder()
                 .companyId(UUID.randomUUID())
                 .hubId(UUID.randomUUID())
                 .name("ipad")
                 .price(800000)
-                .quantity(20)
+                .stockQuantity(20)
                 .build();
         List<Product> products = List.of(notebook, macbook, ipad);
         repository.saveAll(products);

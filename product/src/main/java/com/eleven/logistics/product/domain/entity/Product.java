@@ -12,7 +12,6 @@ import java.util.UUID;
 @Table(name = "p_product")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Product extends BaseTimeEntity {
 
     @Id
@@ -27,15 +26,16 @@ public class Product extends BaseTimeEntity {
 
     private int price;
 
-    private int quantity;
+    private int stockQuantity;
 
+    // TODO: 튜터님 깃 허브 보고 생성 메서드나 업데이트 메서드 수정할 것
     @Builder
-    private Product(UUID companyId, UUID hubId, String name, int price, int quantity) {
+    private Product(UUID companyId, UUID hubId, String name, int price, int stockQuantity) {
         this.companyId = companyId;
         this.hubId = hubId;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+        this.stockQuantity = stockQuantity;
     }
 
     public void updateOf(UUID companyId, UUID hubId, String name, int price, int quantity) {
@@ -43,11 +43,11 @@ public class Product extends BaseTimeEntity {
         this.hubId = hubId;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+        this.stockQuantity = quantity;
     }
 
     public void reduceQuantity(int quantity) {
-        this.quantity -= quantity;
+        this.stockQuantity -= quantity;
     }
 
     public void deleteOf(String deletedBy) {

@@ -14,7 +14,6 @@ public enum ProductErrorCode implements ErrorCode {
     NO_KEYWORD(HttpStatus.BAD_REQUEST, "검색어를 입력해주세요.")
     ;
 
-
     private final HttpStatus httpStatus;
     private final String message;
 

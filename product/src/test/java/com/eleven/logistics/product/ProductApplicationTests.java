@@ -4,8 +4,6 @@ import com.eleven.logistics.product.presentation.dto.CreateRequestDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,8 +17,6 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ProductApplicationTests {
-
-	private static final Logger log = LoggerFactory.getLogger(ProductApplicationTests.class);
 
 	private static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:16.3");
 
