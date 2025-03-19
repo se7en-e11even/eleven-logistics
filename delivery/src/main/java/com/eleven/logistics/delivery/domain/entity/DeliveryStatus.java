@@ -7,10 +7,10 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum DeliveryStatus {
   PENDING_AT_HUB("허브 대기 중"),
-  IN_TRANSIT_TO_HUB_("허브 이동 중"),
+  MOVING_TO_HUB_("허브 이동 중"),
   ARRIVED_AT_DESTINATION_HUB("목적지 허브 도착"),
-  OUT_FOR_DELIVERY("배송 중"),
-  IN_TRANSIT_TO_COMPANY("업체 이동 중"),
+  IN_DELIVERY("배송 중"),
+  MOVING_TO_COMPANY("업체 이동 중"),
   DELIVERED("배송 완료");
 
   private final String description;

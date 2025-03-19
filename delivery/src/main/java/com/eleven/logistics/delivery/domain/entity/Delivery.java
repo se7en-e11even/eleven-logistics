@@ -1,7 +1,8 @@
 package com.eleven.logistics.delivery.domain.entity;
 
-import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryRequest;
 import com.eleven.logistics.delivery.presentation.dtos.delivery.UpdateDeliveryRequest;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,7 +10,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,8 +23,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "p_delivery")
-public class Delivery extends Timestamped{
+@Table(name = "p_deliveries")
+public class Delivery extends Timestamped {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,11 +52,14 @@ public class Delivery extends Timestamped{
   @Column(name = "company_delivery_manager_id", nullable = false)
   private UUID companyDeliveryManagerId;
 
-  @Column(name = "delivery_status", nullable = false)
+  @Column(name = "delivery_status")
   @Enumerated(EnumType.STRING)
   private DeliveryStatus deliveryStatus;
 
-  public Delivery(CreateDeliveryRequest request) {
+  @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<DeliveryRoute> deliveryRoutes = new ArrayList<>();
+
+  public Delivery(DeliveryRequest request) {
     this.orderId = request.getOrderId();
     this.departureHubId = request.getDepartureHubId();
     this.destinationHubId = request.getDestinationHubId();
@@ -64,10 +71,18 @@ public class Delivery extends Timestamped{
   }
 
   public void update(UpdateDeliveryRequest request) {
-    this.deliveryAddress = request.getDeliveryAddress();
     this.receiver = request.getReceiver();
     this.receiverSnsId = request.getReceiverSnsId();
     this.companyDeliveryManagerId = request.getCompanyDeliveryManagerId();
-    this.deliveryStatus = request.getDeliveryStatus();
+  }
+
+  public void updateStatus(DeliveryStatus currentStatus) {
+    this.deliveryStatus = currentStatus;
+  }
+
+  // 배송 경로 추가
+  public void addRoute(DeliveryRoute route) {
+    this.deliveryRoutes.add(route);
+    route.assignDelivery(this);
   }
 }
