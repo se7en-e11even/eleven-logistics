@@ -1,5 +1,6 @@
 package com.eleven.logistics.order.domain.entity;
 
+import com.eleven.logistics.order.domain.vo.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.eleven.logistics.product;
 
 import com.eleven.logistics.product.domain.entity.Product;
-import com.eleven.logistics.product.infrastructure.ProductJpaRepository;
+import com.eleven.logistics.product.infrastructure.repository.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

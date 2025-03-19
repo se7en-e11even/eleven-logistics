@@ -1,13 +1,14 @@
 package com.eleven.logistics.order.presentation;
 
-import com.eleven.logistics.order.application.OrderService;
-import com.eleven.logistics.order.application.dto.CreateDto;
-import com.eleven.logistics.order.application.dto.OrderProductDto;
-import com.eleven.logistics.order.application.dto.ResponseDto;
+import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
+import com.eleven.logistics.order.application.dto.command.ListOrderCommand;
+import com.eleven.logistics.order.application.dto.query.FindOrderProductQuery;
+import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
+import com.eleven.logistics.order.application.dto.query.ListOrderQuery;
+import com.eleven.logistics.order.application.service.OrderService;
 import com.eleven.logistics.order.common.exception.CustomException;
-import com.eleven.logistics.order.common.resolver.dto.PageRequestDto;
-import com.eleven.logistics.order.common.resolver.dto.PageResponseDto;
-import com.eleven.logistics.order.presentation.dto.CreateRequestDto;
+import com.eleven.logistics.order.presentation.controller.OrderController;
+import com.eleven.logistics.order.presentation.dto.request.CreateOrderRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Arrays;
@@ -42,19 +43,19 @@ class OrderControllerMvcTest {
     @MockitoBean
     private OrderService orderService;
 
-    private ResponseDto[] dtos;
+    private FindOrderQuery[] dtos;
 
     UUID[] uuids;
 
     @Test
     @DisplayName("주문 생성 요청 성공 테스트")
-    void createOrder() throws JsonProcessingException {
+    void create() throws JsonProcessingException {
         UUID orderId = UUID.randomUUID();
-        var createRequestOrder = new CreateRequestDto(
+        var createRequestOrder = new CreateOrderRequest(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 "",
-                List.of(new CreateRequestDto.OrderProductCreateDto(
+                List.of(new CreateOrderRequest.CreateOrderProductRequest(
                         UUID.randomUUID(),
                         1000,
                         1)
@@ -63,7 +64,7 @@ class OrderControllerMvcTest {
 
         var createRequest = objectMapper.writeValueAsString(createRequestOrder);
 
-        given(orderService.createOrder(any(CreateDto.class)))
+        given(orderService.create(any(CreateOrderCommand.class)))
                 .willReturn(orderId);
 
         // when & then
@@ -76,9 +77,9 @@ class OrderControllerMvcTest {
 
     @Test
     @DisplayName("요청한 주문이 없으면 404")
-    void readOrder_ById_NotFound() {
+    void read_ById_NotFound() {
         UUID orderId = UUID.randomUUID();
-        given(orderService.readOrder(orderId))
+        given(orderService.read(orderId))
                 .willThrow(new CustomException(ORDER_NOT_FOUND));
 
         // when & then
@@ -89,8 +90,8 @@ class OrderControllerMvcTest {
 
     @Test
     @DisplayName("주문 상세 조회")
-    void readOrderById() {
-        given(orderService.readOrder(uuids[0]))
+    void readById() {
+        given(orderService.read(uuids[0]))
                 .willReturn(dtos[0]);
 
         // when & then
@@ -102,9 +103,9 @@ class OrderControllerMvcTest {
     @Test
     @DisplayName("주문 목록 조회")
     void retreiveOrders() throws JsonProcessingException {
-        var pageRequestDto = PageRequestDto.of(0, 10);
-        var pageResponseDto = new PageResponseDto<>(List.of(dtos), 3L);
-        given(orderService.readOrders(pageRequestDto))
+        var pageRequestDto = ListOrderCommand.of(0, 10);
+        var pageResponseDto = new ListOrderQuery<>(List.of(dtos), 3L);
+        given(orderService.search("keyword", pageRequestDto))
                 .willReturn(pageResponseDto);
 
         // when & then
@@ -124,7 +125,7 @@ class OrderControllerMvcTest {
             uuids[i] = UUID.randomUUID();
         }
         dtos = Arrays.array(
-                new ResponseDto(
+                new FindOrderQuery(
                         uuids[0],
                         uuids[3],
                         uuids[4],
@@ -133,14 +134,14 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1),
-                        List.of(new OrderProductDto(
+                        List.of(new FindOrderProductQuery(
                                 uuids[6],
                                 uuids[7],
                                 10000,
                                 1
                         ))
                 ),
-                new ResponseDto(
+                new FindOrderQuery(
                         uuids[1],
                         uuids[8],
                         uuids[9],
@@ -149,14 +150,14 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2),
-                        List.of(new OrderProductDto(
+                        List.of(new FindOrderProductQuery(
                                 uuids[11],
                                 uuids[12],
                                 20000,
                                 2
                         ))
                 ),
-                new ResponseDto(
+                new FindOrderQuery(
                         uuids[2],
                         uuids[13],
                         uuids[14],
@@ -165,7 +166,7 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 3),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 3),
-                        List.of(new OrderProductDto(
+                        List.of(new FindOrderProductQuery(
                                 uuids[16],
                                 uuids[17],
                                 30000,

@@ -1,6 +1,6 @@
 package com.eleven.logistics.order.common.config;
 
-import com.eleven.logistics.order.common.resolver.PageSizeArgumentResolver;
+import com.eleven.logistics.order.presentation.resolver.PageSizeArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
