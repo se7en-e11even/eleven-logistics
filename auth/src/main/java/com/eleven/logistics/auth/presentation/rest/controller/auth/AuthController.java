@@ -1,7 +1,7 @@
 package com.eleven.logistics.auth.presentation.rest.controller.auth;
 
 import com.eleven.logistics.auth.application.dto.UserResponseDto;
-import com.eleven.logistics.auth.application.service.AuthService;
+import com.eleven.logistics.auth.application.service.auth.AuthService;
 import com.eleven.logistics.auth.presentation.rest.dto.SignInRequestDto;
 import com.eleven.logistics.auth.presentation.rest.dto.SignUpRequestDto;
 import jakarta.validation.Valid;

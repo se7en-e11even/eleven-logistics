@@ -1,4 +1,4 @@
-package com.eleven.logistics.auth.application.service;
+package com.eleven.logistics.auth.application.service.auth;
 
 import com.eleven.logistics.auth.application.dto.SignInCommand;
 import com.eleven.logistics.auth.application.dto.SignUpCommand;
