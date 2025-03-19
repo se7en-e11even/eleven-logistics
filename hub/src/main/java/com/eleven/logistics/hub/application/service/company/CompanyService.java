@@ -1,8 +1,11 @@
 package com.eleven.logistics.hub.application.service.company;
 
 import com.eleven.logistics.hub.application.dto.PageResponseDto;
+import com.eleven.logistics.hub.application.dto.UserResponseDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyResponseDto;
+import com.eleven.logistics.hub.application.external.UserService;
+import com.eleven.logistics.hub.domain.entity.Role;
 import com.eleven.logistics.hub.domain.entity.company.Company;
 import com.eleven.logistics.hub.domain.entity.hub.Hub;
 import com.eleven.logistics.hub.domain.repository.company.CompanyRepository;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class CompanyService {
 
     private final CompanyRepository companyRepository;
     private final HubRepository hubRepository;
+    private final UserService userService;
 
     @Transactional
     public CompanyResponseDto createCompany(String username, CompanyDto dto) {
@@ -35,9 +40,16 @@ public class CompanyService {
             throw new IllegalArgumentException("이미 업체가 존재합니다.");
         }
 
+        ResponseEntity<UserResponseDto> companyUser = userService.getUserByName(dto.getUsername());
+        String role = companyUser.getBody().getRole().toString();
+
+        if (!role.equals("COMPANY")) {
+            throw new IllegalArgumentException("해당 사용자의 권한이 없습니다.");
+        }
+
         Company company = Company.create(
                         dto.getName(),dto.getAddress(),
-                        dto.getType(),hubId,username);
+                        dto.getType(),hubId, companyUser.getBody().getUsername());
         company.getCreatedBy(username);
 
         companyRepository.save(company);
@@ -82,9 +94,16 @@ public class CompanyService {
             throw new IllegalArgumentException("해당 업체는 사라졌습니다.");
         }
 
+        ResponseEntity<UserResponseDto> companyUser = userService.getUserByName(dto.getUsername());
+        String role = companyUser.getBody().getRole().toString();
+
+        if (!role.equals("COMPANY")) {
+            throw new IllegalArgumentException("해당 사용자의 권한이 없습니다.");
+        }
+
         company.update(
                 dto.getName(),dto.getAddress(),
-                dto.getType(),hubId,username);
+                dto.getType(),hubId,companyUser.getBody().getUsername());
         company.getUpdatedBy(username);
 
         return CompanyResponseDto.of(company);

@@ -1,9 +1,11 @@
 package com.eleven.logistics.hub.application.service.hub;
 
 import com.eleven.logistics.hub.application.dto.PageResponseDto;
+import com.eleven.logistics.hub.application.dto.UserResponseDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyResponseDto;
 import com.eleven.logistics.hub.application.dto.hub.HubDto;
 import com.eleven.logistics.hub.application.dto.hub.HubResponseDto;
+import com.eleven.logistics.hub.application.external.UserService;
 import com.eleven.logistics.hub.domain.entity.company.Company;
 import com.eleven.logistics.hub.domain.entity.hub.Hub;
 import com.eleven.logistics.hub.domain.repository.company.CompanyRepository;
