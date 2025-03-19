@@ -24,9 +24,12 @@ public class ProductService {
     private final ProductRepository repository;
     private final ProductRepositoryCustom repositoryCustom;
 
-
     @Transactional
     public UUID createProduct(CreateDto dto) {
+        // 상품 생성 시 상품 업체, 상품 관리 허브가 존재하는 지 확인!
+        // 업체 아이디, 허브 아이디를 사용자가 로그인 했을 때 그 사용자의 소속 회사와 회사 소속 허브를 가져오는 것이 맞을까?
+        // feignClient 를 사용해 업체, 허브 확인하기
+        // 확인 후 업체 id, 허브 id 를 엔티티에 넣어줄것.
         // 엔티티에 객체 생성에 대한 책임을 부여한다.
         Product product = Product.builder()
                 .companyId(dto.companyId())
@@ -68,11 +71,11 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(UUID productId) {
+    public void deleteProduct(UUID productId, String username) {
+        // 해당 상품이 존재하는 지 확인
         Product deleteProduct = repository.findByProductIdAndDeletedAtIsNull(productId)
                 .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
-        // TODO: 삭제자 정보 가져오기
-        deleteProduct.deleteOf("userId");
+        deleteProduct.deleteOf(username);
     }
 
     @Transactional(readOnly = true)

@@ -9,9 +9,9 @@ import com.eleven.logistics.product.common.resolver.dto.PageResponseDto;
 import com.eleven.logistics.product.presentation.dto.CreateRequestDto;
 import com.eleven.logistics.product.presentation.dto.UpdateRequestDto;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -27,13 +27,27 @@ public class ProductController {
 
     private final ProductService productService;
 
+    // TODO: 허브 관리자는 담당 허브에 대해서만 cruds 가 가능하다.
+
     /**
      * 상품 생성 API
      */
     @PostMapping
-    public ResponseEntity<Void> createProduct(@RequestBody @Valid CreateRequestDto requestDto) {
-        // 업체 아이디, 허브 아이디를 사용자가 로그인 했을 때 그 사용자의 소속 회사와 회사 소속 허브를 가져오는 것이 맞을까?
-        // 상품 등록 요청에 직접 넣어 요청 하도록 하는 것이 맞을까?
+    public ResponseEntity<Void> createProduct(
+            @RequestBody @Valid CreateRequestDto requestDto,
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
+    ) {
+        // 배송 담당자는 상품을 추가할 수 없다.
+        if (role.equals("DELIVERY")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        // 허브 관리자는 허브 소속 회사의 상품만
+        // if role.eq.HUB: username 으로 -> userid -> companyId, hubId
+
+        // 업체 담당자는 해당 업체의 상품만 생성
+        //  if role.eq.COMPANY: username -> userId -> companyId
+
         UUID productId = productService.createProduct(requestDto.toDto());
 
         URI location = UriComponentsBuilder.newInstance()
@@ -44,20 +58,7 @@ public class ProductController {
     }
 
     /**
-     * 상품 목록 조회 API
-     */
-    @GetMapping
-    public ResponseEntity<PageResponseDto<ResponseDto>> readProducts(@RequestParam(defaultValue = "1") int page,
-                                                                     @PageSize int size,
-                                                                     @RequestParam(defaultValue = "desc") String orderBy
-    ) {
-        log.info("pageSize: {}", size);
-        PageRequestDto pageRequestDto = PageRequestDto.of(page-1, size, orderBy);
-        return ResponseEntity.ok(productService.readProducts(pageRequestDto));
-    }
-
-    /**
-     * 상품 상세 조회 API
+     * 상품 조회 API
      */
     @GetMapping("/{product_id}")
     public ResponseEntity<?> readProduct(@PathVariable UUID product_id) {
@@ -68,9 +69,16 @@ public class ProductController {
      * 상품 수정 API
      */
     @PutMapping("/{product_id}")
-    public ResponseEntity<Void> updateProduct(@PathVariable UUID product_id,
-                                              @RequestBody @Valid UpdateRequestDto requestDto
+    public ResponseEntity<Void> updateProduct(
+            @PathVariable UUID product_id,
+            @RequestBody @Valid UpdateRequestDto requestDto,
+            @RequestHeader("X-Role") String role
     ) {
+        // 배송 담당자는 상품을 수정할 수 없다.
+        if (role.equals("DELIVERY")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         // service 에 controller 의 의존성을 없애기 위해 dto 변환
         UpdateDto updateDto = requestDto.withId(product_id);
         productService.updateProduct(updateDto);
@@ -81,22 +89,26 @@ public class ProductController {
      * 상품 삭제 API
      */
     @DeleteMapping("/{product_id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable UUID product_id) {
-        // TODO: 삭제자 정보 가져와서 넘겨주기
-        productService.deleteProduct(product_id);
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable UUID product_id,
+            @RequestHeader("X-Username") String username
+    ) {
+        productService.deleteProduct(product_id, username);
         return ResponseEntity.noContent().build();
     }
 
     /**
      * 상품 검색 API
+     * 페이징 처리, keyword 가 없으면 권한에 맞는 전체 목록
      */
-    @GetMapping("/search")
+    @GetMapping
     public ResponseEntity<PageResponseDto<ResponseDto>> searchProducts(
-            @RequestParam @NotBlank(message = "검색어를 입력해주세요.") String keyword,
+            @RequestParam String keyword,
             @RequestParam(defaultValue = "1") int page,
             @PageSize int size,
             @RequestParam(defaultValue = "desc") String orderBy
     ) {
+        log.info("pageSize 검증 10, 30, 50(default 10): {}", size);
         PageRequestDto pageRequestDto = PageRequestDto.of(page-1, size, orderBy);
         return ResponseEntity.ok(productService.searchProducts(keyword, pageRequestDto));
     }
