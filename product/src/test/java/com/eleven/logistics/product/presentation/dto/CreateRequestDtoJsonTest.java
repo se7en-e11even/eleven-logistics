@@ -18,8 +18,9 @@ class CreateRequestDtoJsonTest {
     private JacksonTester<CreateRequestDto> json;
 
     @Test
-    @DisplayName("요청 객체 역직렬화 테스트")
+    @DisplayName("요청 데이터 역직렬화 테스트")
     void deserialize() throws IOException {
+        // given
         var content = """
                 {
                     "companyId": "a858fb2e-b6c6-41c6-8c6c-98a8cadfc9b8",
@@ -29,6 +30,8 @@ class CreateRequestDtoJsonTest {
                     "quantity": 10
                 }
                 """;
+
+        // when & then
         assertThat(json.parse(content))
                 .usingRecursiveComparison()
                 .isEqualTo(new CreateRequestDto(

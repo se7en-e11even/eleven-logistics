@@ -20,7 +20,8 @@ class ResponseDtoJsonTest {
 
     @Test
     @DisplayName("응답 객체 직렬화 테스트")
-    void toDto() throws IOException {
+    void toJson() throws IOException {
+        // given
         var product = new ResponseDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -32,8 +33,10 @@ class ResponseDtoJsonTest {
                 LocalDateTime.of(2025, 3, 17, 13, 1, 2)
         );
 
+        // when
         var jsonContent = json.write(product);
 
+        // then
         // UUID, LocalDateTime 등의 객체는 비교 시 toString()으로 변환해 주어야 한다.
         assertThat(jsonContent).extractingJsonPathStringValue("@.productId")
                 .isEqualTo(product.productId().toString());
