@@ -1,5 +1,6 @@
 package com.eleven.logistics.hubrouteservice.application.service;
 
+import com.eleven.logistics.common.dto.ApiResponseDto;
 import com.eleven.logistics.hubrouteservice.application.dto.HubResponseDto;
 import com.eleven.logistics.hubrouteservice.application.dto.HubRouteResponseDto;
 import com.eleven.logistics.hubrouteservice.application.dto.MapDto;
@@ -11,6 +12,8 @@ import com.eleven.logistics.hubrouteservice.domain.entity.HubRoute;
 import com.eleven.logistics.hubrouteservice.domain.repository.HubRouteRepository;
 import com.eleven.logistics.hubrouteservice.domain.service.HubRouteDomainService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class HubRouteService {
 
@@ -38,17 +42,36 @@ public class HubRouteService {
     @Transactional
     public HubRouteResponseDto createHubRoute(ProcessHubRouteCommand hubRouteCommand) {
 
-        // hub-service와 feign-client를 이용해 origin과 destination의 위도, 경도를 조회
-        HubResponseDto originHub = hubService.getHubById(hubRouteCommand.getOriginHubId());
-        HubResponseDto destinationHub = hubService.getHubById(hubRouteCommand.getDestinationHubId());
 
+        // hub-service에서 Hub 정보를 가져오는 부분
+        ResponseEntity<ApiResponseDto<HubResponseDto>> originResponse = hubService.getHubById(hubRouteCommand.getOriginHubId());
+        ResponseEntity<ApiResponseDto<HubResponseDto>> destinationResponse = hubService.getHubById(hubRouteCommand.getDestinationHubId());
+
+        // ApiResponseDto에서 HubResponseDto를 꺼내기
+        HubResponseDto originHub = originResponse.getBody().getData(); // ApiResponseDto에서 data를 꺼냄
+        HubResponseDto destinationHub = destinationResponse.getBody().getData(); // ApiResponseDto에서 data를 꺼냄
+
+        // 데이터가 존재하지 않으면 예외 처리
         if (originHub == null || destinationHub == null) {
             throw new RuntimeException("허브 정보를 찾을 수 없습니다.");
         }
 
-        String originCoords = originHub.getLongitude() + "," + originHub.getLatitude();
-        String destinationCoords = destinationHub.getLongitude() + "," + destinationHub.getLatitude();
+        // 출발 -> 도착 경로가 이미 존재하는지 확인 (중복 체크)
+        Optional<HubRoute> existingForwardRoute = hubRouteRepository.findByOriginHubIdAndDestinationHubId(hubRouteCommand.getOriginHubId(), hubRouteCommand.getDestinationHubId());
+        if (existingForwardRoute.isPresent()) {
+            throw new RuntimeException("이미 동일한 경로가 존재합니다.");
+        }
 
+        // 도착 -> 출발 경로가 이미 존재하는지 확인 (역방향 경로 중복 체크)
+        Optional<HubRoute> existingReverseRoute = hubRouteRepository.findByOriginHubIdAndDestinationHubId(hubRouteCommand.getDestinationHubId(), hubRouteCommand.getOriginHubId());
+        if (existingReverseRoute.isPresent()) {
+            throw new RuntimeException("역방향 경로가 이미 존재합니다.");
+        }
+
+        String originCoords = originHub.getLongitude() + "," + originHub.getLatitude();
+        log.info(originCoords);
+        String destinationCoords = destinationHub.getLongitude() + "," + destinationHub.getLatitude();
+        log.info(destinationCoords);
         // KakaoMapClient를 통해 거리 및 소요 시간 조회
         MapDto kakaoMapDto = routeService.getRoute(originCoords, destinationCoords);
 
@@ -56,8 +79,8 @@ public class HubRouteService {
             throw new RuntimeException("맵 API에서 거리 및 시간 정보를 가져올 수 없습니다.");
         }
 
-        // HubRoute 엔티티 저장
-        HubRoute hubRoute = HubRoute.create(
+        // 출발 -> 도착 경로 생성
+        HubRoute forwardRoute = HubRoute.create(
                 hubRouteCommand.getOriginHubId(),
                 hubRouteCommand.getDestinationHubId(),
                 originHub.getName(),
@@ -65,47 +88,68 @@ public class HubRouteService {
                 kakaoMapDto.getDuration(),
                 kakaoMapDto.getDistance()
         );
+        hubRouteRepository.save(forwardRoute);
 
-        hubRouteRepository.save(hubRoute);
+        // 도착 -> 출발 경로 생성 (역방향 경로)
+        HubRoute reverseRoute = HubRoute.create(
+                hubRouteCommand.getDestinationHubId(),
+                hubRouteCommand.getOriginHubId(),
+                destinationHub.getName(),
+                originHub.getName(),
+                kakaoMapDto.getDuration(),
+                kakaoMapDto.getDistance()
+        );
+        hubRouteRepository.save(reverseRoute);
 
         // HubRouteResponseDto에 저장된 데이터 반환
-        return HubRouteResponseDto.of(hubRoute);
+        return HubRouteResponseDto.of(forwardRoute);
     }
 
+
     @Transactional
-    public List<Map<String, UUID>> findOptimalRoute(ProcessHubRouteCommand hubRouteCommand) {
+    public List<Map<String, UUID>> findOptimalRoute(UUID originHubId, UUID destinationHubId) {
 
-        // request에서 originHubId, destinationHubId 추출
-        UUID originHubId = hubRouteCommand.getOriginHubId();
-        UUID destinationHubId = hubRouteCommand.getDestinationHubId();
+//        // Redis에서 최적 경로가 있는지 확인 (캐싱된 데이터가 있으면 반환)
+//        List<Map<String, UUID>> cachedRoute = optimalRouteCacheService.getOptimalRoute(originHubId, destinationHubId);
+//        if (cachedRoute != null) {
+//            return cachedRoute;
+//        }
 
-        // Redis에서 최적 경로가 있는지 확인 (캐싱된 데이터가 있으면 반환)
-        List<Map<String, UUID>> cachedRoute = optimalRouteCacheService.getOptimalRoute(originHubId, destinationHubId);
-        if (cachedRoute != null) {
-            return cachedRoute;
-        }
 
-        // 출발 및 도착 허브 정보 조회
-        HubResponseDto originHub = hubService.getHubById(originHubId);
-        HubResponseDto destinationHub = hubService.getHubById(destinationHubId);
+        // hub-service에서 Hub 정보를 가져오는 부분
+        ResponseEntity<ApiResponseDto<HubResponseDto>> originResponse = hubService.getHubById(originHubId);
+        ResponseEntity<ApiResponseDto<HubResponseDto>> destinationResponse = hubService.getHubById(destinationHubId);
 
+        // ApiResponseDto에서 HubResponseDto를 꺼내기
+        HubResponseDto originHub = originResponse.getBody().getData(); // ApiResponseDto에서 data를 꺼냄
+        HubResponseDto destinationHub = destinationResponse.getBody().getData(); // ApiResponseDto에서 data를 꺼냄
+
+        // 데이터가 존재하지 않으면 예외 처리
         if (originHub == null || destinationHub == null) {
             throw new RuntimeException("허브 정보를 찾을 수 없습니다.");
         }
 
+
         // HubRoute 테이블에서 출발-도착 허브 간 경로가 있는지 확인
         Optional<HubRoute> existingRoute = hubRouteRepository.findByOriginHubIdAndDestinationHubId(originHubId, destinationHubId);
 
+
         // 경로가 없으면 `createHubRoute` 실행 후 다시 `findOptimalRoute` 실행
-        if (existingRoute.isEmpty()) {
-            createHubRoute(hubRouteCommand);
-        }
+//        if (existingRoute.isEmpty()) {
+//            // ProcessHubRouteCommand 생성
+//            ProcessHubRouteCommand command = new ProcessHubRouteCommand(originHubId, destinationHubId);
+//
+//            // createHubRoute 메서드를 호출하면서 ProcessHubRouteCommand 객체를 전달
+//            createHubRoute(command);
+//        }
+
 
         // 최적 경로 계산
         List<Map<String, UUID>> optimalRoute = hubRouteDomainService.findOptimalRoute(hubRouteRepository.findAll(), originHubId, destinationHubId);
 
-        // Redis에 최적 경로 캐싱
-        optimalRouteCacheService.saveOptimalRoute(originHubId, destinationHubId, optimalRoute);
+
+//        // Redis에 최적 경로 캐싱
+//        optimalRouteCacheService.saveOptimalRoute(originHubId, destinationHubId, optimalRoute);
 
         return optimalRoute;
     }

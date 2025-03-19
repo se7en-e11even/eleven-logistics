@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class HubRoute {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private UUID originHubId;
     private UUID destinationHubId;

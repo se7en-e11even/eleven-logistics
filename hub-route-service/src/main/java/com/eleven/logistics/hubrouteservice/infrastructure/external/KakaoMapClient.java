@@ -2,12 +2,14 @@ package com.eleven.logistics.hubrouteservice.infrastructure.external;
 
 import com.eleven.logistics.hubrouteservice.application.dto.MapDto;
 import com.eleven.logistics.hubrouteservice.application.service.external.RouteService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+@Slf4j
 @Component
 public class KakaoMapClient implements RouteService {
     private static final String KAKAO_API_URL = "https://apis-navi.kakaomobility.com/v1/directions";
@@ -28,7 +30,6 @@ public class KakaoMapClient implements RouteService {
         String url = KAKAO_API_URL + "?origin=" + origin + "&destination=" + destination;
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             Map<String, Object> responseBody = response.getBody();
             return extractDistanceAndDuration(responseBody);
