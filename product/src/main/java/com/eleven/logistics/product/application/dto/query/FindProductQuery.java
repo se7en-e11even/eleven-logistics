@@ -1,4 +1,4 @@
-package com.eleven.logistics.product.application.dto;
+package com.eleven.logistics.product.application.dto.query;
 
 import com.eleven.logistics.product.domain.entity.Product;
 import lombok.AccessLevel;
@@ -12,24 +12,24 @@ import java.util.UUID;
  * 응용 계층의 dto 를 그대로 사용한다.
  */
 @Builder(access = AccessLevel.PRIVATE)
-public record ResponseDto(
+public record FindProductQuery(
         UUID productId,
         UUID companyId,
         UUID hubId,
         String name,
-        Integer price,
-        Integer quantity,
+        int price,
+        int stockQuantity,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static ResponseDto of(Product product) {
-        return ResponseDto.builder()
+    public static FindProductQuery of(Product product) {
+        return FindProductQuery.builder()
                 .productId(product.getProductId())
                 .companyId(product.getCompanyId())
                 .hubId(product.getHubId())
                 .name(product.getName())
                 .price(product.getPrice())
-                .quantity(product.getStockQuantity())
+                .stockQuantity(product.getStockQuantity())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .build();
