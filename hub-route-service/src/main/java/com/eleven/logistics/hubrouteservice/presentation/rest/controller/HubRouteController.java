@@ -26,8 +26,8 @@ public class HubRouteController {
 
     // 출발 허브 → 도착 허브까지 최적 경로 찾기
     @GetMapping
-    public ResponseEntity<List<Map<String, UUID>>> findOptimalRoute(@RequestBody HubRouteRequestDto requestDto) {
-        return ResponseEntity.ok(hubRouteService.findOptimalRoute(requestDto.toCommand()));
+    public ResponseEntity<List<Map<String, UUID>>> findOptimalRoute(@RequestParam("originHubId") UUID originHubId, @RequestParam("destinationHubId") UUID destinationHubId) {
+        return ResponseEntity.ok(hubRouteService.findOptimalRoute(originHubId, destinationHubId));
     }
 
 }
