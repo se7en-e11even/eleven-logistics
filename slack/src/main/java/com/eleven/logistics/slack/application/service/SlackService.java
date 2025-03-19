@@ -3,27 +3,20 @@ package com.eleven.logistics.slack.application.service;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
 import com.eleven.logistics.slack.application.dto.SlackDto;
 import com.eleven.logistics.slack.application.dto.SlackMessageResponse;
+import com.eleven.logistics.slack.domain.config.SlackConfig;
 import com.eleven.logistics.slack.domain.entity.Slack;
 import com.eleven.logistics.slack.domain.repository.SlackRepository;
-import com.eleven.logistics.slack.presentation.config.SlackConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
@@ -92,6 +85,33 @@ public class SlackService {
     public SlackMessageResponse updateSlackMessage(UUID slackId, SlackDto dto, String username) {
         Slack slack = slackRepository.findById(slackId)
                 .orElseThrow(()->new IllegalArgumentException("찾으시는 메시지가 없습니다."));
-        return null;
+        try {
+            String userId = slackConfig.getUserIdByName(dto.getUsername());
+
+            if (userId == null) {
+                throw new IllegalArgumentException("사용자를 찾을 수 없습니다");
+            }
+            String result = slackConfig.sendMessage(userId, dto.getMessage());
+
+            JSONObject jsonObject = new JSONObject(result);
+            if (!jsonObject.getBoolean("ok")) {
+                throw new IllegalArgumentException("메시지 전송에 실패했습니다.");
+            }
+
+            slack.update(dto.getUsername(), dto.getMessage());
+            slack.getUpdatedBy(username);
+
+        } catch (Exception e) {
+            throw new RuntimeException("메시지 전송 중 오류가 발생했습니다", e);
+        }
+        return SlackMessageResponse.of(slack);
+    }
+
+    @Transactional
+    public void deleteSlackMessage(UUID slackId, String username) {
+        Slack slack = slackRepository.findById(slackId)
+                .orElseThrow(()->new IllegalArgumentException("찾으시는 메시지가 없습니다."));
+
+        slack.delete(username);
     }
 }

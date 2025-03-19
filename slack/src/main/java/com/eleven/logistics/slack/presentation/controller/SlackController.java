@@ -69,16 +69,20 @@ public class SlackController {
             throw new IllegalArgumentException("접근 권한이 없습니다.");
         }
         SlackMessageResponse response = slackService.updateSlackMessage(slackId, requestDto.toDto(), username);
-        return null;
+        return ResponseEntity.ok()
+                .body(ApiResponseDto.success(response, "요청이 성공적으로 처리되었습니다."));
     }
 
     @DeleteMapping("/{slackId}")
     public ResponseEntity<ApiResponseDto<Void>> deleteSlackMessage(
             @PathVariable UUID slackId,
+            @RequestHeader("X-Username") String username,
             @RequestHeader("X-Role") String role) {
         if (role == null || !role.equals("MASTER")) {
             throw new IllegalArgumentException("접근 권한이 없습니다.");
         }
-        return null;
+        slackService.deleteSlackMessage(slackId, username);
+        return ResponseEntity.ok()
+                .body(ApiResponseDto.success(null, "요청이 성공적으로 처리되었습니다."));
     }
 }

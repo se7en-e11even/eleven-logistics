@@ -1,5 +1,6 @@
 package com.eleven.logistics.slack.presentation.config;
 
+import com.eleven.logistics.slack.domain.config.SlackConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @Slf4j
-public class SlackConfig {
+public class SlackConfigImpl implements SlackConfig {
 
     // chat.scheduledMessage 메시지를 예약한다
     // chat.scheduledMessages.list 예약 메시지 보내기
@@ -23,7 +24,7 @@ public class SlackConfig {
 
     private final RestTemplate restTemplate;
 
-    public SlackConfig(RestTemplateBuilder builder) {
+    public SlackConfigImpl(RestTemplateBuilder builder) {
         restTemplate = builder.build();
     }
 
