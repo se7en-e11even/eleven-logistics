@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: hub-service
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: default
+      password: 1234
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eleven-logistics-hub
+    username: eleven-logistics
+    password: 1234
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 19093
+
+naver:
+  geocode-url: https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode
+  client-id: t7nmrnh2kl
+  client-secret: I0BRx0h5K4T4CzgjXQgRKSPs6m82P5qS3QMuG3Ro
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/

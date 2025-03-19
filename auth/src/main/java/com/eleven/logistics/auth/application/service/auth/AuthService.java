@@ -1,10 +1,10 @@
-package com.eleven.logistics.auth.application.service;
+package com.eleven.logistics.auth.application.service.auth;
 
+import com.eleven.logistics.auth.application.dto.SignInCommand;
+import com.eleven.logistics.auth.application.dto.SignUpCommand;
 import com.eleven.logistics.auth.application.dto.UserResponseDto;
 import com.eleven.logistics.auth.domain.entity.User;
 import com.eleven.logistics.auth.domain.repository.UserRepository;
-import com.eleven.logistics.auth.presentation.rest.dto.SignInRequestDto;
-import com.eleven.logistics.auth.presentation.rest.dto.SignUpRequestDto;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -42,13 +42,13 @@ public class AuthService {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKeyValue));
     }
 
-    public String signIn(SignInRequestDto signInRequestDto) {
+    public String signIn(SignInCommand signInCommand) {
 
-        User user = userRepository.findByUsername(signInRequestDto.getUsername()).orElseThrow(
+        User user = userRepository.findByUsername(signInCommand.getUsername()).orElseThrow(
                 () -> new IllegalArgumentException("등록되지 않은 사용자입니다.")
         );
 
-        user.tryToSignIn(signInRequestDto, passwordEncoder);
+        user.tryToSignIn(signInCommand.getUsername(), signInCommand.getPassword(), passwordEncoder);
 
         return createAccessToken(user);
     }
@@ -72,22 +72,22 @@ public class AuthService {
 
 
     @Transactional
-    public UserResponseDto signUp(SignUpRequestDto signUpRequestDto) {
+    public UserResponseDto signUp(SignUpCommand signUpCommand) {
 
         // 중복 체크
-        if (userRepository.findByUsername(signUpRequestDto.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(signUpCommand.getUsername()).isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
         // 비밀번호 해싱
-        String hashedPassword = passwordEncoder.encode(signUpRequestDto.getPassword());
+        String hashedPassword = passwordEncoder.encode(signUpCommand.getPassword());
 
         // User 엔티티에 객체 생성에 대한 책임을 부여합니다.
         User user = User.create(
-                signUpRequestDto.getUsername(),
+                signUpCommand.getUsername(),
                 hashedPassword,
-                signUpRequestDto.getSlackAccount(),
-                signUpRequestDto.getRole()
+                signUpCommand.getSlackAccount(),
+                signUpCommand.getRole()
         );
 
         userRepository.save(user);
