@@ -6,8 +6,8 @@ spring:
     name: order-service
 
   datasource:
-    username: admin
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/eleven-logistics-order
+    username: eleven-logistics
     password: 1234
   jpa:
     hibernate:
