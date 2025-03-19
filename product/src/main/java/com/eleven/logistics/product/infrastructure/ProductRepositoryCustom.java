@@ -7,7 +7,6 @@ import com.eleven.logistics.product.common.resolver.dto.PageResponseDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.eleven.logistics.product.domain.entity.QProduct.product;
-import static com.eleven.logistics.product.domain.exception.ProductErrorCode.NO_KEYWORD;
 import static com.eleven.logistics.product.domain.exception.ProductErrorCode.ORDER_BY_NOT_FOUND;
 
 @Repository
@@ -28,11 +26,11 @@ public class ProductRepositoryCustom {
 
     /**
      * 상품 목록 조회
-     * page, order
+     * 페이징, 정렬
      */
     public PageResponseDto<ResponseDto> readProducts(PageRequestDto dto) {
-        List<ResponseDto> content = getProductList(dto);
-        long total = getTotalCount();
+        List<ResponseDto> content = getProductList(null, dto);
+        long total = getTotalCount(null);
 
         return new PageResponseDto<>(content, total);
     }
@@ -42,35 +40,12 @@ public class ProductRepositoryCustom {
      */
     public PageResponseDto<ResponseDto> retrieveProducts(String keyword, PageRequestDto dto) {
         List<ResponseDto> content = getProductList(keyword, dto);
-        long total = getTotalCount();
+        long total = getTotalCount(keyword);
         return new PageResponseDto<>(content, total);
     }
 
     /**
-     * 페이징 조회 메서드
-     */
-    private List<ResponseDto> getProductList(PageRequestDto dto) {
-        return jpaQueryFactory
-                .select(Projections.constructor(ResponseDto.class,
-                        product.productId,
-                        product.companyId,
-                        product.hubId,
-                        product.name,
-                        product.price,
-                        product.quantity,
-                        product.createdAt,
-                        product.updatedAt
-                        ))
-                .from(product)
-                .where(getWhereConditions())
-                .offset(dto.getFirstIndex())
-                .limit(dto.size())
-                .orderBy(getOrderConditions(dto))
-                .fetch();
-    }
-
-    /**
-     * 검색 메서드
+     * 페이징 + 검색 메서드
      */
     private List<ResponseDto> getProductList(String keyword, PageRequestDto dto) {
         return jpaQueryFactory
@@ -80,7 +55,7 @@ public class ProductRepositoryCustom {
                         product.hubId,
                         product.name,
                         product.price,
-                        product.quantity,
+                        product.stockQuantity,
                         product.createdAt,
                         product.updatedAt
                 ))
@@ -95,39 +70,29 @@ public class ProductRepositoryCustom {
     /**
      * 전체 데이터 수 조회
      */
-    private long getTotalCount() {
+    private long getTotalCount(String keyword) {
         return Optional.ofNullable(jpaQueryFactory
                         .select(product.count())
                         .from(product)
-                        .where(getWhereConditions())
+                        .where(getWhereConditions(keyword))
                         .fetchOne()
                 )
                 .orElse(0L);
     }
 
     /**
-     * 조회 조건: deletedAt
-     */
-    private BooleanBuilder getWhereConditions() {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        // soft delete 정책을 사용한다.
-        return builder.and(product.deletedAt.isNull());
-    }
-
-    /**
-     * 조회 조건: deletedAt, keyword
+     * 조회 조건
      */
     private BooleanBuilder getWhereConditions(String keyword) {
-        if (!StringUtils.hasText(keyword)) {
-            throw new CustomException(NO_KEYWORD);
-        }
-
         BooleanBuilder builder = new BooleanBuilder();
+
+        // soft delete 정책 적용
         builder.and(product.deletedAt.isNull());
 
-        BooleanExpression keywordCondition = product.name.containsIgnoreCase(keyword);
-        builder.and(keywordCondition);
+        // keyword 가 있을 경우 검색 조건 추가
+        if (StringUtils.hasText(keyword)) {
+            builder.and(product.name.containsIgnoreCase(keyword));
+        }
 
         return builder;
     }
@@ -136,9 +101,13 @@ public class ProductRepositoryCustom {
      * 정렬 조건
      */
     private OrderSpecifier<?> getOrderConditions(PageRequestDto dto) {
-        String order = dto.orderBy();
+        String orderBy = dto.orderBy().toLowerCase();
 
-        return switch (order) {
+        if (!StringUtils.hasText(orderBy)) {
+            return product.createdAt.desc();
+        }
+
+        return switch (orderBy) {
             case "desc" -> product.createdAt.desc();
             case "asc" -> product.createdAt.asc();
             default -> throw new CustomException(ORDER_BY_NOT_FOUND);
