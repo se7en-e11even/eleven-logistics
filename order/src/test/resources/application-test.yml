@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    username: admin
+    url: jdbc:postgresql://localhost:5432/eleven
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create
