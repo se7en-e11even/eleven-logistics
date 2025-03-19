@@ -6,13 +6,14 @@ import com.eleven.logistics.hubrouteservice.application.dto.HubRouteResponseDto;
 import com.eleven.logistics.hubrouteservice.application.dto.MapDto;
 import com.eleven.logistics.hubrouteservice.application.dto.ProcessHubRouteCommand;
 import com.eleven.logistics.hubrouteservice.application.service.external.HubService;
-import com.eleven.logistics.hubrouteservice.application.service.external.OptimalRouteCacheService;
 import com.eleven.logistics.hubrouteservice.application.service.external.RouteService;
 import com.eleven.logistics.hubrouteservice.domain.entity.HubRoute;
 import com.eleven.logistics.hubrouteservice.domain.repository.HubRouteRepository;
 import com.eleven.logistics.hubrouteservice.domain.service.HubRouteDomainService;
+
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +30,12 @@ public class HubRouteService {
     private final RouteService routeService;
     private final HubService hubService;
     private final HubRouteDomainService hubRouteDomainService;
-    private final OptimalRouteCacheService optimalRouteCacheService;
 
-    public HubRouteService(HubRouteRepository hubRouteRepository, RouteService routeService, HubService hubService, OptimalRouteCacheService optimalRouteCacheService) {
+    public HubRouteService(HubRouteRepository hubRouteRepository, RouteService routeService, HubService hubService) {
         this.hubRouteRepository = hubRouteRepository;
         this.routeService = routeService;
         this.hubService = hubService;
         this.hubRouteDomainService = new HubRouteDomainService();
-        this.optimalRouteCacheService = optimalRouteCacheService;
     }
 
     @Transactional
@@ -106,14 +105,11 @@ public class HubRouteService {
     }
 
 
+
+
+    @Cacheable(value = "optimalRoutes", key = "#originHubId + ':' + #destinationHubId")
     @Transactional
     public List<Map<String, UUID>> findOptimalRoute(UUID originHubId, UUID destinationHubId) {
-
-//        // Redis에서 최적 경로가 있는지 확인 (캐싱된 데이터가 있으면 반환)
-//        List<Map<String, UUID>> cachedRoute = optimalRouteCacheService.getOptimalRoute(originHubId, destinationHubId);
-//        if (cachedRoute != null) {
-//            return cachedRoute;
-//        }
 
 
         // hub-service에서 Hub 정보를 가져오는 부분
@@ -129,27 +125,8 @@ public class HubRouteService {
             throw new RuntimeException("허브 정보를 찾을 수 없습니다.");
         }
 
-
-        // HubRoute 테이블에서 출발-도착 허브 간 경로가 있는지 확인
-        Optional<HubRoute> existingRoute = hubRouteRepository.findByOriginHubIdAndDestinationHubId(originHubId, destinationHubId);
-
-
-        // 경로가 없으면 `createHubRoute` 실행 후 다시 `findOptimalRoute` 실행
-//        if (existingRoute.isEmpty()) {
-//            // ProcessHubRouteCommand 생성
-//            ProcessHubRouteCommand command = new ProcessHubRouteCommand(originHubId, destinationHubId);
-//
-//            // createHubRoute 메서드를 호출하면서 ProcessHubRouteCommand 객체를 전달
-//            createHubRoute(command);
-//        }
-
-
         // 최적 경로 계산
         List<Map<String, UUID>> optimalRoute = hubRouteDomainService.findOptimalRoute(hubRouteRepository.findAll(), originHubId, destinationHubId);
-
-
-//        // Redis에 최적 경로 캐싱
-//        optimalRouteCacheService.saveOptimalRoute(originHubId, destinationHubId, optimalRoute);
 
         return optimalRoute;
     }
