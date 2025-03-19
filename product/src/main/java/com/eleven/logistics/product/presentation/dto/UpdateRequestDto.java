@@ -26,7 +26,7 @@ public record UpdateRequestDto(
         Integer quantity
 ) {
     public UpdateDto withId(UUID productId) {
-        return new UpdateDto(
+        return UpdateDto.create(
                 productId,
                 this.companyId,
                 this.hubId,

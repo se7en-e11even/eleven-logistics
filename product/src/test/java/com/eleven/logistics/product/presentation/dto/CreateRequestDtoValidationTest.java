@@ -29,7 +29,8 @@ class CreateRequestDtoValidationTest {
 
     @Test
     @DisplayName("유효한 값으로 생성")
-    void validateCompanyIdNotNull() {
+    void validate() {
+        // given
         var product = new CreateRequestDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -37,14 +38,18 @@ class CreateRequestDtoValidationTest {
                 10000,
                 10
         );
+
+        // when
         Set<ConstraintViolation<CreateRequestDto>> violations = validator.validate(product);
 
+        // then
         assertThat(violations).isEmpty();
     }
 
     @Test
     @DisplayName("유효하지 않은 company_id 값으로 생성")
     void validateCompanyIdNull() {
+        // given
         var product = new CreateRequestDto(
                 null,
                 UUID.randomUUID(),
@@ -53,7 +58,10 @@ class CreateRequestDtoValidationTest {
                 1
         );
 
+        // when
         Set<ConstraintViolation<CreateRequestDto>> violations = validator.validate(product);
+
+        // then
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
                 .isEqualTo("company_id 는 필수 항목입니다.");

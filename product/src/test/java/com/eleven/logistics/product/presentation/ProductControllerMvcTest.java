@@ -42,10 +42,65 @@ class ProductControllerMvcTest {
 
     UUID[] randomId;
 
+    @Test
+    @DisplayName("상품 생성 요청 성공 테스트")
+    void createProduct() throws JsonProcessingException {
+        UUID productId = UUID.randomUUID();
+        var createRequestProduct = new CreateRequestDto(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "product1",
+                10000,
+                10
+        );
+
+        var createRequest = objectMapper.writeValueAsString(createRequestProduct);
+
+        given(productService.createProduct(any(CreateDto.class)))
+                .willReturn(productId);
+
+        // when & then
+        assertThat(mvc.post().uri("/api/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createRequest)
+        ).hasStatus(HttpStatus.CREATED)
+                .hasHeader("Location", "/api/products/" + productId);
+
+    }
+
+    @Test
+    @DisplayName("요청한 상품이 없으면 404 NotFound")
+    void readProduct_ById_not_found() {
+        UUID productId = UUID.randomUUID();
+        given(productService.readProduct(productId))
+                .willThrow(new CustomException(PRODUCT_NOT_FOUND));
+
+        // when & then
+        assertThat(mvc.get().uri("/api/products/" + productId)
+                .accept(MediaType.APPLICATION_JSON)
+        ).hasStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("상품 상세 조회")
+    void readProductById() {
+        given(productService.readProduct(randomId[0]))
+                .willReturn(dtos[0]);
+
+        // when & then
+        assertThat(mvc.get().uri("/api/products/" + randomId[0])
+                .accept(MediaType.APPLICATION_JSON)
+        ).hasStatusOk();
+    }
+
+    @Test
+    @DisplayName("상품 목록 조회")
+    void retreiveProducts() {}
+
     @BeforeEach
     void setUp() {
         randomId = new UUID[9];
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < randomId.length; i++) {
             randomId[i] = UUID.randomUUID();
         }
         dtos = Arrays.array(
@@ -82,59 +137,4 @@ class ProductControllerMvcTest {
 
         );
     }
-
-    @Test
-    @DisplayName("상품 생성 요청 성공 테스트")
-    void createProduct() throws JsonProcessingException {
-        UUID productId = UUID.randomUUID();
-        var createRequestProduct = new CreateRequestDto(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "product1",
-                10000,
-                10
-        );
-
-        var createRequest = objectMapper.writeValueAsString(createRequestProduct);
-
-        given(productService.createProduct(any(CreateDto.class)))
-                .willReturn(productId);
-
-        // when & then
-        assertThat(mvc.post().uri("/api/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createRequest)
-        ).hasStatus(HttpStatus.CREATED)
-                .hasHeader("Location", "/api/products/" + productId);
-
-    }
-
-    @Test
-    @DisplayName("요청한 상품이 없으면 404 NotFound")
-    void readProduct_ById_not_found() throws Exception {
-        UUID productId = UUID.randomUUID();
-        given(productService.readProduct(productId))
-                .willThrow(new CustomException(PRODUCT_NOT_FOUND));
-
-        // when & then
-        assertThat(mvc.get().uri("/api/products/" + productId)
-                .accept(MediaType.APPLICATION_JSON)
-        ).hasStatus(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    @DisplayName("상품 상세 조회")
-    void readProductById() {
-        given(productService.readProduct(randomId[0]))
-                .willReturn(dtos[0]);
-
-        // when & then
-        assertThat(mvc.get().uri("/api/products/" + randomId[0])
-                .accept(MediaType.APPLICATION_JSON)
-        ).hasStatusOk();
-    }
-
-    @Test
-    @DisplayName("상품 목록 조회")
-    void retreiveProduct() {}
 }

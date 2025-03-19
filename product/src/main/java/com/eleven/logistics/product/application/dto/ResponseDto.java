@@ -29,7 +29,7 @@ public record ResponseDto(
                 .hubId(product.getHubId())
                 .name(product.getName())
                 .price(product.getPrice())
-                .quantity(product.getQuantity())
+                .quantity(product.getStockQuantity())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .build();

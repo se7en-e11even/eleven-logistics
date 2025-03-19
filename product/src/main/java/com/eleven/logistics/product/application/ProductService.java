@@ -33,7 +33,7 @@ public class ProductService {
                 .hubId(dto.hubId())
                 .name(dto.name())
                 .price(dto.price())
-                .quantity(dto.quantity())
+                .stockQuantity(dto.quantity())
                 .build();
 
         repository.save(product);

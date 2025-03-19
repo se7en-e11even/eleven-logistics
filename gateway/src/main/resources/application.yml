@@ -19,6 +19,11 @@ spring:
           predicates:
             - Path=/api/products/**  # /auth/** 경로로 들어오는 요청을 이 라우트로 처리
 
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+
         - id: hub-service
           uri: lb://hub-service
           predicates:
