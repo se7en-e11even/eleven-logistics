@@ -3,7 +3,7 @@ package com.eleven.logistics.slack.application.service;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
 import com.eleven.logistics.slack.application.dto.SlackDto;
 import com.eleven.logistics.slack.application.dto.SlackMessageResponse;
-import com.eleven.logistics.slack.domain.config.SlackConfig;
+import com.eleven.logistics.slack.domain.config.SlackClient;
 import com.eleven.logistics.slack.domain.entity.Slack;
 import com.eleven.logistics.slack.domain.repository.SlackRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class SlackService {
 
     private final SlackRepository slackRepository;
 
-    private final SlackConfig slackConfig;
+    private final SlackClient slackClient;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
@@ -35,12 +35,12 @@ public class SlackService {
     @Transactional
     public SlackMessageResponse sendMessageToUser(SlackDto slackDto, String username) {
         try {
-            String userId = slackConfig.getUserIdByName(slackDto.getUsername());
+            String userId = slackClient.getUserIdByName(slackDto.getUsername());
 
             if (userId == null) {
                 throw new IllegalArgumentException("사용자를 찾을 수 없습니다");
             }
-            String result = slackConfig.sendMessage(userId, slackDto.getMessage());
+            String result = slackClient.sendMessage(userId, slackDto.getMessage());
 
             JSONObject jsonObject = new JSONObject(result);
             if (!jsonObject.getBoolean("ok")) {
@@ -86,12 +86,12 @@ public class SlackService {
         Slack slack = slackRepository.findById(slackId)
                 .orElseThrow(()->new IllegalArgumentException("찾으시는 메시지가 없습니다."));
         try {
-            String userId = slackConfig.getUserIdByName(dto.getUsername());
+            String userId = slackClient.getUserIdByName(dto.getUsername());
 
             if (userId == null) {
                 throw new IllegalArgumentException("사용자를 찾을 수 없습니다");
             }
-            String result = slackConfig.sendMessage(userId, dto.getMessage());
+            String result = slackClient.sendMessage(userId, dto.getMessage());
 
             JSONObject jsonObject = new JSONObject(result);
             if (!jsonObject.getBoolean("ok")) {

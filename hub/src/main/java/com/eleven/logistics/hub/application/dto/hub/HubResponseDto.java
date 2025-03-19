@@ -17,6 +17,8 @@ public class HubResponseDto {
     private UUID id;
     private String name;
     private String address;
+    private double longitude;
+    private double latitude;
     private PageResponseDto<CompanyResponseDto> companyList;
 
     public static HubResponseDto of(Hub hub) {
@@ -32,6 +34,8 @@ public class HubResponseDto {
                 .id(hub.getId())
                 .name(hub.getName())
                 .address(hub.getAddress())
+                .latitude(hub.getLatitude())
+                .longitude(hub.getLongitude())
                 .companyList(companyList)
                 .build();
     }

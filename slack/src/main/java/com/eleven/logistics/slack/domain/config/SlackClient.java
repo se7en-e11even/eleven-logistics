@@ -2,7 +2,7 @@ package com.eleven.logistics.slack.domain.config;
 
 import org.json.JSONArray;
 
-public interface SlackConfig {
+public interface SlackClient {
 
     String getUserIdByName(String username);
 
