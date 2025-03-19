@@ -14,10 +14,10 @@ spring:
           predicates:
             - Path=/auth/**, /api/users/**  # /auth/** 경로로 들어오는 요청을 이 라우트로 처리
 
-        - id: product-service
-          uri: lb://product-service
+        - id: product-service  # 라우트 식별자
+          uri: lb://product-service  # 'auth-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
-            - Path=/api/products/**
+            - Path=/api/products/**  # /auth/** 경로로 들어오는 요청을 이 라우트로 처리
 
         - id: hub-service
           uri: lb://hub-service
@@ -33,6 +33,11 @@ spring:
           uri: lb://delivery-service
           predicates:
             - Path=/api/delivery/**
+
+        - id: slack-service
+          uri: lb://slack-service
+          predicates:
+            - Path=/api/slack/**
 
       discovery:
         locator:
