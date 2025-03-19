@@ -77,7 +77,7 @@ public class HubController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{hubId}")
     public ResponseEntity<ApiResponseDto<Void>> deleteHub(@PathVariable("hubId") UUID hubId,
                                                           @RequestHeader("X-Username") String username){
         String role =  request.getHeader("X-Role");

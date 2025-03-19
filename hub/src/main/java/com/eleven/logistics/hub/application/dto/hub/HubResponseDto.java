@@ -26,6 +26,8 @@ public class HubResponseDto {
                 .id(hub.getId())
                 .name(hub.getName())
                 .address(hub.getAddress())
+                .longitude(hub.getLongitude())
+                .latitude(hub.getLatitude())
                 .build();
     }
 
