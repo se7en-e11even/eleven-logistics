@@ -13,6 +13,7 @@ import java.util.UUID;
 @Builder(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL) // NULL 값 필드는 제거
 public class CompanyResponseDto {
+    private UUID id;
     private String name;
     private String address;
     private Company.CompanyType type;
@@ -21,6 +22,7 @@ public class CompanyResponseDto {
 
     public static CompanyResponseDto of(Company company) {
         return CompanyResponseDto.builder()
+                .id(company.getId())
                 .name(company.getName())
                 .address(company.getAddress())
                 .type(company.getType())
@@ -32,6 +34,7 @@ public class CompanyResponseDto {
     public static List<CompanyResponseDto> listOf(List<Company> companies) {
         return companies.stream()
                 .map(company -> CompanyResponseDto.builder()
+                        .id(company.getId())
                         .name(company.getName())
                         .address(company.getAddress())
                         .type(company.getType())
