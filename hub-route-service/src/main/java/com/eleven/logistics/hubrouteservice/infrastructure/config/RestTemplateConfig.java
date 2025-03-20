@@ -1,4 +1,4 @@
-package com.eleven.logistics.hubrouteservice.infrastructure.cache.config;
+package com.eleven.logistics.hubrouteservice.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
