@@ -1,6 +1,7 @@
 package com.eleven.logistics.delivery.domain.entity;
 
-import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteRequest;
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteRequest;
+import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRouteRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,7 +34,7 @@ public class DeliveryRoute extends Timestamped {
   @JoinColumn(name = "delivery_id", nullable = false)
   private Delivery delivery;
 
-  @Column(name = "delivery_person_id", nullable = false)
+  @Column(name = "delivery_person_id")
   private UUID deliveryPersonId;
 
   @Column(name = "sequence", nullable = false)
@@ -61,9 +62,8 @@ public class DeliveryRoute extends Timestamped {
   @Enumerated(EnumType.STRING)
   private RouteStatus routeStatus;
 
-  public DeliveryRoute(Delivery delivery, DeliveryRouteRequest routeDto) {
+  public DeliveryRoute(Delivery delivery, CreateDeliveryRouteRequest routeDto) {
     this.delivery = delivery;
-    this.deliveryPersonId = routeDto.getDeliveryPersonId();
     this.sequence = routeDto.getSequence();
     this.departureHubId = routeDto.getDepartureHubId();
     this.arrivalHubId = routeDto.getArrivalHubId();
@@ -74,13 +74,14 @@ public class DeliveryRoute extends Timestamped {
     this.actualTime = 0;
   }
 
-  public void updateRoute(DeliveryRouteRequest routeDto) {
+  public void updateRoute(UpdateDeliveryRouteRequest routeDto) {
     this.deliveryPersonId = routeDto.getDeliveryPersonId();
     this.sequence = routeDto.getSequence();
     this.departureHubId = routeDto.getDepartureHubId();
     this.arrivalHubId = routeDto.getArrivalHubId();
-    this.expectedDistance = routeDto.getExpectedDistance();
-    this.expectedTime = routeDto.getExpectedTime();
+    this.actualDistance = routeDto.getDistance();
+    this.actualTime = routeDto.getTime();
+    this.routeStatus = routeDto.getRouteStatus();
   }
 
   public void updateStatus(RouteStatus status, int actualDistance, int actualTime) {

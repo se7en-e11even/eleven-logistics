@@ -1,13 +1,15 @@
 package com.eleven.logistics.delivery.presentation.controller;
 
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteRequest;
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteResponse;
 import com.eleven.logistics.delivery.presentation.dtos.DeliveryResponse;
 import com.eleven.logistics.delivery.application.service.DeliveryService;
 import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteResponse;
 import com.eleven.logistics.delivery.domain.entity.DeliveryStatus;
 import com.eleven.logistics.delivery.domain.entity.RouteStatus;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRequest;
-import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteRequest;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRouteRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -73,15 +75,22 @@ public class DeliveryController {
     return ResponseEntity.ok(result);
   }
 
-  // 배송 및 배송경로 생성
+  // 배송 생성
   @PostMapping
   public ResponseEntity<DeliveryResponse> createDelivery(
-      @RequestBody CreateDeliveryRequest requestDto
+      @Valid @RequestBody CreateDeliveryRequest request
   ) {
-    DeliveryResponse response = deliveryService.createDelivery(
-        requestDto.toDeliveryRequestDto(),
-        requestDto.getRouteDtos()
-    );
+    DeliveryResponse response = deliveryService.createDelivery(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  // 배송 경로 생성
+  @PostMapping("/{deliveryId}/routes")
+  public ResponseEntity<List<CreateDeliveryRouteResponse>> createRoute(
+      @PathVariable UUID deliveryId,
+      @Valid @RequestBody List<CreateDeliveryRouteRequest> routeDtos
+      ) {
+    List<CreateDeliveryRouteResponse> response = deliveryService.createRoute(deliveryId, routeDtos);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
@@ -133,7 +142,7 @@ public class DeliveryController {
   public ResponseEntity<DeliveryRouteResponse> updateRoute(
       @PathVariable UUID deliveryId,
       @PathVariable UUID routeId,
-      @RequestBody DeliveryRouteRequest routeDto
+      @RequestBody UpdateDeliveryRouteRequest routeDto
   ) {
     DeliveryRouteResponse response = deliveryService.updateRoute(deliveryId, routeId, routeDto);
     return ResponseEntity.status(HttpStatus.OK).body(response);
