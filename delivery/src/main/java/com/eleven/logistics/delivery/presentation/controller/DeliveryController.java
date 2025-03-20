@@ -1,13 +1,13 @@
 package com.eleven.logistics.delivery.presentation.controller;
 
-import com.eleven.logistics.delivery.application.dtos.DeliveryResponse;
-import com.eleven.logistics.delivery.application.service.delivery.DeliveryService;
-import com.eleven.logistics.delivery.application.dtos.DeliveryRouteResponse;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryResponse;
+import com.eleven.logistics.delivery.application.service.DeliveryService;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteResponse;
 import com.eleven.logistics.delivery.domain.entity.DeliveryStatus;
 import com.eleven.logistics.delivery.domain.entity.RouteStatus;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.CreateDeliveryRequest;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryRouteRequest;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.UpdateDeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteRequest;
+import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;

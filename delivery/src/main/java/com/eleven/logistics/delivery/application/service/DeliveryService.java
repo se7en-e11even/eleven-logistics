@@ -1,16 +1,16 @@
-package com.eleven.logistics.delivery.application.service.delivery;
+package com.eleven.logistics.delivery.application.service;
 
-import com.eleven.logistics.delivery.application.dtos.DeliveryResponse;
-import com.eleven.logistics.delivery.application.dtos.DeliveryRouteResponse;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryResponse;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteResponse;
 import com.eleven.logistics.delivery.domain.entity.Delivery;
 import com.eleven.logistics.delivery.domain.entity.DeliveryRoute;
 import com.eleven.logistics.delivery.domain.entity.DeliveryStatus;
 import com.eleven.logistics.delivery.domain.entity.RouteStatus;
 import com.eleven.logistics.delivery.domain.repository.DeliveryRepository;
-import com.eleven.logistics.delivery.infrastructure.util.PagingUtil;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryRequest;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryRouteRequest;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.UpdateDeliveryRequest;
+import com.eleven.logistics.delivery.util.PagingUtil;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteRequest;
+import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -161,7 +161,7 @@ public class DeliveryService {
     Delivery delivery = deliveryRepository.findById(deliveryId)
         .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
 
-    delivery.updateDeletionInfo(delivery.getUpdatedBy());
+    delivery.updateDeletionInfo(delivery.getDeletedBy());
   }
 
   // 배송 조회
