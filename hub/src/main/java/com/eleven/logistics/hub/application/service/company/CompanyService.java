@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -67,6 +68,13 @@ public class CompanyService {
         }
 
         return CompanyResponseDto.of(company);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CompanyResponseDto> findByCompanyUsername(String username) {
+        List<Company> company = companyRepository.findByUsername(username);
+
+        return CompanyResponseDto.listOf(company);
     }
 
     @Transactional(readOnly = true)
@@ -120,4 +128,5 @@ public class CompanyService {
 
         company.delete(username);
     }
+
 }

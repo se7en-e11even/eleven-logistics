@@ -4,6 +4,7 @@ import com.eleven.logistics.hub.domain.entity.company.Company;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -27,4 +28,17 @@ public class CompanyResponseDto {
                 .username(company.getUsername())
                 .build();
     }
+
+    public static List<CompanyResponseDto> listOf(List<Company> companies) {
+        return companies.stream()
+                .map(company -> CompanyResponseDto.builder()
+                        .name(company.getName())
+                        .address(company.getAddress())
+                        .type(company.getType())
+                        .hubId(company.getHub().getId())
+                        .username(company.getUsername())
+                        .build())
+                .toList();
+    }
+
 }
