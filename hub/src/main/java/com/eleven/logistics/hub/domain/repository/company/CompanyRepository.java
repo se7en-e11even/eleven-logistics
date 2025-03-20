@@ -4,6 +4,7 @@ import com.eleven.logistics.hub.domain.entity.company.Company;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,4 +18,6 @@ public interface CompanyRepository {
     Page<Company> findByDeletedAtIsNull(Pageable pageable);
 
     Page<Company> findByHubIdAndDeletedAtIsNull(UUID id, Pageable pageable);
+
+    Optional<Company> findByUsername(String username);
 }

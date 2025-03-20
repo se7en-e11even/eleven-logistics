@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -65,6 +66,14 @@ public class CompanyService {
         if(company.getDeletedAt() != null){
             throw new IllegalArgumentException("해당 업체는 사라졌습니다.");
         }
+
+        return CompanyResponseDto.of(company);
+    }
+
+    @Transactional(readOnly = true)
+    public CompanyResponseDto findByCompanyUsername(String username) {
+        Company company = companyRepository.findByUsername(username)
+                .orElseThrow(()-> new IllegalArgumentException("찾으시는 업체가 없습니다."));
 
         return CompanyResponseDto.of(company);
     }
@@ -120,4 +129,5 @@ public class CompanyService {
 
         company.delete(username);
     }
+
 }
