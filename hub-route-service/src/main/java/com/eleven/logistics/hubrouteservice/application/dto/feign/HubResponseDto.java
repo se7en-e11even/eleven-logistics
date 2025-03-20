@@ -1,5 +1,7 @@
-package com.eleven.logistics.hubrouteservice.application.dto;
+package com.eleven.logistics.hubrouteservice.application.dto.feign;
 
+import com.eleven.logistics.hubrouteservice.application.dto.CompanyResponseDto;
+import com.eleven.logistics.hubrouteservice.application.dto.PageResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

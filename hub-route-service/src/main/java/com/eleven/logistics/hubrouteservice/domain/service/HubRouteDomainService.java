@@ -9,7 +9,7 @@ import java.util.*;
 @Slf4j
 public class HubRouteDomainService {
 
-    public List<Map<String, UUID>> findOptimalRoute(List<HubRoute> routes, UUID originHubId, UUID destinationHubId) {
+    public List<Map<UUID, UUID>> findOptimalRoute(List<HubRoute> routes, UUID originHubId, UUID destinationHubId) {
 
         // Graph 모델링: 출발 허브 ID → [인접한 도착 허브 목록]
         Map<UUID, List<HubRoute>> graph = new HashMap<>();
@@ -49,26 +49,25 @@ public class HubRouteDomainService {
 
 
         // 최적 경로 추적 (출발 → 도착 형식으로 저장)
-        List<Map<String, UUID>> path = new ArrayList<>();
+        List<Map<UUID, UUID>> path = new ArrayList<>();
         UUID current = destinationHubId;
 
         while (previous.containsKey(current)) {
             UUID prevHub = previous.get(current);
-            Map<String, UUID> routeMap = new HashMap<>();
-            routeMap.put("originHubId", prevHub);
-            routeMap.put("destinationHubId", current);
+            Map<UUID, UUID> routeMap = new HashMap<>();
+            routeMap.put(prevHub, current); // 출발 허브와 도착 허브를 UUID 타입으로 저장
             path.add(routeMap);
             current = prevHub;
         }
 
         Collections.reverse(path); // 경로를 올바른 순서로 정렬
 
-
         // 예외 처리: 경로가 없거나, 첫 출발 허브가 요청한 originHubId와 다르면 예외 발생
-        if (path.isEmpty() || !path.get(0).get("originHubId").equals(originHubId)) {
+        if (path.isEmpty() || !path.get(0).keySet().iterator().next().equals(originHubId)) {
             throw new HubRouteNotFoundException("출발 허브 ID " + originHubId + "에서 도착 허브 ID " + destinationHubId + "까지의 경로를 찾을 수 없습니다.");
         }
 
-        return path.isEmpty() || !path.get(0).get("originHubId").equals(originHubId) ? Collections.emptyList() : path;
+        return path.isEmpty() || !path.get(0).keySet().iterator().next().equals(originHubId) ? Collections.emptyList() : path;
+
     }
 }

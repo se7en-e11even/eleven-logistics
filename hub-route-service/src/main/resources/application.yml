@@ -15,6 +15,11 @@ spring:
       port: 6379       # Redis 기본 포트
       username: default
       password: 1234
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 
   jpa:
     hibernate:
@@ -29,3 +34,13 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+
+message:
+  exchange: hub-route
+  queue:
+    delivery: hub-route.delivery
+  err:
+    exchange: hub-route.err
+    queue:
+      hub-route: hub-route.err.hub-route
