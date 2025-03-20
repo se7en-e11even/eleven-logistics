@@ -30,18 +30,4 @@ public class CompanyResponseDto {
                 .username(company.getUsername())
                 .build();
     }
-
-    public static List<CompanyResponseDto> listOf(List<Company> companies) {
-        return companies.stream()
-                .map(company -> CompanyResponseDto.builder()
-                        .id(company.getId())
-                        .name(company.getName())
-                        .address(company.getAddress())
-                        .type(company.getType())
-                        .hubId(company.getHub().getId())
-                        .username(company.getUsername())
-                        .build())
-                .toList();
-    }
-
 }

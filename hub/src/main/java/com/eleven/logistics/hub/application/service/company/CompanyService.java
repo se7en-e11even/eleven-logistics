@@ -71,10 +71,11 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    public List<CompanyResponseDto> findByCompanyUsername(String username) {
-        List<Company> company = companyRepository.findByUsername(username);
+    public CompanyResponseDto findByCompanyUsername(String username) {
+        Company company = companyRepository.findByUsername(username)
+                .orElseThrow(()-> new IllegalArgumentException("찾으시는 업체가 없습니다."));
 
-        return CompanyResponseDto.listOf(company);
+        return CompanyResponseDto.of(company);
     }
 
     @Transactional(readOnly = true)

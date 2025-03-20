@@ -19,5 +19,5 @@ public interface CompanyRepository {
 
     Page<Company> findByHubIdAndDeletedAtIsNull(UUID id, Pageable pageable);
 
-    List<Company> findByUsername(String username);
+    Optional<Company> findByUsername(String username);
 }

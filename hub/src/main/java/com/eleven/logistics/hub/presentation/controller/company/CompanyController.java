@@ -50,12 +50,12 @@ public class CompanyController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
     @GetMapping("/username/{username}")
-    public ResponseEntity<ApiResponseDto<List<CompanyResponseDto>>> findByCompanyUsername(@PathVariable("username") String username){
+    public ResponseEntity<ApiResponseDto<CompanyResponseDto>> findByCompanyUsername(@PathVariable("username") String username){
         String role =  request.getHeader("X-Role");
         if (role == null){
             throw new SecurityException("접근 권한이 없습니다.");
         }
-        List<CompanyResponseDto> responseDto = companyService.findByCompanyUsername(username);
+        CompanyResponseDto responseDto = companyService.findByCompanyUsername(username);
         return ResponseEntity.ok()
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
