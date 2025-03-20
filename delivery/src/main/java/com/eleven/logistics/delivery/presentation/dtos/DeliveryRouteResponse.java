@@ -1,4 +1,4 @@
-package com.eleven.logistics.delivery.application.dtos;
+package com.eleven.logistics.delivery.presentation.dtos;
 
 import com.eleven.logistics.delivery.domain.entity.DeliveryRoute;
 import com.eleven.logistics.delivery.domain.entity.RouteStatus;

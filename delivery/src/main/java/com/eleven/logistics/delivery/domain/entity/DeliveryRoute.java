@@ -1,6 +1,6 @@
 package com.eleven.logistics.delivery.domain.entity;
 
-import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryRouteRequest;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

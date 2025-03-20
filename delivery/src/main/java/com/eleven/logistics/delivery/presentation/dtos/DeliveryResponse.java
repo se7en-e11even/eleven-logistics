@@ -1,4 +1,4 @@
-package com.eleven.logistics.delivery.application.dtos;
+package com.eleven.logistics.delivery.presentation.dtos;
 
 import com.eleven.logistics.delivery.domain.entity.Delivery;
 import com.eleven.logistics.delivery.domain.entity.DeliveryStatus;
@@ -19,7 +19,7 @@ public class DeliveryResponse {
   private String deliveryAddress;
   private String receiver;
   private UUID receiverSnsId;
-  private UUID companyDeliveryManagerId;
+  private UUID companyDeliveryPersonId;
   private DeliveryStatus deliveryStatus;
 
   public DeliveryResponse(Delivery delivery) {
@@ -30,7 +30,7 @@ public class DeliveryResponse {
     this.deliveryAddress = delivery.getDeliveryAddress();
     this.receiver = delivery.getReceiver();
     this.receiverSnsId = delivery.getReceiverSnsId();
-    this.companyDeliveryManagerId = delivery.getCompanyDeliveryManagerId();
+    this.companyDeliveryPersonId = delivery.getCompanyDeliveryPersonId();
     this.deliveryStatus = delivery.getDeliveryStatus();
   }
 }

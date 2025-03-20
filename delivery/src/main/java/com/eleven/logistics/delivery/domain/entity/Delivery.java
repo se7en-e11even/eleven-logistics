@@ -1,7 +1,7 @@
 package com.eleven.logistics.delivery.domain.entity;
 
-import com.eleven.logistics.delivery.presentation.dtos.delivery.DeliveryRequest;
-import com.eleven.logistics.delivery.presentation.dtos.delivery.UpdateDeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.DeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,8 +49,8 @@ public class Delivery extends Timestamped {
   @Column(name = "receiver_sns_id", nullable = false)
   private UUID receiverSnsId;
 
-  @Column(name = "company_delivery_manager_id", nullable = false)
-  private UUID companyDeliveryManagerId;
+  @Column(name = "company_delivery_person_id", nullable = false)
+  private UUID companyDeliveryPersonId;
 
   @Column(name = "delivery_status")
   @Enumerated(EnumType.STRING)
@@ -66,14 +66,14 @@ public class Delivery extends Timestamped {
     this.deliveryAddress = request.getDeliveryAddress();
     this.receiver = request.getReceiver();
     this.receiverSnsId = request.getReceiverSnsId();
-    this.companyDeliveryManagerId = request.getCompanyDeliveryManagerId();
+    this.companyDeliveryPersonId = request.getCompanyDeliveryPersonId();
     this.deliveryStatus = DeliveryStatus.PENDING_AT_HUB;
   }
 
   public void update(UpdateDeliveryRequest request) {
     this.receiver = request.getReceiver();
     this.receiverSnsId = request.getReceiverSnsId();
-    this.companyDeliveryManagerId = request.getCompanyDeliveryManagerId();
+    this.companyDeliveryPersonId = request.getCompanyDeliveryPersonId();
   }
 
   public void updateStatus(DeliveryStatus currentStatus) {

@@ -1,4 +1,4 @@
-package com.eleven.logistics.delivery.presentation.dtos.delivery;
+package com.eleven.logistics.delivery.presentation.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
@@ -18,6 +18,6 @@ public class UpdateDeliveryRequest {
   private UUID receiverSnsId;
 
   @NotNull
-  private UUID companyDeliveryManagerId;
+  private UUID companyDeliveryPersonId;
 
 }

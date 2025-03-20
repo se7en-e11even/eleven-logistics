@@ -1,4 +1,4 @@
-package com.eleven.logistics.delivery.infrastructure.util;
+package com.eleven.logistics.delivery.util;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
