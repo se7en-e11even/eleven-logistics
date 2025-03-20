@@ -35,3 +35,14 @@ out/
 
 ### VS Code ###
 .vscode/
+/order/gradle/wrapper/gradle-wrapper.jar
+/order/gradle/wrapper/gradle-wrapper.properties
+/order/src/main/generated/com/eleven/logistics/order/domain/entity/QBaseTimeEntity.java
+/order/src/main/generated/com/eleven/logistics/order/domain/entity/QOrder.java
+/order/src/main/generated/com/eleven/logistics/order/domain/entity/QOrderProduct.java
+/product/gradle/wrapper/gradle-wrapper.jar
+/product/gradle/wrapper/gradle-wrapper.properties
+/product/src/main/generated/com/eleven/logistics/product/domain/entity/QBaseTimeEntity.java
+/product/src/main/generated/com/eleven/logistics/product/domain/entity/QProduct.java
+/order/gradle/wrapper/gradle-wrapper.jar
+/product/gradle/wrapper/gradle-wrapper.jar

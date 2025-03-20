@@ -1,6 +1,6 @@
 package com.eleven.logistics.order;
 
-import com.eleven.logistics.order.presentation.dto.CreateRequestDto;
+import com.eleven.logistics.order.presentation.dto.request.CreateOrderRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,11 +40,11 @@ class OrderApplicationTests {
 	@DisplayName("주문 성공 시 201")
 	void createOrder() {
 		// given
-		var requestOrder = new CreateRequestDto(
+		var requestOrder = new CreateOrderRequest(
 				UUID.randomUUID(),
 				UUID.randomUUID(),
 				"",
-				List.of(new CreateRequestDto.OrderProductCreateDto(
+				List.of(new CreateOrderRequest.CreateOrderProductRequest(
 						UUID.randomUUID(),
 						1000,
 						1)

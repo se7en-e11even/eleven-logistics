@@ -11,7 +11,7 @@ public interface OrderRepository {
 
     Order findByOrderId(UUID orderId);
 
-    // queryDSL 사용으로 변경함.
+    // queryDSL 사용으로 변경함.-> OrderRepositoryCustom 의 findById
 //    @Query("SELECT o FROM Order o JOIN FETCH o.orderProductList WHERE o.orderId = :orderId")
 //    Optional<Order> findByOrderIdAndDeletedAtIsNull(UUID orderId);
 }

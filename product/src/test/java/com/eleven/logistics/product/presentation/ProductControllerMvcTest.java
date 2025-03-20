@@ -1,10 +1,11 @@
 package com.eleven.logistics.product.presentation;
 
-import com.eleven.logistics.product.application.ProductService;
-import com.eleven.logistics.product.application.dto.CreateDto;
-import com.eleven.logistics.product.application.dto.ResponseDto;
+import com.eleven.logistics.product.application.service.ProductService;
+import com.eleven.logistics.product.application.dto.command.CreateProductCommand;
+import com.eleven.logistics.product.application.dto.query.FindProductQuery;
 import com.eleven.logistics.product.common.exception.CustomException;
-import com.eleven.logistics.product.presentation.dto.CreateRequestDto;
+import com.eleven.logistics.product.presentation.controller.ProductController;
+import com.eleven.logistics.product.presentation.dto.request.CreateProductRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Arrays;
@@ -38,15 +39,15 @@ class ProductControllerMvcTest {
     @MockitoBean
     private ProductService productService;
 
-    private ResponseDto[] dtos;
+    private FindProductQuery[] dtos;
 
     UUID[] randomId;
 
     @Test
     @DisplayName("상품 생성 요청 성공 테스트")
-    void createProduct() throws JsonProcessingException {
+    void create() throws JsonProcessingException {
         UUID productId = UUID.randomUUID();
-        var createRequestProduct = new CreateRequestDto(
+        var createRequestProduct = new CreateProductRequest(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 "product1",
@@ -56,12 +57,14 @@ class ProductControllerMvcTest {
 
         var createRequest = objectMapper.writeValueAsString(createRequestProduct);
 
-        given(productService.createProduct(any(CreateDto.class)))
+        given(productService.create(any(CreateProductCommand.class)))
                 .willReturn(productId);
 
         // when & then
         assertThat(mvc.post().uri("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
                 .content(createRequest)
         ).hasStatus(HttpStatus.CREATED)
                 .hasHeader("Location", "/api/products/" + productId);
@@ -70,9 +73,9 @@ class ProductControllerMvcTest {
 
     @Test
     @DisplayName("요청한 상품이 없으면 404 NotFound")
-    void readProduct_ById_not_found() {
+    void read_ById_not_found() {
         UUID productId = UUID.randomUUID();
-        given(productService.readProduct(productId))
+        given(productService.read(productId))
                 .willThrow(new CustomException(PRODUCT_NOT_FOUND));
 
         // when & then
@@ -83,8 +86,8 @@ class ProductControllerMvcTest {
 
     @Test
     @DisplayName("상품 상세 조회")
-    void readProductById() {
-        given(productService.readProduct(randomId[0]))
+    void readById() {
+        given(productService.read(randomId[0]))
                 .willReturn(dtos[0]);
 
         // when & then
@@ -104,7 +107,7 @@ class ProductControllerMvcTest {
             randomId[i] = UUID.randomUUID();
         }
         dtos = Arrays.array(
-                new ResponseDto(
+                new FindProductQuery(
                         randomId[0],
                         randomId[3],
                         randomId[6],
@@ -114,7 +117,7 @@ class ProductControllerMvcTest {
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1)
                 ),
-                new ResponseDto(
+                new FindProductQuery(
                         randomId[1],
                         randomId[4],
                         randomId[7],
@@ -124,7 +127,7 @@ class ProductControllerMvcTest {
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2)
                 ),
-                new ResponseDto(
+                new FindProductQuery(
                         randomId[2],
                         randomId[5],
                         randomId[8],

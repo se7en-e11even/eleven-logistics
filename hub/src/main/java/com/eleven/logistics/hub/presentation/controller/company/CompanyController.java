@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -45,6 +46,16 @@ public class CompanyController {
             throw new SecurityException("접근 권한이 없습니다.");
         }
         CompanyResponseDto responseDto = companyService.findByCompanyId(companyId);
+        return ResponseEntity.ok()
+                .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
+    }
+    @GetMapping("/username/{username}")
+    public ResponseEntity<ApiResponseDto<CompanyResponseDto>> findByCompanyUsername(@PathVariable("username") String username){
+        String role =  request.getHeader("X-Role");
+        if (role == null){
+            throw new SecurityException("접근 권한이 없습니다.");
+        }
+        CompanyResponseDto responseDto = companyService.findByCompanyUsername(username);
         return ResponseEntity.ok()
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }

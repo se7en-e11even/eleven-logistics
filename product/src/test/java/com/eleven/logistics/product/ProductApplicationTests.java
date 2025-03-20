@@ -1,6 +1,6 @@
 package com.eleven.logistics.product;
 
-import com.eleven.logistics.product.presentation.dto.CreateRequestDto;
+import com.eleven.logistics.product.presentation.dto.request.CreateProductRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class ProductApplicationTests {
 	@Test
 	@DisplayName("상품 생성 성공 시 201 created")
 	void createProduct() {
-		var requestProduct = new CreateRequestDto(
+		var requestProduct = new CreateProductRequest(
 				UUID.randomUUID(),
 				UUID.randomUUID(),
 				"product1",
@@ -48,6 +48,8 @@ class ProductApplicationTests {
 
 		webTestClient.post()
 				.uri("/api/products")
+				.header("X-Username", "tester")
+				.header("X-Role", "TESTER")
 				.bodyValue(requestProduct)
 				.exchange()
 				.expectStatus().isCreated();
