@@ -152,14 +152,14 @@ public class SlackService {
                     List<DeliveryRouteResponse> route = deliveryService.getDeliveryRoutes(deliveryId);
 
                     /**
-                     배송 경로의 출발 허브를 뽑아옴
+                     배송 경로의 허브 id 를 뽑아옴
                      **/
                     List<UUID> departureId = route.stream()
                             .map(DeliveryRouteResponse::getDepartureHubId)
                             .toList();
 
                     /**
-                     배송 경로의 도착 허브를 뽑아옴
+                     배송 경로의 허브 주소를 뽑아옴
                      **/
                     List<String> departure = departureId.stream()
                             .map(hubAddress::get)
