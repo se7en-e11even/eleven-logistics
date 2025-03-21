@@ -47,7 +47,7 @@ public abstract class BaseSystemFieldEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void getCreatedBy(String username) {
+    public void setCreatedAt(String username) {
         this.createdBy = username;
     }
     public void getUpdatedBy(String username) {

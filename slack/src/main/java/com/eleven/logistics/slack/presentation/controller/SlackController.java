@@ -1,10 +1,8 @@
 package com.eleven.logistics.slack.presentation.controller;
 
 import com.eleven.logistics.common.dto.ApiResponseDto;
-import com.eleven.logistics.slack.application.dto.CreateSlackMessageDto;
-
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
-import com.eleven.logistics.slack.application.dto.SlackMessageResponse;
+import com.eleven.logistics.slack.application.slackdto.SlackMessageResponse;
 import com.eleven.logistics.slack.application.service.SlackService;
 import com.eleven.logistics.slack.presentation.dto.CreateSlackMessageRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +66,7 @@ public class SlackController {
         if (role == null || !role.equals("MASTER")) {
             throw new IllegalArgumentException("접근 권한이 없습니다.");
         }
+
         SlackMessageResponse response = slackService.updateSlackMessage(slackId, requestDto.toDto(), username);
         return ResponseEntity.ok()
                 .body(ApiResponseDto.success(response, "요청이 성공적으로 처리되었습니다."));

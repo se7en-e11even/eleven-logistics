@@ -2,6 +2,12 @@ spring:
   application:
     name: slack-service
 
+  rabbitmq:
+    host: 129.154.192.198
+    port: 5672
+    username: eleven-logistics
+    password: eleven-logistics
+
   data:
     redis:
       host: localhost
@@ -26,6 +32,7 @@ slack:
 gemini:
   api:
     key: ${Gemini_Token}
+    url: ${Gemini_Url}
 
 server:
   port: 19099
@@ -34,3 +41,39 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+
+message:
+  exchange:
+    delivery: delivery  # message.exchange.delivery -> exchange
+
+  queue:
+    delivery:
+      slack: delivery.slack. # message.queue.delivery.slack -> queue
+
+  err:
+    exchange:
+      delivery: delivery.err  # message.err.exchange.delivery -> error exchage
+
+    queue:
+      delivery:
+        slack: delivery.err.slack # message.err.queue.delivery.slack -> error queue
+
+
+logging:
+  level:
+    com.eleven.logistics.slack: DEBUG
+    feign: DEBUG
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
+        connectTimeout: 5000
+        readTimeout: 5000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
