@@ -45,85 +45,142 @@ public class SlackService {
                 throw new IllegalArgumentException("사용자를 찾을 수 없습니다");
             }
 
-            // 기존 데이터 조회 로직 (생략)
             ApiResponseDto<PageResponseDto<CompanyResponseDto>> companyAll = hubService.findByAllCompany();
             ApiResponseDto<PageResponseDto<HubResponseDto>> hubAll = hubService.findByAllHub();
             PageResponseDto<DeliveryResponse> deliveryAll = deliveryService.searchDeliveries();
             PageResponseDto<DeliveryPersonResponse> deliveryPersonAll = deliveryService.searchDeliveryPersons();
 
-            List<String> deliveryPersonName = deliveryPersonAll.getContent().stream()
-                    .filter(deliveryPerson -> deliveryPerson.getUsername().equals(slackDto.getUsername()))
-                    .map(DeliveryPersonResponse::getUsername)
-                    .toList();
-
+            /**
+             업체를 전체 조회해서 각자 업체를 담당하는 사용자의 이름을 id와 Map 자료구조로 묶음
+             **/
             Map<UUID, String> companyUsername = companyAll.getData().getContent().stream()
                     .collect(Collectors.toMap(CompanyResponseDto::getId, CompanyResponseDto::getUsername));
 
+
+            /**
+             허브를 전체 조회해서 각긱 허브의 주소와 id를 Map 자료구조로 묶음
+             **/
             Map<UUID, String> hubAddress = hubAll.getData().getContent().stream()
                     .collect(Collectors.toMap(HubResponseDto::getId, HubResponseDto::getAddress));
 
-            List<UUID> deliveryIds = deliveryAll.getContent().stream()
-                    .filter(person -> deliveryPersonName.stream()
-                            .anyMatch(name -> name.equals(person.getReceiver())))
-                    .map(DeliveryResponse::getId)
-                    .toList();
-
+            /**
+             전체 배송을 조회해서 슬렉에서 가져온 사용자 이름과 비교해서 배송 응답 객체를 만듦
+             **/
             List<DeliveryResponse> deliveries = deliveryAll.getContent().stream()
                     .filter(receiver -> receiver.getReceiver().equals(slackDto.getUsername()))
                     .toList();
 
+            /**
+             전체 배송 응답 객체에서 orderId (FK) 가 존재하는 배송 응답 객체를 뽑음
+             **/
             List<DeliveryResponse> orderID = deliveries.stream()
                     .filter(orderId -> orderId.getOrderId() != null)
                     .toList();
 
+            /**
+             배송 응답 객체의 orderId 만 뽑음
+             **/
             List<UUID> ordered = orderID.stream().map(DeliveryResponse::getOrderId).toList();
+
+            /**
+             배송 응답 객체의 orderId 로 order 단일 조회를 시도하여 해당 order 의 상세 정보를 저장할 빈 리스트를 만들고
+             찾아온 order 데이터를 추가함.
+             **/
             List<ResponseEntity<FindOrderQuery>> orderDetails = new ArrayList<>();
             for (UUID orderId : ordered) {
                 ResponseEntity<FindOrderQuery> orderDetail = orderService.read(orderId);
                 orderDetails.add(orderDetail);
             }
 
+            /**
+             색출이 된 order 데이터에서 발송자의 id 를 뽑아옴
+             **/
             List<UUID> supplyIds = orderDetails.stream()
                     .map(ResponseEntity::getBody)
                     .map(body -> body.supplyId())
                     .filter(Objects::nonNull)
                     .toList();
 
+            /**
+             발송자의 아이디에서 사용자의 이름을 뽑아옴.
+             **/
             List<String> supplyUsername = supplyIds.stream()
                     .map(companyUsername::get)
                     .filter(Objects::nonNull)
                     .toList();
 
+            /**
+             최종 메시지를 담을 메시지 객체를 생성
+             **/
             SlackMessageResponse returnMessage = null;
+
+            /**
+             생성된 메시지를 담을 빈 리스트를 생성
+             **/
             List<MessageResponse> messageResponses = new ArrayList<>();
 
-            // Gemini API 설정
+            /**
+             Gemini API 설정
+             **/
             RestTemplate restTemplate = new RestTemplate();
             String geminiApiUrl = gemini_url + gemini_key;
 
+            /**
+             메시지를 요청할 때 담당자 이름과 실제로 배송 담당자의 이름이 같은 사람을 뽑아옴
+             **/
+            List<String> deliveryPersonName = deliveryPersonAll.getContent().stream()
+                    .filter(deliveryPerson -> deliveryPerson.getUsername().equals(slackDto.getUsername()))
+                    .map(DeliveryPersonResponse::getUsername)
+                    .toList();
+
+            /**
+             배송 정보를 전체 조회할 때, 슬렉에서 가져온 사용자 이름과 담당자의 이름을 비교한 deliveryPersonName 으로
+             배송 담당자의 receiver 와 비교해서 매칭이 되는 deliveryId 를 뽑아옴
+             **/
+            List<UUID> deliveryIds = deliveryAll.getContent().stream()
+                    .filter(person -> deliveryPersonName.stream()
+                            .anyMatch(name -> name.equals(person.getReceiver())))
+                    .map(DeliveryResponse::getId)
+                    .toList();
+
+            /**
+             색출한 deliveryId 가 비어있지 않다면, deliveryId 를 하나씩 뽑아서 delivery 단일 조회와, 배송 경로를 조회한다.
+             **/
             if (!deliveryIds.isEmpty()) {
                 for (UUID deliveryId : deliveryIds) {
                     DeliveryResponse deliveryDetail = deliveryService.getDelivery(deliveryId);
                     List<DeliveryRouteResponse> route = deliveryService.getDeliveryRoutes(deliveryId);
 
+                    /**
+                     배송 경로의 출발 허브를 뽑아옴
+                     **/
                     List<UUID> departureId = route.stream()
                             .map(DeliveryRouteResponse::getDepartureHubId)
                             .toList();
 
+                    /**
+                     배송 경로의 도착 허브를 뽑아옴
+                     **/
                     List<String> departure = departureId.stream()
                             .map(hubAddress::get)
                             .filter(Objects::nonNull)
                             .toList();
 
+                    /**
+                     허브의 실제 주소를 조회해서 배송 경로의 출발, 도착 허브를 각각 실제 주소로 뽑아옴
+                     **/
                     List<String> deliveryRoute = route.stream()
                             .flatMap(r -> Stream.of(hubAddress.get(r.getDepartureHubId()), hubAddress.get(r.getArrivalHubId())))
                             .filter(Objects::nonNull)
                             .distinct()
                             .toList();
 
-                    DeliveryResponse deliveryRes = deliveryDetail;
-
-                    if (deliveryRes.getReceiver().equals(slackDto.getUsername())) {
+                    /**
+                     색출한 delivery 의 담당자와 슬렉에서 가져온 사용자 이름이 같다면,
+                     색출한 order 데이터에서 id (PK)와 orderProduct 를 Map 자료구조로 묶,
+                     만약 이미 존재하는 주문 정보가 있다면 모든 요소를 추가함.
+                     **/
+                    if (deliveryDetail.getReceiver().equals(slackDto.getUsername())) {
                         Map<UUID, List<FindOrderProductQuery>> ordersGroupedById = orderDetails.stream()
                                 .map(ResponseEntity::getBody)
                                 .collect(Collectors.toMap(
@@ -135,6 +192,10 @@ public class SlackService {
                                         }
                                 ));
 
+                        /**
+                         Map 자료구조로 묶은 order 정보를 실제 상품 정보를 조회하기 위해 사용
+                         이후 메시지를 생성하고 Gemini 연동하는 기능을 수행합니다.
+                         **/
                         messageResponses = ordersGroupedById.entrySet().stream()
                                 .map(entry -> {
                                     UUID orderId = entry.getKey();
@@ -157,11 +218,11 @@ public class SlackService {
                                             .collect(Collectors.joining(", "));
 
                                     return new MessageResponse(
-                                            deliveryRes.getId(),
+                                            deliveryDetail.getId(),
                                             supplyUsername.isEmpty() ? "" : supplyUsername.get(0),
                                             departure.isEmpty() ? "" : departure.get(0),
                                             deliveryRoute.size() > 1 ? deliveryRoute.subList(1, deliveryRoute.size()) : List.of(),
-                                            deliveryRes.getDeliveryAddress(),
+                                            deliveryDetail.getDeliveryAddress(),
                                             deliveryPersonName.isEmpty() ? "" : deliveryPersonName.get(0),
                                             request,
                                             productDetails
