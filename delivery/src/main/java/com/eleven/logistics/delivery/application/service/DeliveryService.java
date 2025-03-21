@@ -1,5 +1,8 @@
 package com.eleven.logistics.delivery.application.service;
 
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteRequest;
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteResponse;
 import com.eleven.logistics.delivery.presentation.dtos.DeliveryResponse;
 import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteResponse;
 import com.eleven.logistics.delivery.domain.entity.Delivery;
@@ -7,12 +10,13 @@ import com.eleven.logistics.delivery.domain.entity.DeliveryRoute;
 import com.eleven.logistics.delivery.domain.entity.DeliveryStatus;
 import com.eleven.logistics.delivery.domain.entity.RouteStatus;
 import com.eleven.logistics.delivery.domain.repository.DeliveryRepository;
+import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRouteRequest;
 import com.eleven.logistics.delivery.util.PagingUtil;
-import com.eleven.logistics.delivery.presentation.dtos.DeliveryRequest;
-import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteRequest;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,13 +29,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
+  private final EntityManager em;
+
+  // 배송 조회
+  public DeliveryResponse getDelivery(UUID deliveryId) {
+    Delivery delivery = deliveryRepository.findById(deliveryId)
+        .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
+
+    return new DeliveryResponse(delivery);
+  }
+
+  //배송 경로 조회(특정 배송의 모든 경로)
+  public List<DeliveryRouteResponse> getDeliveryRoutes(UUID deliveryId) {
+    Delivery delivery = deliveryRepository.findById(deliveryId)
+        .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
+
+    return delivery.getDeliveryRoutes().stream()
+        .map(DeliveryRouteResponse::new)
+        .toList();
+  }
 
   // 배송 검색 조회
   public Page<DeliveryResponse> searchDeliveries(
       DeliveryStatus status, UUID orderId, Pageable pageable
   ) {
-    // TODO : 사용자 권한 체크 검증로직 추가
-
     Pageable deliveryPages = PagingUtil.adjustPageable(pageable);
     return deliveryRepository.findByDeliveryStatusAndOrderId(status, orderId, deliveryPages)
         .map(DeliveryResponse::new);
@@ -41,33 +62,55 @@ public class DeliveryService {
   public Page<DeliveryRouteResponse> searchDeliveryRoutes(
       UUID deliveryId, RouteStatus status, Pageable pageable
   ) {
-    // TODO : 사용자 권한 체크 검증로직 추가
-
     Pageable routePages = PagingUtil.adjustPageable(pageable);
     return deliveryRepository.findRoutesByDeliveryIdAndRouteStatus(deliveryId, status, routePages)
         .map(DeliveryRouteResponse::new);
   }
 
-  // 배송 및 배송경로 생성
+  // 배송 생성
   @Transactional
-  public DeliveryResponse createDelivery(DeliveryRequest deliveryDto,
-      List<DeliveryRouteRequest> routeDtos
+  public DeliveryResponse createDelivery(CreateDeliveryRequest request) {
+    Delivery delivery = deliveryRepository.save(new Delivery(request));
+
+    deliveryRepository.save(delivery);
+    delivery.updateCreatedBy(delivery.getCreatedBy());
+
+    return new DeliveryResponse(delivery);
+  }
+
+  // 배송 경로 생성
+  @Transactional
+  public List<CreateDeliveryRouteResponse> createRoute(
+      UUID deliveryId, List<CreateDeliveryRouteRequest> routeDtos
   ) {
     if (routeDtos == null || routeDtos.isEmpty()) {
       throw new IllegalArgumentException(
           "At least one route must be provided when creating a delivery");
     }
 
-    Delivery delivery = new Delivery(deliveryDto);
+    Delivery delivery = deliveryRepository.findById(deliveryId)
+        .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
 
-    for (DeliveryRouteRequest routeDto : routeDtos) {
+    // 기존 경로 개수 저장
+    int existingRouteCount = delivery.getRoutes().size();
+
+    // DeliveryRoute 객체 생성 및 Delivery에 추가
+    routeDtos.forEach(routeDto -> {
       DeliveryRoute route = new DeliveryRoute(delivery, routeDto);
       delivery.addRoute(route);
-    }
+      route.updateCreatedBy(delivery.getCreatedBy());
+    });
 
     deliveryRepository.save(delivery);
-    delivery.updateCreatedBy(delivery.getCreatedBy());
-    return new DeliveryResponse(delivery);
+
+    // 저장된 routes에서 새로 추가된 경로만 추출
+    List<DeliveryRoute> savedRoutes = delivery.getRoutes().subList(
+        existingRouteCount, delivery.getRoutes().size()
+    );
+
+    return savedRoutes.stream()
+        .map(CreateDeliveryRouteResponse::new)
+        .collect(Collectors.toList());
   }
 
   // 배송 상태 변경
@@ -76,8 +119,10 @@ public class DeliveryService {
   ) {
     Delivery delivery = deliveryRepository.findById(deliveryId)
         .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
+
     delivery.updateStatus(status);
     delivery.updateModificationInfo(delivery.getUpdatedBy());
+
     return new DeliveryResponse(delivery);
   }
 
@@ -86,10 +131,9 @@ public class DeliveryService {
   public DeliveryRouteResponse updateRouteStatus(UUID deliveryId, UUID routeId,
       RouteStatus status, int actualDistance, int actualTime
   ) {
-    // TODO : 사용자 권한 체크 검증로직 추가
-
     Delivery delivery = deliveryRepository.findById(deliveryId)
         .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
+
     DeliveryRoute route = delivery.getDeliveryRoutes().stream()
         .filter(r -> r.getId().equals(routeId))
         .findFirst()
@@ -97,14 +141,13 @@ public class DeliveryService {
 
     route.updateStatus(status, actualDistance, actualTime);
     route.updateCreatedBy(delivery.getCreatedBy());
+
     return new DeliveryRouteResponse(route);
   }
 
   // 배송 수정
   @Transactional
   public DeliveryResponse updateDelivery(UUID deliveryId, UpdateDeliveryRequest request) {
-    // TODO : 사용자 권한 체크 검증로직 추가
-
     Delivery delivery = deliveryRepository.findById(deliveryId)
         .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
 
@@ -118,10 +161,8 @@ public class DeliveryService {
   // 배송경로 전체 수정
   @Transactional
   public DeliveryRouteResponse updateRoute(UUID deliveryId, UUID routeId,
-      DeliveryRouteRequest routeDto
+      UpdateDeliveryRouteRequest routeDto
   ) {
-    // TODO : 사용자 권한 체크 검증로직 추가
-
     Delivery delivery = deliveryRepository.findById(deliveryId)
         .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
 
@@ -163,22 +204,5 @@ public class DeliveryService {
 
     delivery.updateDeletionInfo(delivery.getDeletedBy());
   }
-
-  // 배송 조회
-  public DeliveryResponse getDelivery(UUID deliveryId) {
-    Delivery delivery = deliveryRepository.findById(deliveryId)
-        .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
-    return new DeliveryResponse(delivery);
-  }
-
-  //배송 경로 조회(특정 배송의 모든 경로)
-  public List<DeliveryRouteResponse> getDeliveryRoutes(UUID deliveryId) {
-    Delivery delivery = deliveryRepository.findById(deliveryId)
-        .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
-    return delivery.getDeliveryRoutes().stream()
-        .map(DeliveryRouteResponse::new)
-        .toList();
-  }
-
 
 }

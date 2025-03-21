@@ -1,6 +1,6 @@
 package com.eleven.logistics.delivery.domain.entity;
 
-import com.eleven.logistics.delivery.presentation.dtos.DeliveryRequest;
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRequest;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -59,7 +59,7 @@ public class Delivery extends Timestamped {
   @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DeliveryRoute> deliveryRoutes = new ArrayList<>();
 
-  public Delivery(DeliveryRequest request) {
+  public Delivery(CreateDeliveryRequest request) {
     this.orderId = request.getOrderId();
     this.departureHubId = request.getDepartureHubId();
     this.destinationHubId = request.getDestinationHubId();
@@ -84,5 +84,9 @@ public class Delivery extends Timestamped {
   public void addRoute(DeliveryRoute route) {
     this.deliveryRoutes.add(route);
     route.assignDelivery(this);
+  }
+
+  public List<DeliveryRoute> getRoutes() {
+    return deliveryRoutes;
   }
 }

@@ -9,26 +9,23 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryRequest {
+public class CreateDeliveryRouteRequest {
 
   @NotNull
-  private UUID orderId;
+  private UUID deliveryId;
+
+  private int sequence;
 
   @NotNull
   private UUID departureHubId;
 
   @NotNull
-  private UUID destinationHubId;
+  private UUID arrivalHubId;
 
   @NotNull
-  private String deliveryAddress;
+  private int expectedDistance;
 
   @NotNull
-  private String receiver;
+  private int expectedTime;
 
-  @NotNull
-  private UUID receiverSnsId;
-
-  @NotNull
-  private UUID companyDeliveryPersonId;
 }

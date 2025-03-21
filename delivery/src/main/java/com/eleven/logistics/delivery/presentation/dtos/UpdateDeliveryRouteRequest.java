@@ -1,5 +1,6 @@
 package com.eleven.logistics.delivery.presentation.dtos;
 
+import com.eleven.logistics.delivery.domain.entity.RouteStatus;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryRouteRequest {
+public class UpdateDeliveryRouteRequest {
 
   @NotNull
   private UUID deliveryPersonId;
@@ -22,9 +23,9 @@ public class DeliveryRouteRequest {
   @NotNull
   private UUID arrivalHubId;
 
-  @NotNull
-  private int expectedDistance;
+  private int distance;
 
-  @NotNull
-  private int expectedTime;
+  private int time;
+
+  private RouteStatus routeStatus;
 }
