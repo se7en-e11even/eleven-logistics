@@ -1,15 +1,14 @@
 package com.eleven.logistics.product.presentation.controller;
 
-import com.eleven.logistics.product.application.dto.command.ListProductCommand;
 import com.eleven.logistics.product.application.dto.query.FindProductQuery;
-import com.eleven.logistics.product.application.dto.query.ListProductQuery;
 import com.eleven.logistics.product.application.service.ProductService;
 import com.eleven.logistics.product.presentation.dto.request.CreateProductRequest;
 import com.eleven.logistics.product.presentation.dto.request.UpdateProductRequest;
-import com.eleven.logistics.product.presentation.resolver.PageSize;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,13 +41,13 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         // 허브 관리자는 허브 소속 회사의 상품만
-        // if role.eq.HUB: username 으로 -> userid -> companyId, hubId
+        // if role.eq.HUB: username 으로 -> userid -> id, hubId
 
         // 업체 담당자는 해당 업체의 상품만 생성
-        //  if role.eq.COMPANY: username -> userId -> companyId
+        //  if role.eq.COMPANY: username -> userId -> id
 
         // service 에 controller 의 의존성을 없애기 위해 dto 변환
-        UUID productId = productService.create(request.toCommand());
+        UUID productId = productService.create(request.toCommand(), username);
 
         URI location = UriComponentsBuilder.newInstance()
                 .path("/api/products/{product_id}")
@@ -101,14 +100,11 @@ public class ProductController {
      * 페이징 처리, keyword 가 없으면 권한에 맞는 전체 목록
      */
     @GetMapping
-    public ResponseEntity<ListProductQuery<FindProductQuery>> search(
+    public ResponseEntity<Page<FindProductQuery>> search(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @PageSize int size,
-            @RequestParam(defaultValue = "desc") String orderBy
+            Pageable pageable
     ) {
-        log.info("pageSize 검증 10, 30, 50(default 10): {}", size);
-        ListProductCommand command = ListProductCommand.of(page-1, size, orderBy);
-        return ResponseEntity.ok(productService.search(keyword, command));
+        log.info("pageSize 검증 10, 30, 50(default 10): {}", pageable.getPageSize());
+        return ResponseEntity.ok(productService.search(keyword, pageable));
     }
 }

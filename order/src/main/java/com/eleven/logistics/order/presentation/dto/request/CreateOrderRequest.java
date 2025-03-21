@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record CreateOrderRequest(
+        // UUID 는 NullCheck 만 가능하다. NotBlank 는 문자열 전용
         @NotNull(message = "supply_id 는 필수 항목입니다.")
         UUID supplyId,
 

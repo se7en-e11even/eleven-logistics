@@ -1,6 +1,7 @@
 package com.eleven.logistics.product.application.dto.query;
 
 import com.eleven.logistics.product.domain.entity.Product;
+import com.eleven.logistics.product.domain.vo.FindProduct;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -32,6 +33,19 @@ public record FindProductQuery(
                 .stockQuantity(product.getStockQuantity())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
+                .build();
+    }
+
+    public static FindProductQuery of(FindProduct product) {
+        return FindProductQuery.builder()
+                .productId(product.productId())
+                .companyId(product.companyId())
+                .hubId(product.hubId())
+                .name(product.name())
+                .price(product.price())
+                .stockQuantity(product.stockQuantity())
+                .createdAt(product.createdAt())
+                .updatedAt(product.updatedAt())
                 .build();
     }
 }

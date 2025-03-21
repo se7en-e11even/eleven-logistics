@@ -3,7 +3,7 @@ package com.eleven.logistics.product.presentation;
 import com.eleven.logistics.product.application.service.ProductService;
 import com.eleven.logistics.product.application.dto.command.CreateProductCommand;
 import com.eleven.logistics.product.application.dto.query.FindProductQuery;
-import com.eleven.logistics.product.common.exception.CustomException;
+import com.eleven.logistics.product.domain.exception.CustomException;
 import com.eleven.logistics.product.presentation.controller.ProductController;
 import com.eleven.logistics.product.presentation.dto.request.CreateProductRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,8 +48,6 @@ class ProductControllerMvcTest {
     void create() throws JsonProcessingException {
         UUID productId = UUID.randomUUID();
         var createRequestProduct = new CreateProductRequest(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
                 "product1",
                 10000,
                 10
@@ -57,7 +55,7 @@ class ProductControllerMvcTest {
 
         var createRequest = objectMapper.writeValueAsString(createRequestProduct);
 
-        given(productService.create(any(CreateProductCommand.class)))
+        given(productService.create(any(CreateProductCommand.class), "username"))
                 .willReturn(productId);
 
         // when & then

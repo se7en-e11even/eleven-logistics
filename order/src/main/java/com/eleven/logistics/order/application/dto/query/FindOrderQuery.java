@@ -1,6 +1,8 @@
 package com.eleven.logistics.order.application.dto.query;
 
 import com.eleven.logistics.order.domain.entity.Order;
+import com.eleven.logistics.order.domain.entity.OrderProduct;
+import com.eleven.logistics.order.domain.vo.FindOrder;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -18,18 +20,11 @@ public record FindOrderQuery(
         String request,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<FindOrderProductQuery> orderProductDtoList
+        List<FindOrderProductQuery> orderProductQueryList
 ) {
     public static FindOrderQuery of(Order order) {
         List<FindOrderProductQuery> orderProductList = order.getOrderProductList().stream()
-                .map(orderProduct -> {
-                    return FindOrderProductQuery.create(
-                            orderProduct.getOrderProductId(),
-                            orderProduct.getProductId(),
-                            orderProduct.getPrice(),
-                            orderProduct.getQuantity()
-                    );
-                })
+                .map(FindOrderProductQuery::of)
                 .toList();
 
         return FindOrderQuery.builder()
@@ -41,7 +36,51 @@ public record FindOrderQuery(
                 .request(order.getRequest())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
-                .orderProductDtoList(orderProductList)
+                .orderProductQueryList(orderProductList)
                 .build();
+    }
+
+    public static FindOrderQuery of(FindOrder findOrder) {
+        List<FindOrderProductQuery> orderProductList = findOrder.orderProductList().stream()
+                .map(FindOrderProductQuery::of)
+                .toList();
+
+        return FindOrderQuery.builder()
+                .orderId(findOrder.orderId())
+                .supplyId(findOrder.supplyId())
+                .receiverId(findOrder.receiverId())
+                .deliveryId(findOrder.deliveryId())
+                .orderStatus(findOrder.orderStatus())
+                .request(findOrder.request())
+                .createdAt(findOrder.createdAt())
+                .updatedAt(findOrder.updatedAt())
+                .orderProductQueryList(orderProductList)
+                .build();
+    }
+
+    @Builder
+    public record FindOrderProductQuery(
+            UUID orderProductId,
+            UUID productId,
+            Integer price,
+            Integer quantity
+    ) {
+        public static FindOrderProductQuery of(OrderProduct orderProduct) {
+            return FindOrderProductQuery.builder()
+                    .orderProductId(orderProduct.getOrderProductId())
+                    .productId(orderProduct.getProductId())
+                    .price(orderProduct.getPrice())
+                    .quantity(orderProduct.getQuantity())
+                    .build();
+        }
+
+        public static FindOrderProductQuery of(FindOrder.FindOrderProduct findOrderProduct) {
+            return FindOrderProductQuery.builder()
+                    .orderProductId(findOrderProduct.orderProductId())
+                    .productId(findOrderProduct.productId())
+                    .price(findOrderProduct.price())
+                    .quantity(findOrderProduct.quantity())
+                    .build();
+        }
     }
 }

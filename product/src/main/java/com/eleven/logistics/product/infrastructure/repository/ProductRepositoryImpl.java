@@ -1,23 +1,24 @@
 package com.eleven.logistics.product.infrastructure.repository;
 
-import com.eleven.logistics.product.application.dto.command.ListProductCommand;
-import com.eleven.logistics.product.application.dto.query.FindProductQuery;
-import com.eleven.logistics.product.application.dto.query.ListProductQuery;
-import com.eleven.logistics.product.common.exception.CustomException;
 import com.eleven.logistics.product.domain.repository.ProductRepositoryCustom;
+import com.eleven.logistics.product.domain.vo.FindProduct;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.eleven.logistics.product.domain.entity.QProduct.product;
-import static com.eleven.logistics.product.domain.exception.ProductErrorCode.ORDER_BY_NOT_FOUND;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,18 +30,18 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
      * 상품 검색
      * 상품 전체 목록, 페이징, 상품 keyword 검색
      */
-    public ListProductQuery<FindProductQuery> retrieve(String keyword, ListProductCommand command) {
-        List<FindProductQuery> content = getProductList(keyword, command);
-        long total = getTotalCount(keyword);
-        return new ListProductQuery<>(content, total);
+    @Override
+    public Page<FindProduct> retrieve(String keyword, Pageable pageable) {
+        List<FindProduct> content = getProductList(keyword, pageable);
+        return new PageImpl<>(content, pageable, content.size());
     }
 
     /**
      * 페이징 + 검색 메서드
      */
-    private List<FindProductQuery> getProductList(String keyword, ListProductCommand command) {
+    private List<FindProduct> getProductList(String keyword, Pageable pageable) {
         return jpaQueryFactory
-                .select(Projections.constructor(FindProductQuery.class,
+                .select(Projections.constructor(FindProduct.class,
                         product.productId,
                         product.companyId,
                         product.hubId,
@@ -52,23 +53,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .where(getWhereConditions(keyword))
-                .offset(command.getFirstIndex())
-                .limit(command.size())
-                .orderBy(getOrderConditions(command))
+                .orderBy(getAllOrderSpecifiers(pageable).toArray(new OrderSpecifier[0]))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
-    }
-
-    /**
-     * 전체 데이터 수 조회
-     */
-    private long getTotalCount(String keyword) {
-        return Optional.ofNullable(jpaQueryFactory
-                        .select(product.count())
-                        .from(product)
-                        .where(getWhereConditions(keyword))
-                        .fetchOne()
-                )
-                .orElse(0L);
     }
 
     /**
@@ -91,17 +79,22 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     /**
      * 정렬 조건
      */
-    private OrderSpecifier<?> getOrderConditions(ListProductCommand command) {
-        String orderBy = command.orderBy().toLowerCase();
+    private List<OrderSpecifier<?>> getAllOrderSpecifiers(Pageable pageable) {
+        List<OrderSpecifier<?>> orders = new ArrayList<>();
 
-        if (!StringUtils.hasText(orderBy)) {
-            return product.createdAt.desc();
+        for (Sort.Order sortOrder : pageable.getSort()) {
+            Order direction = sortOrder.isAscending() ? Order.ASC : Order.DESC;
+            switch (sortOrder.getProperty()) {
+                case "createdAt":
+                    orders.add(new OrderSpecifier<>(direction, product.createdAt));
+                    break;
+                case "updatedAt":
+                    orders.add(new OrderSpecifier<>(direction, product.updatedAt));
+                    break;
+                default:
+                    break;
+            }
         }
-
-        return switch (orderBy) {
-            case "desc" -> product.createdAt.desc();
-            case "asc" -> product.createdAt.asc();
-            default -> throw new CustomException(ORDER_BY_NOT_FOUND);
-        };
+        return orders;
     }
 }

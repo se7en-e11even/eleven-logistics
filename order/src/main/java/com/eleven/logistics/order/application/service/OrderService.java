@@ -2,20 +2,22 @@ package com.eleven.logistics.order.application.service;
 
 import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
 import com.eleven.logistics.order.application.dto.command.CreateOrderProductCommand;
-import com.eleven.logistics.order.application.dto.command.ListOrderCommand;
 import com.eleven.logistics.order.application.dto.command.UpdateOrderCommand;
 import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
 import com.eleven.logistics.order.application.dto.query.FindProductQuery;
-import com.eleven.logistics.order.application.dto.query.ListOrderQuery;
 import com.eleven.logistics.order.application.port.out.ProductPort;
-import com.eleven.logistics.order.common.exception.CustomException;
+import com.eleven.logistics.order.application.port.out.RabbitMQBrokerPort;
+import com.eleven.logistics.order.domain.exception.CustomException;
 import com.eleven.logistics.order.domain.entity.Order;
 import com.eleven.logistics.order.domain.entity.OrderProduct;
 import com.eleven.logistics.order.domain.repository.OrderRepository;
 import com.eleven.logistics.order.domain.repository.OrderRepositoryCustom;
+import com.eleven.logistics.order.application.dto.message.OrderMessage;
 import com.eleven.logistics.order.domain.vo.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +32,19 @@ import static com.eleven.logistics.order.domain.exception.OrderErrorCode.ORDER_N
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderRepository repository;
-    private final OrderRepositoryCustom repositoryCustom;
+    // Feign Client
     private final ProductPort productPort;
 
+    private final RabbitMQBrokerPort rabbitMQBrokerPort;
+    private final OrderRepository repository;
+    private final OrderRepositoryCustom repositoryCustom;
+
     public UUID create(CreateOrderCommand command) {
+        // TODO: 주문 생성은 상태 변화를 활용하여 우선 생성하고 이후에 요청 응답의 결과에 따라 처리 한다.
+        // 주문 요청이 들어오면 PENDING
+        // 재고 확인 여부 : PENDING, CANCEL
+        // 배송 정보 확인 : 접수됨?, 배송 중....
+
         // feign client 요청 테스트, 상품 id를 통해 공급업체 id, 상품 재고를 알 수 있다.
         // 주문 수량과 재고를 비교해야 한다.
         FindProductQuery product = productPort.getProduct(command.commandList().get(0).productId().toString());
@@ -64,6 +74,9 @@ public class OrderService {
             order.addOrderProduct(orderProduct);
         }
         repository.save(order);
+
+        // message publish
+        rabbitMQBrokerPort.publishMessage(new OrderMessage(order.getOrderId()));
         return order.getOrderId();
     }
 
@@ -96,7 +109,6 @@ public class OrderService {
     public void delete(UUID orderId, String username) {
         Order order = repository.findByOrderId(orderId);
 
-        // TODO: 사용자 정보 넣기
         order.deleteOf(username);
     }
 
@@ -108,10 +120,11 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public ListOrderQuery<FindOrderQuery> search(
+    public Page<FindOrderQuery> search(
             String keyword,
-            ListOrderCommand command
+            Pageable pageable
     ) {
-        return repositoryCustom.retrieve(keyword, command);
+        return repositoryCustom.retrieve(keyword, pageable)
+                .map(FindOrderQuery::of);
     }
 }

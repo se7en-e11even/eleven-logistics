@@ -1,14 +1,13 @@
 package com.eleven.logistics.order.presentation.controller;
 
-import com.eleven.logistics.order.application.dto.command.ListOrderCommand;
 import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
-import com.eleven.logistics.order.application.dto.query.ListOrderQuery;
 import com.eleven.logistics.order.application.service.OrderService;
 import com.eleven.logistics.order.presentation.dto.request.CreateOrderRequest;
 import com.eleven.logistics.order.presentation.dto.request.UpdateOrderRequest;
-import com.eleven.logistics.order.presentation.resolver.PageSize;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -87,13 +86,10 @@ public class OrderController {
      * 상품 검색 API
      */
     @GetMapping
-    public ResponseEntity<ListOrderQuery<FindOrderQuery>> search(
+    public ResponseEntity<Page<FindOrderQuery>> search(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @PageSize int size,
-            @RequestParam(defaultValue = "desc") String orderBy
+            Pageable pageable
     ) {
-        ListOrderCommand command = new ListOrderCommand(page - 1, size, orderBy);
-        return ResponseEntity.ok(orderService.search(keyword, command));
+        return ResponseEntity.ok(orderService.search(keyword, pageable));
     }
 }

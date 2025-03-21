@@ -1,12 +1,9 @@
 package com.eleven.logistics.order.presentation;
 
 import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.ListOrderCommand;
-import com.eleven.logistics.order.application.dto.query.FindOrderProductQuery;
 import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
-import com.eleven.logistics.order.application.dto.query.ListOrderQuery;
 import com.eleven.logistics.order.application.service.OrderService;
-import com.eleven.logistics.order.common.exception.CustomException;
+import com.eleven.logistics.order.domain.exception.CustomException;
 import com.eleven.logistics.order.presentation.controller.OrderController;
 import com.eleven.logistics.order.presentation.dto.request.CreateOrderRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -103,10 +102,11 @@ class OrderControllerMvcTest {
     @Test
     @DisplayName("주문 목록 조회")
     void retreiveOrders() throws JsonProcessingException {
-        var pageRequestDto = ListOrderCommand.of(0, 10);
-        var pageResponseDto = new ListOrderQuery<>(List.of(dtos), 3L);
-        given(orderService.search("keyword", pageRequestDto))
-                .willReturn(pageResponseDto);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // TODO: 리턴 값 지정
+        given(orderService.search("keyword", pageable))
+                .willReturn(null);
 
         // when & then
         assertThat(mvc.get().uri("/api/orders")
@@ -134,7 +134,7 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1),
-                        List.of(new FindOrderProductQuery(
+                        List.of(new FindOrderQuery.FindOrderProductQuery(
                                 uuids[6],
                                 uuids[7],
                                 10000,
@@ -150,7 +150,7 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2),
-                        List.of(new FindOrderProductQuery(
+                        List.of(new FindOrderQuery.FindOrderProductQuery(
                                 uuids[11],
                                 uuids[12],
                                 20000,
@@ -166,7 +166,7 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 3),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 3),
-                        List.of(new FindOrderProductQuery(
+                        List.of(new FindOrderQuery.FindOrderProductQuery(
                                 uuids[16],
                                 uuids[17],
                                 30000,
