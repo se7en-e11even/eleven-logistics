@@ -1,6 +1,6 @@
 package com.eleven.logistics.slack.presentation.dto;
 
-import com.eleven.logistics.slack.application.dto.SlackDto;
+import com.eleven.logistics.slack.application.slackdto.SlackDto;
 import lombok.*;
 
 @Getter
