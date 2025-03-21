@@ -41,11 +41,26 @@ eureka:
       defaultZone: http://localhost:19090/eureka/
 
 
-message:
+deliveryExchange:
   # [Delivery Service]
-  exchange: delivery
   queue:
     hubroute: delivery.hubroute
+
+message:
+  # [HubRoute Service]
+  exchange: hubroute
+  queue:
+    delivery: hubroute.delivery
+
+
+  # [Error Handling for HubRoute Service]
+  err:
+    exchange: hubroute.err
+    queue:
+      delivery: hubroute.err.delivery
+
+
+
 
 
 

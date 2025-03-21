@@ -80,6 +80,20 @@ public class Delivery extends Timestamped {
     this.deliveryStatus = currentStatus;
   }
 
+  public void updateStatusByDescription(String description) {
+    this.deliveryStatus = getDeliveryStatusFromDescription(description);
+  }
+
+  // status 값을 description에 맞는 RouteStatus로 변환하는 메서드
+  private DeliveryStatus getDeliveryStatusFromDescription(String statusDescription) {
+    for (DeliveryStatus status : DeliveryStatus.values()) {
+      if (status.getDescription().equals(statusDescription)) {
+        return status;
+      }
+    }
+    throw new IllegalArgumentException("Invalid delivery status description: " + statusDescription);
+  }
+
   // 배송 경로 추가
   public void addRoute(DeliveryRoute route) {
     this.deliveryRoutes.add(route);

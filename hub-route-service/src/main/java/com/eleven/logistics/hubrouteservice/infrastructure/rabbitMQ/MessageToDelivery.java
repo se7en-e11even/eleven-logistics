@@ -9,9 +9,8 @@ import java.util.UUID;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeliveryMessage {
-
-    private UUID originHubId;
-    private UUID destinationHubId;
+public class MessageToDelivery {
     private UUID deliveryId;
+    private String description;
+
 }
