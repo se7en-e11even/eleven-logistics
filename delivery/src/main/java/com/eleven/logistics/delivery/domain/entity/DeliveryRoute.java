@@ -75,13 +75,25 @@ public class DeliveryRoute extends Timestamped {
   }
 
   public void updateRoute(UpdateDeliveryRouteRequest routeDto) {
-    this.deliveryPersonId = routeDto.getDeliveryPersonId();
-    this.sequence = routeDto.getSequence();
     this.departureHubId = routeDto.getDepartureHubId();
     this.arrivalHubId = routeDto.getArrivalHubId();
     this.actualDistance = routeDto.getDistance();
     this.actualTime = routeDto.getTime();
-    this.routeStatus = routeDto.getRouteStatus();
+
+    // status 문자열을 RouteStatus로 변환하여 routeStatus 변경
+    if (routeDto.getStatus() != null) {
+      this.routeStatus = getRouteStatusFromDescription(routeDto.getStatus());
+    }
+  }
+
+  // status 값을 description에 맞는 RouteStatus로 변환하는 메서드
+  private RouteStatus getRouteStatusFromDescription(String statusDescription) {
+    for (RouteStatus status : RouteStatus.values()) {
+      if (status.getDescription().equals(statusDescription)) {
+        return status;
+      }
+    }
+    throw new IllegalArgumentException("Invalid route status description: " + statusDescription);
   }
 
   public void updateStatus(RouteStatus status, int actualDistance, int actualTime) {
@@ -92,5 +104,9 @@ public class DeliveryRoute extends Timestamped {
 
   public void assignDelivery(Delivery delivery) {
     this.delivery = delivery;
+  }
+
+  public void updateDeliveryPerson(UUID id) {
+    this.deliveryPersonId = id;
   }
 }
