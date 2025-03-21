@@ -15,6 +15,16 @@ spring:
       port: 6379       # Redis 기본 포트
       username: default
       password: 1234
+  rabbitmq:
+    host: 129.154.192.198
+    port: 5672
+    username: eleven-logistics
+    password: eleven-logistics
+    listener:
+      simple: # exchange 옵션에 따라 다르다!
+        default-requeue-rejected: false
+
+
 
   jpa:
     hibernate:
@@ -29,3 +39,15 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+
+message:
+  # [Delivery Service]
+  exchange: delivery
+  queue:
+    hubroute: delivery.hubroute
+
+
+
+
+
