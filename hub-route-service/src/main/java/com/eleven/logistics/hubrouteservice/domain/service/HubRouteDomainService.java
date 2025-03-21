@@ -53,22 +53,21 @@ public class HubRouteDomainService {
         UUID current = destinationHubId;
 
         while (previous.containsKey(current)) {
-            UUID prevHub = previous.get(current);
+            String prevHub = previous.get(current).toString();
             Map<String, UUID> routeMap = new HashMap<>();
-            routeMap.put("originHubId", prevHub);
-            routeMap.put("destinationHubId", current);
+            routeMap.put(prevHub, current);
             path.add(routeMap);
-            current = prevHub;
+            current = UUID.fromString(prevHub);
         }
 
         Collections.reverse(path); // 경로를 올바른 순서로 정렬
 
 
         // 예외 처리: 경로가 없거나, 첫 출발 허브가 요청한 originHubId와 다르면 예외 발생
-        if (path.isEmpty() || !path.get(0).get("originHubId").equals(originHubId)) {
+        if (path.isEmpty() || !path.get(0).keySet().iterator().next().equals(originHubId.toString())) {
             throw new HubRouteNotFoundException("출발 허브 ID " + originHubId + "에서 도착 허브 ID " + destinationHubId + "까지의 경로를 찾을 수 없습니다.");
         }
 
-        return path.isEmpty() || !path.get(0).get("originHubId").equals(originHubId) ? Collections.emptyList() : path;
+        return path.isEmpty() || !path.get(0).keySet().iterator().next().equals(originHubId.toString()) ? Collections.emptyList() : path;
     }
 }
