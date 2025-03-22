@@ -13,7 +13,6 @@ import com.eleven.logistics.delivery.domain.repository.DeliveryRepository;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRouteRequest;
 import com.eleven.logistics.delivery.util.PagingUtil;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
-  private final EntityManager em;
 
   // 배송 조회
   public DeliveryResponse getDelivery(UUID deliveryId) {
