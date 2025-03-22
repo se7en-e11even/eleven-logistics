@@ -26,7 +26,7 @@ public record CreateOrderRequest(
 ) {
 
     public CreateOrderCommand toCommand() {
-        return CreateOrderCommand.create(
+        return CreateOrderCommand.of(
                 supplyId,
                 receiverId,
                 request,
@@ -50,7 +50,7 @@ public record CreateOrderRequest(
             Integer quantity
     ) {
         public static CreateOrderProductCommand toCommand(CreateOrderProductRequest request) {
-            return CreateOrderProductCommand.create(
+            return CreateOrderProductCommand.of(
                     null,
                     request.productId,
                     request.price,

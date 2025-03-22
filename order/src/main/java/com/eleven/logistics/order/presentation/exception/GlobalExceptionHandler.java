@@ -3,6 +3,7 @@ package com.eleven.logistics.order.presentation.exception;
 import com.eleven.logistics.order.domain.exception.CustomException;
 import com.eleven.logistics.order.domain.exception.ErrorCode;
 import com.eleven.logistics.order.presentation.dto.response.ErrorResponse;
+import feign.FeignException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -84,6 +85,18 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder()
                         .status(HttpStatus.BAD_REQUEST.value())
                         .message(errorMessage)
+                        .build());
+    }
+
+    /**
+     * Handle FeignException
+     */
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ErrorResponse> handleFeignException(FeignException e) {
+        return ResponseEntity.status(e.status())
+                .body(ErrorResponse.builder()
+                        .status(e.status())
+                        .message("Feign 호출 중 오류 발생: " + e.getMessage())
                         .build());
     }
 }

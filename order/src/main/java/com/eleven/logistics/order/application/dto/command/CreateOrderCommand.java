@@ -14,7 +14,7 @@ public record CreateOrderCommand(
         List<CreateOrderProductCommand> commandList
 ) {
 
-    public static CreateOrderCommand create(
+    public static CreateOrderCommand of(
             UUID supplyId,
             UUID receiverId,
             String request,

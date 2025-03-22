@@ -9,7 +9,7 @@ public record CreateProductCommand(
         Integer price,
         Integer quantity
 ) {
-    public static CreateProductCommand create(
+    public static CreateProductCommand of(
             String name,
             Integer price,
             Integer quantity

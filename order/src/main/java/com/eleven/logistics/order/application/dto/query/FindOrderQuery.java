@@ -6,6 +6,7 @@ import com.eleven.logistics.order.domain.vo.FindOrder;
 import lombok.AccessLevel;
 import lombok.Builder;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -21,10 +22,11 @@ public record FindOrderQuery(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         List<FindOrderProductQuery> orderProductQueryList
-) {
-    public static FindOrderQuery of(Order order) {
+) implements Serializable {
+
+    public static FindOrderQuery from(Order order) {
         List<FindOrderProductQuery> orderProductList = order.getOrderProductList().stream()
-                .map(FindOrderProductQuery::of)
+                .map(FindOrderProductQuery::from)
                 .toList();
 
         return FindOrderQuery.builder()
@@ -40,9 +42,9 @@ public record FindOrderQuery(
                 .build();
     }
 
-    public static FindOrderQuery of(FindOrder findOrder) {
+    public static FindOrderQuery from(FindOrder findOrder) {
         List<FindOrderProductQuery> orderProductList = findOrder.orderProductList().stream()
-                .map(FindOrderProductQuery::of)
+                .map(FindOrderProductQuery::from)
                 .toList();
 
         return FindOrderQuery.builder()
@@ -64,8 +66,8 @@ public record FindOrderQuery(
             UUID productId,
             Integer price,
             Integer quantity
-    ) {
-        public static FindOrderProductQuery of(OrderProduct orderProduct) {
+    ) implements Serializable {
+        public static FindOrderProductQuery from(OrderProduct orderProduct) {
             return FindOrderProductQuery.builder()
                     .orderProductId(orderProduct.getOrderProductId())
                     .productId(orderProduct.getProductId())
@@ -74,7 +76,7 @@ public record FindOrderQuery(
                     .build();
         }
 
-        public static FindOrderProductQuery of(FindOrder.FindOrderProduct findOrderProduct) {
+        public static FindOrderProductQuery from(FindOrder.FindOrderProduct findOrderProduct) {
             return FindOrderProductQuery.builder()
                     .orderProductId(findOrderProduct.orderProductId())
                     .productId(findOrderProduct.productId())

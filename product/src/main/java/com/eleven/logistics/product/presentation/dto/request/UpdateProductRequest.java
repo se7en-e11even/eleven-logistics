@@ -19,8 +19,8 @@ public record UpdateProductRequest(
             @Positive(message = "수량은 양수입니다.")
         Integer stockQuantity
 ) {
-    public UpdateProductCommand toCommandWithId(UUID productId) {
-        return UpdateProductCommand.create(
+    public UpdateProductCommand toCommand(UUID productId) {
+        return UpdateProductCommand.of(
                 productId,
                 this.name,
                 this.price,

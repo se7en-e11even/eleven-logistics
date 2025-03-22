@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.eleven.logistics.product.domain.entity.QProduct.product;
 
@@ -31,15 +32,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
      * 상품 전체 목록, 페이징, 상품 keyword 검색
      */
     @Override
-    public Page<FindProduct> retrieve(String keyword, Pageable pageable) {
-        List<FindProduct> content = getProductList(keyword, pageable);
+    public Page<FindProduct> retrieve(String keyword, Pageable pageable, UUID hubId) {
+        List<FindProduct> content = getProductList(keyword, pageable, hubId);
         return new PageImpl<>(content, pageable, content.size());
     }
 
     /**
      * 페이징 + 검색 메서드
      */
-    private List<FindProduct> getProductList(String keyword, Pageable pageable) {
+    private List<FindProduct> getProductList(String keyword, Pageable pageable, UUID hubId) {
         return jpaQueryFactory
                 .select(Projections.constructor(FindProduct.class,
                         product.productId,
@@ -52,7 +53,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.updatedAt
                 ))
                 .from(product)
-                .where(getWhereConditions(keyword))
+                .where(getWhereConditions(keyword, hubId))
                 .orderBy(getAllOrderSpecifiers(pageable).toArray(new OrderSpecifier[0]))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -62,7 +63,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     /**
      * 조회 조건
      */
-    private BooleanBuilder getWhereConditions(String keyword) {
+    private BooleanBuilder getWhereConditions(String keyword, UUID hubId) {
         BooleanBuilder builder = new BooleanBuilder();
 
         // soft delete 정책 적용
@@ -71,6 +72,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         // keyword 가 있을 경우 검색 조건 추가
         if (StringUtils.hasText(keyword)) {
             builder.and(product.name.containsIgnoreCase(keyword));
+        }
+
+        // hubId 가 있을 경우 검색 조건 추가
+        if (hubId != null) {
+            builder.and(product.hubId.eq(hubId));
         }
 
         return builder;

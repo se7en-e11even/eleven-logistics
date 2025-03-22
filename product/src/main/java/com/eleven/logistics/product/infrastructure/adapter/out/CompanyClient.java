@@ -1,4 +1,4 @@
-package com.eleven.logistics.product.infrastructure.adapter;
+package com.eleven.logistics.product.infrastructure.adapter.out;
 
 import com.eleven.logistics.product.application.dto.query.FindCompanyQuery;
 import com.eleven.logistics.product.application.port.out.CompanyPort;

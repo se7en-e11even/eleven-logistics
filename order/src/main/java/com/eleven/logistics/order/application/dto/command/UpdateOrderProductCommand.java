@@ -12,7 +12,7 @@ public record UpdateOrderProductCommand(
         Integer price,
         Integer quantity
 ) {
-    public static UpdateOrderProductCommand create(
+    public static UpdateOrderProductCommand of(
             UUID orderProductId,
             UUID productId,
             Integer price,

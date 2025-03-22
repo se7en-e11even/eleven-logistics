@@ -1,4 +1,4 @@
-package com.eleven.logistics.product.infrastructure.config;
+package com.eleven.logistics.product.infrastructure.config.web;
 
 import feign.Logger;
 import org.springframework.cloud.openfeign.EnableFeignClients;

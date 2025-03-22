@@ -1,4 +1,4 @@
-package com.eleven.logistics.order.infrastructure.config;
+package com.eleven.logistics.order.infrastructure.config.web;
 
 import com.eleven.logistics.order.presentation.resolver.CustomPageableArgumentResolver;
 import lombok.RequiredArgsConstructor;

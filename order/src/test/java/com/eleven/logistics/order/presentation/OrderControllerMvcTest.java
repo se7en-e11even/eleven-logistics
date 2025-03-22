@@ -60,11 +60,15 @@ class OrderControllerMvcTest {
                         1)
                 )
         );
+        var order = new FindOrderQuery(
+                orderId, null, null, null,
+                "", "", null, null, null
+        );
 
         var createRequest = objectMapper.writeValueAsString(createRequestOrder);
 
-        given(orderService.create(any(CreateOrderCommand.class)))
-                .willReturn(orderId);
+        given(orderService.create(any(CreateOrderCommand.class), "tester", "TESTER"))
+                .willReturn(order);
 
         // when & then
         assertThat(mvc.post().uri("/api/orders")
@@ -78,7 +82,7 @@ class OrderControllerMvcTest {
     @DisplayName("요청한 주문이 없으면 404")
     void read_ById_NotFound() {
         UUID orderId = UUID.randomUUID();
-        given(orderService.read(orderId))
+        given(orderService.read(orderId, "tester", "TESTER"))
                 .willThrow(new CustomException(ORDER_NOT_FOUND));
 
         // when & then
@@ -90,7 +94,7 @@ class OrderControllerMvcTest {
     @Test
     @DisplayName("주문 상세 조회")
     void readById() {
-        given(orderService.read(uuids[0]))
+        given(orderService.read(uuids[0], "tester", "TESTER"))
                 .willReturn(dtos[0]);
 
         // when & then
@@ -105,7 +109,7 @@ class OrderControllerMvcTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // TODO: 리턴 값 지정
-        given(orderService.search("keyword", pageable))
+        given(orderService.search("keyword", pageable, "tester", "TESTER"))
                 .willReturn(null);
 
         // when & then

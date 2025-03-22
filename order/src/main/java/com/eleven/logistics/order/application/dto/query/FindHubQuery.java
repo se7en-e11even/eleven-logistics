@@ -1,4 +1,4 @@
-package com.eleven.logistics.product.application.dto.query;
+package com.eleven.logistics.order.application.dto.query;
 
 import java.util.List;
 import java.util.UUID;

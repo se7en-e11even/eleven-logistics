@@ -1,4 +1,4 @@
-package com.eleven.logistics.order.infrastructure.config;
+package com.eleven.logistics.order.infrastructure.config.msa;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -23,6 +23,8 @@ public class FeignRequestInterceptor implements RequestInterceptor {
             // 클라이언트 요청에서 username 과 role 헤더를 가져와 Feign 요청 헤더에 추가
             String username = request.getHeader("X-Username");
             String role = request.getHeader("X-Role");
+
+            log.info("username:{},role:{}", username, role);
 
             if (username != null) {
                 requestTemplate.header("X-Username", username);

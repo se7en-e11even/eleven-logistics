@@ -1,4 +1,4 @@
-package com.eleven.logistics.product.infrastructure.config;
+package com.eleven.logistics.order.infrastructure.config.db;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

@@ -11,5 +11,5 @@ public interface ProductClient extends ProductPort {
 
     @Override
     @GetMapping("/api/products/{product_id}")
-    FindProductQuery getProduct(@PathVariable String product_id);
+    FindProductQuery getProductByProductId(@PathVariable String product_id);
 }

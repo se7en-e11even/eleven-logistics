@@ -13,7 +13,7 @@ public record UpdateProductCommand(
         Integer stockQuantity
 ) {
 
-    public static UpdateProductCommand create(
+    public static UpdateProductCommand of(
             UUID productId,
             String name,
             Integer price,
