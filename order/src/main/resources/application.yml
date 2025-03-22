@@ -26,12 +26,24 @@ eureka:
 
 # [Order Service]
 message:
-  exchange: order
-  queue:
-    delivery: order.delivery
+  send:
+    exchange: order
+    queue:
+      delivery: order.delivery
 
 # [Error Handling for Order Service]
-  err:
-    exchange: order.err
+    err:
+      exchange: order.err
+      queue:
+        delivery: order.err.delivery
+
+# [Delivery Service]
+  receive:
     queue:
-      delivery: order.err.delivery
+      order: delivery.order
+
+# [Error Handling for Delivery Service]
+    err:
+      exchange: delivery.err
+      queue:
+        order: delivery.err.order
