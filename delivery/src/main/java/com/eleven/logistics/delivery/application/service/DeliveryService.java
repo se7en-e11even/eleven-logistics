@@ -1,5 +1,6 @@
 package com.eleven.logistics.delivery.application.service;
 
+import com.eleven.logistics.delivery.application.DeliveryEventPublisher;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRequest;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteRequest;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteResponse;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
+  private final DeliveryEventPublisher eventPublisher;
 
   // 배송 조회
   public DeliveryResponse getDelivery(UUID deliveryId) {
