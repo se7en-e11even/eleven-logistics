@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class RabbitMQListener {
+public class RabbitMQEndpoint {
 
-    @RabbitListener(queues = "${message.queue.delivery}")
+    @RabbitListener(queues = "${message.receive.queue.order}")
     public void receive(OrderMessage message) {
         log.info("receive message: {}", message);
     }

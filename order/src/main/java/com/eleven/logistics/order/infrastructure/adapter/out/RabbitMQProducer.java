@@ -15,7 +15,7 @@ public class RabbitMQProducer implements RabbitMQBrokerPort {
 
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${message.queue.delivery}")
+    @Value("${message.send.queue.delivery}")
     private String orderDeliveryQueue;
 
     @Override

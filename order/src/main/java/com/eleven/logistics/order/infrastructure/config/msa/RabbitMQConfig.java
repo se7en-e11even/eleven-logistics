@@ -1,4 +1,4 @@
-package com.eleven.logistics.order.infrastructure.config;
+package com.eleven.logistics.order.infrastructure.config.msa;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -14,16 +14,16 @@ public class RabbitMQConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    @Value("${message.exchange}")
+    @Value("${message.send.exchange}")
     private String orderExchange;
 
-    @Value("${message.queue.delivery}")
+    @Value("${message.send.queue.delivery}")
     private String orderDeliveryQueue;
 
-    @Value("${message.err.exchange}")
+    @Value("${message.send.err.exchange}")
     private String orderErrExchange;
 
-    @Value("${message.err.queue.delivery}")
+    @Value("${message.send.err.queue.delivery}")
     private String orderErrDeliveryQueue;
 
     // order exchange 생성
