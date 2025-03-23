@@ -7,12 +7,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
-public class CreateSlackMessageRequestDto {
+public class UpdateSlackMessageRequestDto {
 
     private String username;
     private String message;
 
     public SlackDto toDto() {
-        return SlackDto.create(this.username, this.message);
+        return SlackDto.update(this.username, this.message);
     }
 }
