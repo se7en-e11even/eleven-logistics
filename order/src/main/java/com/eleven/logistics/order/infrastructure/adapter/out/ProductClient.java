@@ -1,6 +1,7 @@
 package com.eleven.logistics.order.infrastructure.adapter.out;
 
-import com.eleven.logistics.order.application.dto.command.ProductOrderCommand;
+import com.eleven.logistics.order.application.dto.command.OrderProductCommand;
+import com.eleven.logistics.order.application.dto.command.OrderRollbackCommand;
 import com.eleven.logistics.order.application.dto.query.FindProductQuery;
 import com.eleven.logistics.order.application.port.out.ProductPort;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -18,5 +19,9 @@ public interface ProductClient extends ProductPort {
 
     @Override
     @PutMapping("/api/products/orders")
-    void putProductOrder(@RequestBody ProductOrderCommand orderProduct);
+    void putProductOrder(@RequestBody OrderProductCommand orderProduct);
+
+    @Override
+    @PutMapping("/api/products/rollback")
+    void putProductRollBack(@RequestBody OrderRollbackCommand orderRollback);
 }

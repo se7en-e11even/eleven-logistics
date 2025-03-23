@@ -1,9 +1,10 @@
 package com.eleven.logistics.order.application.service;
 
 import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.ProductOrderCommand;
+import com.eleven.logistics.order.application.dto.command.OrderProductCommand;
+import com.eleven.logistics.order.application.dto.command.OrderRollbackCommand;
 import com.eleven.logistics.order.application.dto.command.UpdateOrderCommand;
-import com.eleven.logistics.order.application.dto.message.OrderMessage;
+import com.eleven.logistics.order.application.dto.message.ToDelivery;
 import com.eleven.logistics.order.application.dto.query.*;
 import com.eleven.logistics.order.application.port.out.*;
 import com.eleven.logistics.order.domain.entity.Order;
@@ -29,10 +30,10 @@ import java.util.UUID;
 
 import static com.eleven.logistics.order.domain.exception.OrderErrorCode.*;
 
-@RequiredArgsConstructor
-@Transactional
-@Service
 @Slf4j(topic = "OrderService")
+@Service
+@Transactional
+@RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository repository;
@@ -53,9 +54,9 @@ public class OrderService {
         Result result = getUserIdAndCompanyIdAndHubId(command, username);
 
         // 주문 수량과 재고를 비교해야 한다.
-        ProductOrderCommand productOrderCommand = new ProductOrderCommand(command.commandList().stream()
+        OrderProductCommand productOrderCommand = new OrderProductCommand(command.commandList().stream()
                 .map(product ->
-                        new ProductOrderCommand.OrderProduct(
+                        new OrderProductCommand.Product(
                                 product.productId(),
                                 product.quantity()
                         )
@@ -104,7 +105,7 @@ public class OrderService {
     @CacheEvict(cacheNames = "orderSearch", allEntries = true)
     public void update(UpdateOrderCommand command, String username, String role) {
         Order order = repositoryCustom.findById(command.orderId())
-                        .orElseThrow(()->new CustomException(ORDER_NOT_FOUND));
+                .orElseThrow(()->new CustomException(ORDER_NOT_FOUND));
 
         // 허브 관리자는 담당 허브만, 공급업체의 hubId
         String supplyId = order.getSupplyId().toString();
@@ -116,11 +117,16 @@ public class OrderService {
     }
 
 
-    // 주문 취소, 주문 상태를 CANCELED 로 변경하여 정보를 저장한다.
+    // 주문자의 주문 취소: 주문 상태를 CANCELED 로 변경하여 정보를 저장한다.
     public FindOrderQuery cancel(UUID orderId) {
         Order order = repositoryCustom.findById(orderId)
-                        .orElseThrow(()->new CustomException(ORDER_NOT_FOUND));
-        order.changeOrderStatus("CANCELED");
+                .orElseThrow(()->new CustomException(ORDER_NOT_FOUND));
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+            throw new CustomException(ORDER_NOT_CANCEL);
+        }
+        order.changeOrderStatus(OrderStatus.CANCELED);
+        // TODO: 주문이 취소되면 배송 정보도 변경 요청을 해야 한다.
+
         return FindOrderQuery.from(order);
     }
 
@@ -162,6 +168,17 @@ public class OrderService {
 
         return repositoryCustom.retrieve(keyword, pageable)
                 .map(FindOrderQuery::from);
+    }
+
+    public void rollback(UUID orderId) {
+        Order byOrderId = repository.findByOrderId(orderId);
+        byOrderId.changeOrderStatus(OrderStatus.FAIL);
+
+        // 주문 상품의 목록을 가져온다.
+        OrderRollbackCommand command = OrderRollbackCommand.from(byOrderId);
+
+        // TODO: FeignClient 요청이 실패하면 롤백은 어떻게 하지?
+        productPort.putProductRollBack(command);
     }
 
     private Ids getCompanyIdAndHubId(String username) {
@@ -219,7 +236,7 @@ public class OrderService {
 
     private void requestDelivery(FindOrderQuery savedOrder, Result result) {
         // message publish
-        OrderMessage message = OrderMessage.of(
+        ToDelivery message = ToDelivery.of(
                 savedOrder.orderId(),
                 result.findProduct().hubId(),
                 result.findCompany().hubId(),
@@ -243,3 +260,5 @@ public class OrderService {
         return new Result(findUser, findCompany, findProduct);
     }
 }
+
+
