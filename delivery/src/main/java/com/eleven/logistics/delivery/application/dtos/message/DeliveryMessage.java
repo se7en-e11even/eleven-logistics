@@ -1,4 +1,4 @@
-package com.eleven.logistics.delivery.presentation.dtos;
+package com.eleven.logistics.delivery.application.dtos.message;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
