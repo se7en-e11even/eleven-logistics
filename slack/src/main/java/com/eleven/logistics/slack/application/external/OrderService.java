@@ -2,9 +2,10 @@ package com.eleven.logistics.slack.application.external;
 
 import com.eleven.logistics.slack.application.querydto.FindOrderQuery;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
 public interface OrderService {
-    ResponseEntity<FindOrderQuery> read(UUID orderId);
+    ResponseEntity<FindOrderQuery> read(@PathVariable UUID order_id);
 }

@@ -1,6 +1,6 @@
 package com.eleven.logistics.slack.common.config;
 
-import com.eleven.logistics.slack.common.resolver.PageSizeArgumentResolver;
+import com.eleven.logistics.slack.presentation.resolver.CustomPageableArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -12,10 +12,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final PageSizeArgumentResolver pageSizeArgumentResolver;
+    private final CustomPageableArgumentResolver customPageableArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(pageSizeArgumentResolver);
+        resolvers.add(customPageableArgumentResolver);
     }
 }

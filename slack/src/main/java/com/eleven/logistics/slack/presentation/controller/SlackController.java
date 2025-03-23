@@ -2,9 +2,9 @@ package com.eleven.logistics.slack.presentation.controller;
 
 import com.eleven.logistics.common.dto.ApiResponseDto;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
-import com.eleven.logistics.slack.application.slackdto.SlackMessageResponse;
 import com.eleven.logistics.slack.application.service.SlackService;
-import com.eleven.logistics.slack.presentation.dto.CreateSlackMessageRequestDto;
+import com.eleven.logistics.slack.application.slackdto.SlackMessageResponse;
+import com.eleven.logistics.slack.presentation.dto.UpdateSlackMessageRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +22,12 @@ public class SlackController {
 
     @PostMapping
     public ResponseEntity<ApiResponseDto<SlackMessageResponse>> createSlackMessage(
-            @RequestBody CreateSlackMessageRequestDto requestDto,
-            @RequestHeader("X-Username") String username,
+            @RequestParam("username") String slackUsername,
             @RequestHeader("X-Role") String role) {
         if (role.isEmpty()) {
             throw new IllegalArgumentException("접근 권한이 없습니다.");
         }
-        SlackMessageResponse response = slackService.sendMessageToUser(requestDto.toDto(), username);
+        SlackMessageResponse response = slackService.sendMessageSlackController(slackUsername);
         return ResponseEntity.ok(ApiResponseDto.success(response, "요청이 성공적으로 전달 되었습니다."));
     }
 
@@ -59,7 +58,7 @@ public class SlackController {
 
     @PutMapping("/{slackId}")
     public ResponseEntity<ApiResponseDto<SlackMessageResponse>> updateSlackMessage(
-            @RequestBody CreateSlackMessageRequestDto requestDto,
+            @RequestBody UpdateSlackMessageRequestDto requestDto,
             @PathVariable UUID slackId,
             @RequestHeader("X-Username") String username,
             @RequestHeader("X-Role") String role) {

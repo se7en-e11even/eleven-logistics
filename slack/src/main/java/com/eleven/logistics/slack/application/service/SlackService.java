@@ -1,34 +1,55 @@
 package com.eleven.logistics.slack.application.service;
 
+import com.eleven.logistics.common.dto.ApiResponseDto;
+import com.eleven.logistics.slack.application.companydto.CompanyResponseDto;
+import com.eleven.logistics.slack.application.deliverydto.DeliveryPersonResponse;
+import com.eleven.logistics.slack.application.deliverydto.DeliveryResponse;
+import com.eleven.logistics.slack.application.deliverydto.DeliveryRouteResponse;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
-import com.eleven.logistics.slack.application.dto.SlackDto;
-import com.eleven.logistics.slack.application.dto.SlackMessageResponse;
+import com.eleven.logistics.slack.application.external.DeliveryService;
+import com.eleven.logistics.slack.application.external.HubService;
+import com.eleven.logistics.slack.application.external.OrderService;
+import com.eleven.logistics.slack.application.external.ProductService;
+import com.eleven.logistics.slack.application.hubdto.HubResponseDto;
+import com.eleven.logistics.slack.application.querydto.FindOrderQuery;
+import com.eleven.logistics.slack.application.querydto.FindProductQuery;
+import com.eleven.logistics.slack.application.slackdto.MessageResponse;
+import com.eleven.logistics.slack.application.slackdto.SlackDto;
+import com.eleven.logistics.slack.application.slackdto.SlackMessageResponse;
 import com.eleven.logistics.slack.domain.config.SlackClient;
 import com.eleven.logistics.slack.domain.entity.Slack;
 import com.eleven.logistics.slack.domain.repository.SlackRepository;
+import com.eleven.logistics.slack.infrastructure.feign.config.JpaAuditorAware;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class SlackService {
-
     private final SlackRepository slackRepository;
 
     private final SlackClient slackClient;
+
+    private final OrderService orderService;
+    private final DeliveryService deliveryService;
+    private final HubService hubService;
+    private final ProductService productService;
+    private final JpaAuditorAware jpaAuditorAware;
 
     @Value("${gemini.api.key}")
     private String gemini_key;
@@ -37,9 +58,19 @@ public class SlackService {
     private String gemini_url;
 
     @Transactional
-    public SlackMessageResponse sendMessageToUser(SlackDto slackDto, String username) {
+    public SlackMessageResponse sendMessageRabbitMQ(String username, UUID deliveryId) {
+        return sendMessageToUser(username, deliveryId);
+    }
+
+    @Transactional
+    public SlackMessageResponse sendMessageSlackController(String username) {
+        return sendMessageToUser(username, null);
+    }
+
+    @Transactional
+    public SlackMessageResponse sendMessageToUser(String slackUsername, UUID deliveryId) {
         try {
-            String userId = slackClient.getUserIdByName(slackDto.getUsername());
+            String userId = slackClient.getUserIdByName(slackUsername);
 
             if (userId == null) {
                 throw new IllegalArgumentException("사용자를 찾을 수 없습니다");
@@ -67,7 +98,7 @@ public class SlackService {
              전체 배송을 조회해서 슬렉에서 가져온 사용자 이름과 비교해서 배송 응답 객체를 만듦
              **/
             List<DeliveryResponse> deliveries = deliveryAll.getContent().stream()
-                    .filter(receiver -> receiver.getReceiver().equals(slackDto.getUsername()))
+                    .filter(receiver -> receiver.getReceiver().equals(slackUsername))
                     .toList();
 
             /**
@@ -129,7 +160,7 @@ public class SlackService {
              메시지를 요청할 때 담당자 이름과 실제로 배송 담당자의 이름이 같은 사람을 뽑아옴
              **/
             List<String> deliveryPersonName = deliveryPersonAll.getContent().stream()
-                    .filter(deliveryPerson -> deliveryPerson.getUsername().equals(slackDto.getUsername()))
+                    .filter(deliveryPerson -> deliveryPerson.getUsername().equals(slackUsername))
                     .map(DeliveryPersonResponse::getUsername)
                     .toList();
 
@@ -137,19 +168,23 @@ public class SlackService {
              배송 정보를 전체 조회할 때, 슬렉에서 가져온 사용자 이름과 담당자의 이름을 비교한 deliveryPersonName 으로
              배송 담당자의 receiver 와 비교해서 매칭이 되는 deliveryId 를 뽑아옴
              **/
-            List<UUID> deliveryIds = deliveryAll.getContent().stream()
-                    .filter(person -> deliveryPersonName.stream()
-                            .anyMatch(name -> name.equals(person.getReceiver())))
-                    .map(DeliveryResponse::getId)
-                    .toList();
-
+            List<UUID> deliveryIds;
+            if (deliveryId == null) {
+                deliveryIds = deliveryAll.getContent().stream()
+                        .filter(person -> deliveryPersonName.stream()
+                                .anyMatch(name -> name.equals(person.getReceiver())))
+                        .map(DeliveryResponse::getId)
+                        .toList();
+            } else {
+                deliveryIds = Collections.singletonList(deliveryId);
+            }
             /**
              색출한 deliveryId 가 비어있지 않다면, deliveryId 를 하나씩 뽑아서 delivery 단일 조회와, 배송 경로를 조회한다.
              **/
             if (!deliveryIds.isEmpty()) {
-                for (UUID deliveryId : deliveryIds) {
-                    DeliveryResponse deliveryDetail = deliveryService.getDelivery(deliveryId);
-                    List<DeliveryRouteResponse> route = deliveryService.getDeliveryRoutes(deliveryId);
+                for (UUID deliveryid : deliveryIds) {
+                    DeliveryResponse deliveryDetail = deliveryService.getDelivery(deliveryid);
+                    List<DeliveryRouteResponse> route = deliveryService.getDeliveryRoutes(deliveryid);
 
                     /**
                      배송 경로의 허브 id 를 뽑아옴
@@ -180,12 +215,16 @@ public class SlackService {
                      색출한 order 데이터에서 id (PK)와 orderProduct 를 Map 자료구조로 묶,
                      만약 이미 존재하는 주문 정보가 있다면 모든 요소를 추가함.
                      **/
-                    if (deliveryDetail.getReceiver().equals(slackDto.getUsername())) {
-                        Map<UUID, List<FindOrderProductQuery>> ordersGroupedById = orderDetails.stream()
+                    if (deliveryDetail.getReceiver().equals(slackUsername)) {
+                        Map<UUID, List<FindOrderQuery.FindOrderProductQuery>> ordersGroupedById = orderDetails.stream()
                                 .map(ResponseEntity::getBody)
+                                .filter(Objects::nonNull)
+                                .filter(order -> order.deliveryId() != null)
                                 .collect(Collectors.toMap(
-                                        FindOrderQuery::orderId,
-                                        FindOrderQuery::orderProductDtoList,
+                                        FindOrderQuery::deliveryId,
+                                        FindOrderQuery::orderProductQueryList,
+                                        // toMap 의 병합 함수로, 주문 내역을 조회했을 때 같은 deliveryId 가 존재한다면, 주문 목록을 합쳐서 메시지로 보냄
+                                        // 합치지 않으면 해당 주문 건마다 메시지를 계속 보내기 때문에 가독성이 떨어짐
                                         (existing, newItems) -> {
                                             existing.addAll(newItems);
                                             return existing;
@@ -199,7 +238,7 @@ public class SlackService {
                         messageResponses = ordersGroupedById.entrySet().stream()
                                 .map(entry -> {
                                     UUID orderId = entry.getKey();
-                                    List<FindOrderProductQuery> orderProducts = entry.getValue();
+                                    List<FindOrderQuery.FindOrderProductQuery> orderProducts = entry.getValue();
 
                                     String request = orderDetails.stream()
                                             .map(ResponseEntity::getBody)
@@ -211,7 +250,7 @@ public class SlackService {
                                     String productDetails = orderProducts.stream()
                                             .map(product -> {
                                                 UUID productId = product.productId();
-                                                FindProductQuery productInfo = productService.read(productId);
+                                                FindProductQuery productInfo = productService.read(productId).getBody();
                                                 String productName = productInfo != null ? productInfo.name() : "";
                                                 return productName + " " + product.quantity() + "개";
                                             })
@@ -269,8 +308,10 @@ public class SlackService {
                             // Slack으로 전송
                             slackClient.sendMessage(userId, improvedMessage);
 
+                            String username = String.valueOf(jpaAuditorAware.getCurrentAuditor());
+
                             // Slack 저장소에 메시지 저장
-                            Slack slack = Slack.create(slackDto.getUsername(), improvedMessage);
+                            Slack slack = Slack.create(slackUsername, improvedMessage);
                             slack.setCreatedBy(username);
                             slackRepository.save(slack);
 
@@ -341,7 +382,7 @@ public class SlackService {
             slackClient.sendMessage(userId, improvedMessage);
 
             slack.update(dto.getUsername(), improvedMessage);
-            slack.getUpdatedBy(username);
+            slack.setUpdatedBy(username);
 
         } catch (Exception e) {
             throw new RuntimeException("메시지 전송 중 오류가 발생했습니다", e);

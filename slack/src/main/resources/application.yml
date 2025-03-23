@@ -49,7 +49,7 @@ message:
 
   queue:
     delivery:
-      slack: delivery.slack. # message.queue.delivery.slack -> queue
+      slack: delivery.slack # message.queue.delivery.slack -> queue
 
   err:
     exchange:

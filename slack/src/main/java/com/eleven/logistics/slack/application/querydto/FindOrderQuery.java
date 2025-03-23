@@ -3,6 +3,7 @@ package com.eleven.logistics.slack.application.querydto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -17,9 +18,13 @@ public record FindOrderQuery(
         @JsonProperty("request") String request,
         @JsonProperty("createdAt") LocalDateTime createdAt,
         @JsonProperty("updatedAt") LocalDateTime updatedAt,
-        @JsonProperty("orderProductDtoList") List<FindOrderProductQuery> orderProductDtoList
-) {
-    public FindOrderQuery {
-        orderProductDtoList = orderProductDtoList != null ? orderProductDtoList : List.of();
+        @JsonProperty("orderProductQueryList") List<FindOrderProductQuery> orderProductQueryList
+) implements Serializable {
+    public record FindOrderProductQuery(
+            UUID orderProductId,
+            UUID productId,
+            Integer price,
+            Integer quantity
+    ) {
     }
 }
