@@ -1,9 +1,9 @@
 package com.eleven.logistics.order.domain.repository;
 
-import com.eleven.logistics.order.application.dto.command.ListOrderCommand;
-import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
-import com.eleven.logistics.order.application.dto.query.ListOrderQuery;
 import com.eleven.logistics.order.domain.entity.Order;
+import com.eleven.logistics.order.domain.vo.FindOrder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,5 +12,5 @@ public interface OrderRepositoryCustom {
 
     Optional<Order> findById(UUID orderId);
 
-    ListOrderQuery<FindOrderQuery> retrieve(String keyword, ListOrderCommand command);
+    Page<FindOrder> retrieve(String keyword, Pageable pageable);
 }

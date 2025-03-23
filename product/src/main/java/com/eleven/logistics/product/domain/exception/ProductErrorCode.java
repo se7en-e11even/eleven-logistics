@@ -1,6 +1,5 @@
 package com.eleven.logistics.product.domain.exception;
 
-import com.eleven.logistics.product.common.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,8 +9,12 @@ import org.springframework.http.HttpStatus;
 public enum ProductErrorCode implements ErrorCode {
 
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "요청하신 상품을 찾을 수 없습니다."),
-    ORDER_BY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 정렬을 찾을 수 없습니다."),
-    NO_KEYWORD(HttpStatus.BAD_REQUEST, "검색어를 입력해주세요.")
+    PRODUCT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다"),
+
+    COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 업체의 상품입니다."),
+
+    HUB_NOT_FOUND(HttpStatus.BAD_REQUEST, "상품의 관리허브가 존재하지 않습니다."),
+
     ;
 
     private final HttpStatus httpStatus;

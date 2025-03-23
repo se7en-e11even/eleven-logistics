@@ -23,4 +23,10 @@ public interface DeliveryPersonRepository {
   Page<DeliveryPerson> findByDeliveryPersonTypeAndHubId(
       @Param("type") DeliveryPersonType type,
       @Param("hubId") UUID hubId, Pageable pageable);
+
+  @Query("SELECT dp FROM DeliveryPerson dp WHERE dp.sequence = :sequence")
+  Optional<DeliveryPerson> findBySequence(int sequence);
+
+
+
 }

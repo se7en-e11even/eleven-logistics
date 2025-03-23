@@ -5,16 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-import java.util.UUID;
-
 public record CreateProductRequest(
-        // UUID 는 NullCheck 만 가능하다. NotBlank 는 문자열 전용
-        @NotNull(message = "company_id 는 필수 항목입니다.")
-        UUID companyId,
-
-        @NotNull(message = "hub_id 는 필수 항목입니다.")
-        UUID hubId,
-
+        @NotBlank(message = "회사 ID")
         @NotBlank(message = "상품 이름은 필수 항목입니다.")
         String name,
 
@@ -27,9 +19,7 @@ public record CreateProductRequest(
         Integer stockQuantity
 ) {
         public CreateProductCommand toCommand() {
-                return CreateProductCommand.create(
-                        companyId,
-                        hubId,
+                return CreateProductCommand.of(
                         name,
                         price,
                         stockQuantity

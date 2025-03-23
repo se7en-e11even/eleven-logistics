@@ -1,6 +1,5 @@
 package com.eleven.logistics.order.application.dto;
 
-import com.eleven.logistics.order.application.dto.query.FindOrderProductQuery;
 import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ class FindOrderQueryJsonTest {
                 "빠른 배송 바랍니다.",
                 LocalDateTime.of(2025, 3, 17, 13, 1, 2),
                 LocalDateTime.of(2025, 3, 17, 13, 1, 2),
-                List.of(new FindOrderProductQuery(
+                List.of(new FindOrderQuery.FindOrderProductQuery(
                         UUID.randomUUID(),
                         UUID.randomUUID(),
                         10000,
@@ -44,6 +43,8 @@ class FindOrderQueryJsonTest {
 
         // when
         var jsonContent = json.write(order);
+
+        System.out.println(jsonContent);
 
         // Then
         assertThat(jsonContent).isNotNull();
@@ -57,11 +58,11 @@ class FindOrderQueryJsonTest {
                 .isEqualTo("2025-03-17T13:01:02");
 
         // 중첩 객체 검증
-        assertThat(jsonContent).extractingJsonPathArrayValue("$.commandList")
+        assertThat(jsonContent).extractingJsonPathArrayValue("$.orderProductQueryList")
                 .hasSize(1);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.commandList[0].price")
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.orderProductQueryList[0].price")
                 .isEqualTo(10000);
-        assertThat(jsonContent).extractingJsonPathNumberValue("$.commandList[0].quantity")
+        assertThat(jsonContent).extractingJsonPathNumberValue("$.orderProductQueryList[0].quantity")
                 .isEqualTo(10);
     }
 }

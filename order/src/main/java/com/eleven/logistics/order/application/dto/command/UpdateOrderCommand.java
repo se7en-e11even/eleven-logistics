@@ -13,7 +13,7 @@ public record UpdateOrderCommand(
         String request,
         List<UpdateOrderProductCommand> orderProductList
 ) {
-    public static UpdateOrderCommand create(
+    public static UpdateOrderCommand of(
             UUID orderId,
             String orderStatus,
             String request,

@@ -28,7 +28,7 @@ class CreateOrderRequestJsonTest {
                     "supplyId": "a858fb2e-b6c6-41c6-8c6c-98a8cadfc9b8",
                     "receiverId": "2bf408a9-226d-4f40-b310-f2e05becf827",
                     "request": "빨리 보내주세요.",
-                    "createOrderProductRequestList": [
+                    "requestList": [
                         {
                             "productId": "347eb391-73ed-4ec6-8eea-f980fdbb0b77",
                             "price": 1000,

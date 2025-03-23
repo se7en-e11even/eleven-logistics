@@ -1,9 +1,9 @@
 package com.eleven.logistics.product.presentation;
 
-import com.eleven.logistics.product.application.service.ProductService;
 import com.eleven.logistics.product.application.dto.command.CreateProductCommand;
 import com.eleven.logistics.product.application.dto.query.FindProductQuery;
-import com.eleven.logistics.product.common.exception.CustomException;
+import com.eleven.logistics.product.application.service.ProductService;
+import com.eleven.logistics.product.domain.exception.CustomException;
 import com.eleven.logistics.product.presentation.controller.ProductController;
 import com.eleven.logistics.product.presentation.dto.request.CreateProductRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,17 +48,20 @@ class ProductControllerMvcTest {
     void create() throws JsonProcessingException {
         UUID productId = UUID.randomUUID();
         var createRequestProduct = new CreateProductRequest(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
                 "product1",
                 10000,
                 10
         );
 
         var createRequest = objectMapper.writeValueAsString(createRequestProduct);
+        var product = new FindProductQuery(
+                productId, UUID.randomUUID(), UUID.randomUUID(),
+                "product1", 10000, 100,
+                LocalDateTime.now(), LocalDateTime.now()
+        );
 
-        given(productService.create(any(CreateProductCommand.class)))
-                .willReturn(productId);
+        given(productService.create(any(CreateProductCommand.class), "tester", "TESTER"))
+                .willReturn(product);
 
         // when & then
         assertThat(mvc.post().uri("/api/products")
@@ -75,7 +78,7 @@ class ProductControllerMvcTest {
     @DisplayName("요청한 상품이 없으면 404 NotFound")
     void read_ById_not_found() {
         UUID productId = UUID.randomUUID();
-        given(productService.read(productId))
+        given(productService.read(productId, "tester", "TESTER"))
                 .willThrow(new CustomException(PRODUCT_NOT_FOUND));
 
         // when & then
@@ -87,7 +90,7 @@ class ProductControllerMvcTest {
     @Test
     @DisplayName("상품 상세 조회")
     void readById() {
-        given(productService.read(randomId[0]))
+        given(productService.read(randomId[0], "tester", "TESTER"))
                 .willReturn(dtos[0]);
 
         // when & then

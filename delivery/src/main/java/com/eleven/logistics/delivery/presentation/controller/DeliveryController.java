@@ -86,12 +86,13 @@ public class DeliveryController {
 
   // 배송 경로 생성
   @PostMapping("/{deliveryId}/routes")
-  public ResponseEntity<List<CreateDeliveryRouteResponse>> createRoute(
+  public List<UUID> createRoute(
       @PathVariable UUID deliveryId,
       @Valid @RequestBody List<CreateDeliveryRouteRequest> routeDtos
       ) {
-    List<CreateDeliveryRouteResponse> response = deliveryService.createRoute(deliveryId, routeDtos);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+//    List<CreateDeliveryRouteResponse> response = deliveryService.createRoute(deliveryId, routeDtos);
+//    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    return deliveryService.createRoute(deliveryId, routeDtos);
   }
 
   // 배송 상태 변경
@@ -138,14 +139,14 @@ public class DeliveryController {
   }
 
   // 배송경로 수정
-  @PatchMapping("/{deliveryId}/routes/{routeId}")
-  public ResponseEntity<DeliveryRouteResponse> updateRoute(
+  @PostMapping("/{deliveryId}/routes/{routeId}")
+  public void updateRoute(
       @PathVariable UUID deliveryId,
       @PathVariable UUID routeId,
       @RequestBody UpdateDeliveryRouteRequest routeDto
   ) {
-    DeliveryRouteResponse response = deliveryService.updateRoute(deliveryId, routeId, routeDto);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+      deliveryService.updateRoute(deliveryId, routeId, routeDto);
+//    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   // 배송경로 삭제
