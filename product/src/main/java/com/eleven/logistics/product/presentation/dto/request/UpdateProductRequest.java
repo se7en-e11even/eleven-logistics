@@ -8,12 +8,6 @@ import jakarta.validation.constraints.Positive;
 import java.util.UUID;
 
 public record UpdateProductRequest(
-        @NotNull(message = "company_id 는 필수 항목입니다.")
-        UUID companyId,
-
-        @NotNull(message = "hub_id 는 필수 항목입니다.")
-        UUID hubId,
-
         @NotBlank(message = "상품 이름은 필수 항목입니다.")
         String name,
 
@@ -25,11 +19,9 @@ public record UpdateProductRequest(
             @Positive(message = "수량은 양수입니다.")
         Integer stockQuantity
 ) {
-    public UpdateProductCommand toCommandWithId(UUID productId) {
-        return UpdateProductCommand.create(
+    public UpdateProductCommand toCommand(UUID productId) {
+        return UpdateProductCommand.of(
                 productId,
-                this.companyId,
-                this.hubId,
                 this.name,
                 this.price,
                 this.stockQuantity

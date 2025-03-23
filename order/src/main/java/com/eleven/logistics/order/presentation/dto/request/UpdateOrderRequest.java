@@ -13,7 +13,7 @@ public record UpdateOrderRequest(
         List<UpdateOrderProductRequest> updateOrderProductRequestList
 ) {
     public UpdateOrderCommand toCommandWithId(UUID orderId) {
-        return UpdateOrderCommand.create(
+        return UpdateOrderCommand.of(
                 orderId,
                 orderStatus,
                 request,
@@ -33,7 +33,7 @@ public record UpdateOrderRequest(
         public static UpdateOrderProductCommand toCommand(
                 UpdateOrderProductRequest request
         ) {
-            return UpdateOrderProductCommand.create(
+            return UpdateOrderProductCommand.of(
                     request.orderProductId,
                     request.productId,
                     request.price,

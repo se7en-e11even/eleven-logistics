@@ -51,6 +51,7 @@ class OrderApplicationTests {
 				)
 		);
 
+		// 서비스에서 FeignClient 호출이 켜져 있으면 테스트에 실패한다.
 		// when & then
 		webTestClient.post()
 				.uri("/api/orders")

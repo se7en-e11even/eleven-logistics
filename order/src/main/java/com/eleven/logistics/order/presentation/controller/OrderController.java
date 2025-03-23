@@ -1,16 +1,18 @@
 package com.eleven.logistics.order.presentation.controller;
 
-import com.eleven.logistics.order.application.dto.command.ListOrderCommand;
+import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
 import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
-import com.eleven.logistics.order.application.dto.query.ListOrderQuery;
 import com.eleven.logistics.order.application.service.OrderService;
 import com.eleven.logistics.order.presentation.dto.request.CreateOrderRequest;
 import com.eleven.logistics.order.presentation.dto.request.UpdateOrderRequest;
-import com.eleven.logistics.order.presentation.resolver.PageSize;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -28,10 +30,12 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<Void> create(
-            @RequestBody @Valid CreateOrderRequest request
+            @RequestBody @Valid CreateOrderRequest request,
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
     ) {
-        // 주문 생성 시 배송이 함께 생성 되어야 함! 배송 정보 확인 후 status 를 APPROVED 로 할 것!
-        UUID orderId = orderService.create(request.toCommand());
+        CreateOrderCommand command = request.toCommand();
+        UUID orderId = orderService.create(command, username, role).orderId();
 
         URI location = UriComponentsBuilder.newInstance()
                 .path("/api/orders/{order_id}")
@@ -44,8 +48,12 @@ public class OrderController {
      * 주문 상세 조회 API
      */
     @GetMapping("/{order_id}")
-    public ResponseEntity<?> read(@PathVariable UUID order_id) {
-        return ResponseEntity.ok(orderService.read(order_id));
+    public ResponseEntity<?> read(
+            @PathVariable UUID order_id,
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
+    ) {
+        return ResponseEntity.ok(orderService.read(order_id, username, role));
     }
 
     /**
@@ -54,9 +62,12 @@ public class OrderController {
     @PutMapping("/{order_id}")
     public ResponseEntity<Void> update(
             @PathVariable UUID order_id,
-            @RequestBody @Valid UpdateOrderRequest request
+            @RequestBody @Valid UpdateOrderRequest request,
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
     ) {
-        orderService.update(request.toCommandWithId(order_id));
+        checkAuthority(role);
+        orderService.update(request.toCommandWithId(order_id), username, role);
         return ResponseEntity.noContent().build();
     }
 
@@ -77,9 +88,11 @@ public class OrderController {
     @DeleteMapping("/{order_id}")
     public ResponseEntity<Void> delete(
             @PathVariable UUID order_id,
-            @RequestHeader("X-Username") String username
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
     ) {
-        orderService.delete(order_id, username);
+        checkAuthority(role);
+        orderService.delete(order_id, username, role);
         return ResponseEntity.noContent().build();
     }
 
@@ -87,13 +100,21 @@ public class OrderController {
      * 상품 검색 API
      */
     @GetMapping
-    public ResponseEntity<ListOrderQuery<FindOrderQuery>> search(
+    public ResponseEntity<Page<FindOrderQuery>> search(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @PageSize int size,
-            @RequestParam(defaultValue = "desc") String orderBy
+            Pageable pageable,
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
     ) {
-        ListOrderCommand command = new ListOrderCommand(page - 1, size, orderBy);
-        return ResponseEntity.ok(orderService.search(keyword, command));
+        return ResponseEntity.ok(orderService.search(keyword, pageable, username, role));
+    }
+
+    private static void checkAuthority(String role) {
+        if ("COMPANY".equals(role) || "DELIVERY".equals(role)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "주문 수정 권한이 없습니다."
+            );
+        }
     }
 }
