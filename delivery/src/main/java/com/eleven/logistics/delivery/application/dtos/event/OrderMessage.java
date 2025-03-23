@@ -1,4 +1,4 @@
-package com.eleven.logistics.delivery.application.dtos.message;
+package com.eleven.logistics.delivery.application.dtos.event;
 
 import java.util.UUID;
 import lombok.AccessLevel;

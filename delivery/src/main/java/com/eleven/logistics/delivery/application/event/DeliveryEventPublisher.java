@@ -1,6 +1,6 @@
-package com.eleven.logistics.delivery.application;
+package com.eleven.logistics.delivery.application.event;
 
-import com.eleven.logistics.delivery.presentation.dtos.DeliveryMessage;
+import com.eleven.logistics.delivery.application.dtos.event.DeliveryMessage;
 
 public interface DeliveryEventPublisher {
 

@@ -1,4 +1,4 @@
-package com.eleven.logistics.delivery.application.dtos.message;
+package com.eleven.logistics.delivery.application.dtos.event;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HubRouteMessage {
-  private UUID deliveryId;
-  private String description;
+public class SlackMessage {
+
+  private UUID orderId;
   private String errType;
 }

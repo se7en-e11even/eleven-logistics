@@ -2,7 +2,7 @@ package com.eleven.logistics.delivery.application.service;
 
 import com.eleven.logistics.delivery.domain.entity.*;
 import com.eleven.logistics.delivery.domain.repository.DeliveryPersonRepository;
-import com.eleven.logistics.delivery.application.DeliveryEventPublisher;
+import com.eleven.logistics.delivery.application.event.DeliveryEventPublisher;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRequest;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteRequest;
 import com.eleven.logistics.delivery.presentation.dtos.DeliveryResponse;
