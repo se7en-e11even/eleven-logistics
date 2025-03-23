@@ -1,9 +1,10 @@
 package com.eleven.logistics.delivery.application.service;
 
+import com.eleven.logistics.delivery.domain.entity.*;
+import com.eleven.logistics.delivery.domain.repository.DeliveryPersonRepository;
 import com.eleven.logistics.delivery.application.DeliveryEventPublisher;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRequest;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteRequest;
-import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteResponse;
 import com.eleven.logistics.delivery.presentation.dtos.DeliveryResponse;
 import com.eleven.logistics.delivery.presentation.dtos.DeliveryRouteResponse;
 import com.eleven.logistics.delivery.domain.entity.Delivery;
@@ -14,10 +15,13 @@ import com.eleven.logistics.delivery.domain.repository.DeliveryRepository;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRouteRequest;
 import com.eleven.logistics.delivery.util.PagingUtil;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
+import jakarta.persistence.EntityManager;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,9 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
+  private final DeliveryPersonRepository deliveryPersonRepository;
   private final DeliveryEventPublisher eventPublisher;
 
   // 배송 조회
@@ -80,7 +86,7 @@ public class DeliveryService {
 
   // 배송 경로 생성
   @Transactional
-  public List<CreateDeliveryRouteResponse> createRoute(
+  public List<UUID> createRoute(
       UUID deliveryId, List<CreateDeliveryRouteRequest> routeDtos
   ) {
     if (routeDtos == null || routeDtos.isEmpty()) {
@@ -94,11 +100,32 @@ public class DeliveryService {
     // 기존 경로 개수 저장
     int existingRouteCount = delivery.getRoutes().size();
 
+    List<UUID> routeIdList = new ArrayList<>(); {
+    }
+
     // DeliveryRoute 객체 생성 및 Delivery에 추가
     routeDtos.forEach(routeDto -> {
       DeliveryRoute route = new DeliveryRoute(delivery, routeDto);
       delivery.addRoute(route);
       route.updateCreatedBy(delivery.getCreatedBy());
+      DeliveryPerson dp = deliveryPersonRepository.findBySequence(routeDto.getSequence())
+              .orElseThrow(() -> new IllegalArgumentException("delivery Person not found"));
+      route.updateDeliveryPerson(dp.getId());
+      routeIdList.add(route.getId());
+      // 로그로 모든 필드 출력 (하나의 로그로 합침)
+        String logMessage = "Created DeliveryRoute: " +
+                "Route ID: " + route.getId() + ", " +
+                "Delivery ID: " + route.getDelivery().getId() + ", " +
+                "Sequence: " + route.getSequence() + ", " +
+                "Departure Hub ID: " + route.getDepartureHubId() + ", " +
+                "Arrival Hub ID: " + route.getArrivalHubId() + ", " +
+                "Expected Distance: " + route.getExpectedDistance() + ", " +
+                "Expected Time: " + route.getExpectedTime() + ", " +
+                "Actual Distance: " + route.getActualDistance() + ", " +
+                "Actual Time: " + route.getActualTime() + ", " +
+                "Route Status: " + route.getRouteStatus().getDescription() + ", " +
+                "Delivery Person ID: " + route.getDeliveryPersonId();
+      log.info(logMessage);
     });
 
     deliveryRepository.save(delivery);
@@ -108,9 +135,11 @@ public class DeliveryService {
         existingRouteCount, delivery.getRoutes().size()
     );
 
-    return savedRoutes.stream()
-        .map(CreateDeliveryRouteResponse::new)
-        .collect(Collectors.toList());
+//    return savedRoutes.stream()
+//        .map(CreateDeliveryRouteResponse::new)
+//        .collect(Collectors.toList());
+
+    return routeIdList;
   }
 
   // 배송 상태 변경
@@ -173,6 +202,20 @@ public class DeliveryService {
 
     // 새로운 값으로 경로 업데이트
     route.updateRoute(routeDto);
+    // 로그로 모든 필드 출력 (하나의 로그로 합침)
+    String logMessage = "Updated DeliveryRoute: " +
+            "Route ID: " + route.getId() + ", " +
+            "Delivery ID: " + route.getDelivery().getId() + ", " +
+            "Sequence: " + route.getSequence() + ", " +
+            "Departure Hub ID: " + route.getDepartureHubId() + ", " +
+            "Arrival Hub ID: " + route.getArrivalHubId() + ", " +
+            "Expected Distance: " + route.getExpectedDistance() + ", " +
+            "Expected Time: " + route.getExpectedTime() + ", " +
+            "Actual Distance: " + route.getActualDistance() + ", " +
+            "Actual Time: " + route.getActualTime() + ", " +
+            "Route Status: " + route.getRouteStatus().getDescription() + ", " +
+            "Delivery Person ID: " + route.getDeliveryPersonId();
+    log.info(logMessage);
     route.updateModificationInfo(route.getUpdatedBy());
     return new DeliveryRouteResponse(route);
   }

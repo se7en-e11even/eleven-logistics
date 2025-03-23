@@ -19,7 +19,6 @@ public class CreateDeliveryRouteResponse {
   private UUID arrivalHubId;
   private int expectedDistance;
   private int expectedTime;
-  private RouteStatus routeStatus;
 
   public CreateDeliveryRouteResponse(DeliveryRoute route) {
     this.id = route.getId();
@@ -29,6 +28,5 @@ public class CreateDeliveryRouteResponse {
     this.arrivalHubId = route.getArrivalHubId();
     this.expectedDistance = route.getExpectedDistance();
     this.expectedTime = route.getExpectedTime();
-    this.routeStatus = route.getRouteStatus();
   }
 }

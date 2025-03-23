@@ -13,11 +13,6 @@ import lombok.NoArgsConstructor;
 public class UpdateDeliveryRouteRequest {
 
   @NotNull
-  private UUID deliveryPersonId;
-
-  private int sequence;
-
-  @NotNull
   private UUID departureHubId;
 
   @NotNull
@@ -27,5 +22,7 @@ public class UpdateDeliveryRouteRequest {
 
   private int time;
 
-  private RouteStatus routeStatus;
+  String status;
+
+
 }
