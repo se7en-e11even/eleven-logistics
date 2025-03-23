@@ -1,7 +1,7 @@
 package com.eleven.logistics.order.application.service;
 
 import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.CreateOrderProductCommand;
+import com.eleven.logistics.order.application.dto.command.ProductOrderCommand;
 import com.eleven.logistics.order.application.dto.command.UpdateOrderCommand;
 import com.eleven.logistics.order.application.dto.message.OrderMessage;
 import com.eleven.logistics.order.application.dto.query.*;
@@ -29,11 +29,15 @@ import java.util.UUID;
 
 import static com.eleven.logistics.order.domain.exception.OrderErrorCode.*;
 
-@Slf4j(topic = "OrderService")
-@Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional
+@Service
+@Slf4j(topic = "OrderService")
 public class OrderService {
+
+    private final OrderRepository repository;
+    private final OrderRepositoryCustom repositoryCustom;
+    private final RabbitMQBrokerPort rabbitMQBrokerPort;
 
     // Feign Client
     private final ProductPort productPort;
@@ -41,42 +45,35 @@ public class OrderService {
     private final UserPort userPort;
     private final HubPort hubPort;
 
-    private final RabbitMQBrokerPort rabbitMQBrokerPort;
+    private record Result(FindUserQuery findUser, FindCompanyQuery.Company findCompany, FindProductQuery findProduct) {}
 
-    private final OrderRepository repository;
-    private final OrderRepositoryCustom repositoryCustom;
-
+    private record Ids(UUID companyId, UUID hubId) {}
     @CachePut(cacheNames = "orderRead", key = "{ #result.orderId, #role }")
     public FindOrderQuery create(CreateOrderCommand command, String username, String role) {
-        // TODO: 주문 생성은 상태 변화를 활용하여 우선 생성하고 이후에 요청 응답의 결과에 따라 처리 한다.
-        // 주문 요청이 들어오면 PENDING
-        // 재고 확인 여부 : PENDING, CANCEL
-        // 배송 정보 확인 : 접수됨?, 배송 중....
+        Result result = getUserIdAndCompanyIdAndHubId(command, username);
 
-        // 배송에 전달할 수신인 username -> userId
-//        FindUserQuery findUser = userPort.getUserByUsername(username);
-
-        // username 의 companyId: 주문자의 회사 -> receiverId
-        FindCompanyQuery.Company findCompany = companyPort.getCompanyByUsername(username).data();
-
-        // feign client 요청 테스트, 상품 id를 통해 공급업체 id, 상품 재고를 알 수 있다.
-        // supplyId -> 상품 id의 companyId, receiverId -> username 의 companyId
         // 주문 수량과 재고를 비교해야 한다.
-        FindProductQuery findProduct = productPort.getProductByProductId(command.commandList().get(0).productId().toString());
-        
-        log.info("productDto = {}", findProduct);
+        ProductOrderCommand productOrderCommand = new ProductOrderCommand(command.commandList().stream()
+                .map(product ->
+                        new ProductOrderCommand.OrderProduct(
+                                product.productId(),
+                                product.quantity()
+                        )
+                ).toList()
+        );
+        productPort.putProductOrder(productOrderCommand);
 
         // 저장할 주문 엔티티 생성
         Order order = Order.builder()
-                .supplyId(findProduct.companyId())
-                .receiverId(findCompany.id())
+                .supplyId(result.findProduct().companyId())
+                .receiverId(result.findCompany().id())
                 .orderStatus(OrderStatus.PENDING)
                 .request(command.request())
                 .orderProductList(new ArrayList<>())
                 .build();
 
         // 주문 상품 추가
-        for (CreateOrderProductCommand orderProductCommand : command.commandList()) {
+        for (CreateOrderCommand.CreateOrderProductCommand orderProductCommand : command.commandList()) {
             OrderProduct orderProduct = OrderProduct.builder()
                     .productId(orderProductCommand.productId())
                     .price(orderProductCommand.price())
@@ -86,18 +83,9 @@ public class OrderService {
         }
         repository.save(order);
 
-        // message publish
-        OrderMessage message = OrderMessage.of(
-                order.getOrderId(),
-                findProduct.hubId(),
-                findCompany.hubId(),
-                findCompany.address(),
-"username", "slackSnsID"
-//                findUser.username(),
-//                findUser.slackAccount()
-        );
-        rabbitMQBrokerPort.publishMessage(message);
-        return FindOrderQuery.from(order);
+        FindOrderQuery savedOrder = FindOrderQuery.from(order);
+        requestDelivery(savedOrder, result);
+        return savedOrder;
     }
 
     @Cacheable(cacheNames = "orderRead", key = "{ #orderId, #role }")
@@ -122,9 +110,7 @@ public class OrderService {
         String supplyId = order.getSupplyId().toString();
         checkHubAuthority(username, role, supplyId);
 
-        order.updateOf(
-                command.request()
-        );
+        order.updateOf(command.request());
 
         // TODO: updateDto 의 orderProductList 수정
     }
@@ -200,8 +186,6 @@ public class OrderService {
         return new Ids(companyId, hubId);
     }
 
-    private record Ids(UUID companyId, UUID hubId) {}
-
     private void checkAuthority(String username, String role, FindOrderQuery findOrder) {
         if (!"MASTER".equals(role)) {
             // user 의 companyId, hubId
@@ -231,5 +215,31 @@ public class OrderService {
                 throw new CustomException(ORDER_UNAUTHORIZED);
             }
         }
+    }
+
+    private void requestDelivery(FindOrderQuery savedOrder, Result result) {
+        // message publish
+        OrderMessage message = OrderMessage.of(
+                savedOrder.orderId(),
+                result.findProduct().hubId(),
+                result.findCompany().hubId(),
+                result.findCompany().address(),
+                result.findUser().username(),
+                result.findUser().slackAccount()
+        );
+        rabbitMQBrokerPort.publishMessage(message);
+    }
+
+    private Result getUserIdAndCompanyIdAndHubId(CreateOrderCommand command, String username) {
+        // 배송에 전달할 수신인 username -> userId
+        FindUserQuery findUser = userPort.getUserByUsername(username);
+
+        // username 의 companyId: 주문자의 회사 -> receiverId, receiver HubId
+        FindCompanyQuery.Company findCompany = companyPort.getCompanyByUsername(username).data();
+
+        // 주문상품의 companyId: 공급자의 회사 -> supplyId, supply HubId
+        FindProductQuery findProduct = productPort.getProductByProductId(command.commandList().get(0).productId().toString());
+
+        return new Result(findUser, findCompany, findProduct);
     }
 }

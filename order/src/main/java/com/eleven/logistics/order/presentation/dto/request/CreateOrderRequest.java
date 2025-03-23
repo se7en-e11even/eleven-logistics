@@ -1,11 +1,9 @@
 package com.eleven.logistics.order.presentation.dto.request;
 
 import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.CreateOrderProductCommand;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Builder;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +34,6 @@ public record CreateOrderRequest(
         );
     }
 
-    @Builder
     public record CreateOrderProductRequest(
             @NotNull(message = "product_id 는 필수 항목입니다.")
             UUID productId,
@@ -49,8 +46,8 @@ public record CreateOrderRequest(
                 @Positive(message = "수량은 양수입니다.")
             Integer quantity
     ) {
-        public static CreateOrderProductCommand toCommand(CreateOrderProductRequest request) {
-            return CreateOrderProductCommand.of(
+        public static CreateOrderCommand.CreateOrderProductCommand toCommand(CreateOrderProductRequest request) {
+            return CreateOrderCommand.CreateOrderProductCommand.of(
                     null,
                     request.productId,
                     request.price,
