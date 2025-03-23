@@ -15,7 +15,6 @@ import com.eleven.logistics.delivery.domain.repository.DeliveryRepository;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRouteRequest;
 import com.eleven.logistics.delivery.util.PagingUtil;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRequest;
-import jakarta.persistence.EntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
