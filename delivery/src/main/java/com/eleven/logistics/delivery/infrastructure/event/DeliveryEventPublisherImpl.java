@@ -1,7 +1,7 @@
-package com.eleven.logistics.delivery.infrastructure.messaging;
+package com.eleven.logistics.delivery.infrastructure.event;
 
-import com.eleven.logistics.delivery.application.DeliveryEventPublisher;
-import com.eleven.logistics.delivery.presentation.dtos.DeliveryMessage;
+import com.eleven.logistics.delivery.application.event.DeliveryEventPublisher;
+import com.eleven.logistics.delivery.application.dtos.event.DeliveryMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DeliveryEventRabbitMQPublisher implements DeliveryEventPublisher {
+public class DeliveryEventPublisherImpl implements DeliveryEventPublisher {
 
   private final RabbitTemplate rabbitTemplate;
 
@@ -27,16 +27,25 @@ public class DeliveryEventRabbitMQPublisher implements DeliveryEventPublisher {
   // RabbitMQ publish
   public void sendMessagesToOrder(DeliveryMessage message) {
     rabbitTemplate.convertAndSend(deliveryOrderQueue, message);
-    log.info("From Delivery to Order: Event published! message: {}", message.getDeliveryId());
+
+    log.info(
+        "From Delivery to Order: Event published! message: deliveryId={}, status={}",
+        message.getDeliveryId(), message.getDeliveryStatus());
   }
 
   public void sendMessagesToHubRoute(DeliveryMessage message) {
     rabbitTemplate.convertAndSend(deliveryHubRouteQueue, message);
-    log.info("From Delivery to HubRoute: Event published! message: {}", message.getDeliveryId());
+
+    log.info(
+        "From Delivery to HubRoute: Event published! message: deliveryId={}, originHub={}, destinationHub={}",
+        message.getDeliveryId(), message.getOriginHubId(), message.getDestinationHubId());
   }
 
   public void sendMessagesToSlack(DeliveryMessage message) {
     rabbitTemplate.convertAndSend(deliverySlackQueue, message);
-    log.info("From Delivery to Slack: Event published! message: {}", message.getDeliveryId());
+
+    log.info(
+        "From Delivery to Slack: Event published! message: deliveryId={}, username={}",
+        message.getDeliveryId(), message.getUsername());
   }
 }
