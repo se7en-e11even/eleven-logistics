@@ -28,6 +28,7 @@ import java.util.UUID;
 import static com.eleven.logistics.order.domain.exception.OrderErrorCode.ORDER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(OrderController.class)
@@ -51,8 +52,6 @@ class OrderControllerMvcTest {
     void create() throws JsonProcessingException {
         UUID orderId = UUID.randomUUID();
         var createRequestOrder = new CreateOrderRequest(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
                 "",
                 List.of(new CreateOrderRequest.CreateOrderProductRequest(
                         UUID.randomUUID(),
@@ -67,12 +66,14 @@ class OrderControllerMvcTest {
 
         var createRequest = objectMapper.writeValueAsString(createRequestOrder);
 
-        given(orderService.create(any(CreateOrderCommand.class), "tester", "TESTER"))
+        given(orderService.create(any(CreateOrderCommand.class), eq("tester"), eq("TESTER")))
                 .willReturn(order);
 
         // when & then
         assertThat(mvc.post().uri("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
                 .content(createRequest)
         ).hasStatus(HttpStatus.CREATED)
                 .hasHeader("Location", String.format("/api/orders/%s", orderId.toString()));
@@ -88,6 +89,8 @@ class OrderControllerMvcTest {
         // when & then
         assertThat(mvc.get().uri("/api/orders/" + orderId)
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatus(HttpStatus.NOT_FOUND);
     }
 
@@ -100,6 +103,8 @@ class OrderControllerMvcTest {
         // when & then
         assertThat(mvc.get().uri("/api/orders/" + uuids[0])
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatusOk();
     }
 
@@ -115,6 +120,8 @@ class OrderControllerMvcTest {
         // when & then
         assertThat(mvc.get().uri("/api/orders")
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatusOk();
 //                .bodyJson()
 //                .extractingPath("$.result")

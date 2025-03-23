@@ -9,13 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 public record CreateOrderRequest(
-        // UUID 는 NullCheck 만 가능하다. NotBlank 는 문자열 전용
-        @NotNull(message = "supply_id 는 필수 항목입니다.")
-        UUID supplyId,
-
-        @NotNull(message = "receiver_id 는 필수 항목입니다.")
-        UUID receiverId,
-
         String request,
 
         @Valid // list 내부 객체도 검증이 필요할 경우
@@ -25,8 +18,6 @@ public record CreateOrderRequest(
 
     public CreateOrderCommand toCommand() {
         return CreateOrderCommand.of(
-                supplyId,
-                receiverId,
                 request,
                 requestList.stream()
                         .map(CreateOrderProductRequest::toCommand)
@@ -48,7 +39,6 @@ public record CreateOrderRequest(
     ) {
         public static CreateOrderCommand.CreateOrderProductCommand toCommand(CreateOrderProductRequest request) {
             return CreateOrderCommand.CreateOrderProductCommand.of(
-                    null,
                     request.productId,
                     request.price,
                     request.quantity
