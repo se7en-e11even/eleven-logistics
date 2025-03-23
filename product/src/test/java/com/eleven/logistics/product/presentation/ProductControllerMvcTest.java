@@ -25,6 +25,7 @@ import java.util.UUID;
 import static com.eleven.logistics.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(ProductController.class)
@@ -60,7 +61,7 @@ class ProductControllerMvcTest {
                 LocalDateTime.now(), LocalDateTime.now()
         );
 
-        given(productService.create(any(CreateProductCommand.class), "tester", "TESTER"))
+        given(productService.create(any(CreateProductCommand.class), eq("tester"), eq("TESTER")))
                 .willReturn(product);
 
         // when & then
@@ -84,6 +85,8 @@ class ProductControllerMvcTest {
         // when & then
         assertThat(mvc.get().uri("/api/products/" + productId)
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatus(HttpStatus.NOT_FOUND);
     }
 
@@ -96,6 +99,8 @@ class ProductControllerMvcTest {
         // when & then
         assertThat(mvc.get().uri("/api/products/" + randomId[0])
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatusOk();
     }
 
