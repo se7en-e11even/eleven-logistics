@@ -139,14 +139,40 @@ public class DeliveryService {
     return routeIdList;
   }
 
+//  // 배송 상태 변경
+//  @Transactional
+//  public DeliveryResponse updateDeliveryStatus(UUID deliveryId, DeliveryStatus status
+//  ) {
+//    Delivery delivery = deliveryRepository.findById(deliveryId)
+//        .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
+//
+//    delivery.updateStatus(status);
+//    delivery.updateModificationInfo(delivery.getUpdatedBy());
+//
+//    return new DeliveryResponse(delivery);
+//  }
+
   // 배송 상태 변경
   @Transactional
   public DeliveryResponse updateDeliveryStatus(UUID deliveryId, DeliveryStatus status
   ) {
     Delivery delivery = deliveryRepository.findById(deliveryId)
-        .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
 
     delivery.updateStatus(status);
+    delivery.updateModificationInfo(delivery.getUpdatedBy());
+
+    return new DeliveryResponse(delivery);
+  }
+
+  // 배송 상태 변경 (문자열로 받아서)
+  @Transactional
+  public DeliveryResponse updateDeliveryStatusByDescription(UUID deliveryId, String description
+  ) {
+    Delivery delivery = deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
+
+    delivery.updateStatusByDescription(description);
     delivery.updateModificationInfo(delivery.getUpdatedBy());
 
     return new DeliveryResponse(delivery);
