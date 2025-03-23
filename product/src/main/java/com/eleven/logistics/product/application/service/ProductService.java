@@ -2,6 +2,7 @@ package com.eleven.logistics.product.application.service;
 
 import com.eleven.logistics.product.application.dto.command.CreateProductCommand;
 import com.eleven.logistics.product.application.dto.command.OrderProductCommand;
+import com.eleven.logistics.product.application.dto.command.OrderRollbackCommand;
 import com.eleven.logistics.product.application.dto.command.UpdateProductCommand;
 import com.eleven.logistics.product.application.dto.query.FindCompanyQuery;
 import com.eleven.logistics.product.application.dto.query.FindHubQuery;
@@ -163,14 +164,23 @@ public class ProductService {
     }
 
     @Transactional
-    public void orders(OrderProductCommand query) {
-        query.productList().forEach(product -> {
+    public void orders(OrderProductCommand command) {
+        command.productList().forEach(product -> {
             Product findProduct = repository.findByProductIdAndDeletedAtIsNull(product.productId())
                     .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
             if (product.quantity() > findProduct.getStockQuantity()) {
                 throw new CustomException(PRODUCT_OUT_OF_STOCK);
             }
             findProduct.decreaseQuantity(product.quantity());
+        });
+    }
+
+    @Transactional
+    public void rollback(OrderRollbackCommand command) {
+        command.productList().forEach(product -> {
+            Product findProduct = repository.findByProductIdAndDeletedAtIsNull(product.productId())
+                    .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
+            findProduct.increaseQuantity(product.quantity());
         });
     }
 

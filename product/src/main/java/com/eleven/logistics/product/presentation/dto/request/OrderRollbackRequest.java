@@ -1,18 +1,18 @@
 package com.eleven.logistics.product.presentation.dto.request;
 
-import com.eleven.logistics.product.application.dto.command.OrderProductCommand;
+import com.eleven.logistics.product.application.dto.command.OrderRollbackCommand;
 
 import java.util.List;
 import java.util.UUID;
 
-public record OrderProductRequest(
+public record OrderRollbackRequest(
         List<Product> productList
 ) {
 
-    public OrderProductCommand toCommand() {
-        return OrderProductCommand.of(
+    public OrderRollbackCommand toCommand() {
+        return OrderRollbackCommand.of(
                 productList.stream()
-                        .map(OrderProductRequest.Product::toCommand)
+                        .map(OrderRollbackRequest.Product::toCommand)
                         .toList()
         );
     }
@@ -21,8 +21,8 @@ public record OrderProductRequest(
             UUID productId,
             Integer quantity
     ) {
-        public OrderProductCommand.Product toCommand() {
-            return OrderProductCommand.Product.of(
+        public OrderRollbackCommand.Product toCommand() {
+            return OrderRollbackCommand.Product.of(
                     productId,
                     quantity
             );

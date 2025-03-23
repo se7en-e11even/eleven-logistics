@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
-public record OrderProductCommand(
+public record OrderRollbackCommand(
         List<Product> productList
 ) {
 
-    public static OrderProductCommand of(
+    public static OrderRollbackCommand of(
             List<Product> productList
     ) {
-        return OrderProductCommand.builder()
+        return OrderRollbackCommand.builder()
                 .productList(productList)
                 .build();
     }
@@ -24,6 +24,7 @@ public record OrderProductCommand(
             UUID productId,
             Integer quantity
     ) {
+
         public static Product of(
                 UUID productId,
                 Integer quantity
