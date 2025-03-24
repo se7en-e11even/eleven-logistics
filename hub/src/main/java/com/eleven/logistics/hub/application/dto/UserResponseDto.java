@@ -1,7 +1,8 @@
 package com.eleven.logistics.hub.application.dto;
 
-import com.eleven.logistics.hub.domain.entity.Role;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -9,5 +10,5 @@ import lombok.*;
 public class UserResponseDto {
 
     private String username;
-    private Role role;
+    private String role;
 }

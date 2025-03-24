@@ -61,7 +61,7 @@ public class HubService {
     // cacheNames = 이 API 로 만들어질 캐시를 지칭하는 이름, key = 캐시 데이터를 구분하기 위한 값
     // cache - aside 전략
     @Cacheable(cacheNames = "findByHubId", key = "#hubId + '-' + #page+'-'+#size")
-    public HubResponseDto findByHubId(UUID hubId, int page, int size) {
+    public HubResponseDto findByHubIdAndCompany(UUID hubId, int page, int size) {
         Hub hub = hubRepository.findById(hubId)
                 .orElseThrow(() -> new IllegalArgumentException("허브를 찾을 수 없습니다."));
 
@@ -129,4 +129,15 @@ public class HubService {
 
         hub.delete(username);
     }
+
+//    public HubResponseDto findByHubId(UUID hubId) {
+//        Hub hub = hubRepository.findById(hubId)
+//                .orElseThrow(() -> new IllegalArgumentException("허브를 찾을 수 없습니다."));
+//
+//        if(hub.getDeletedAt() != null){
+//            throw new IllegalArgumentException("허브를 찾을 수 없습니다.");
+//        }
+//
+//        return HubResponseDto.of(hub);
+//    }
 }

@@ -1,6 +1,7 @@
 package com.eleven.logistics.hub.domain.entity.company;
 
 import com.eleven.logistics.hub.domain.entity.BaseSystemFieldEntity;
+import com.eleven.logistics.hub.domain.entity.CompanyType;
 import com.eleven.logistics.hub.domain.entity.hub.Hub;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,7 @@ public class Company extends BaseSystemFieldEntity {
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Enumerated(EnumType.STRING)
@@ -32,10 +33,6 @@ public class Company extends BaseSystemFieldEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
-
-    public enum CompanyType{
-        PRODUCER_COMPANY, RECEIVER_COMPANY
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hub_id")

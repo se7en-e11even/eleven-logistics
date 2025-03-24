@@ -22,12 +22,13 @@ import java.util.UUID;
 public class HubController {
 
     private final HubService hubService;
-    private final HttpServletRequest request;
 
     @PostMapping
     public ResponseEntity<ApiResponseDto<HubResponseDto>> createHub(@RequestBody HubRequestDto requestDto,
-                                                                    @RequestHeader("X-Username") String username) {
-        String role =  request.getHeader("X-Role");
+                                                                    @RequestHeader("X-Username") String username,
+                                                                    @RequestHeader("X-Role") String role) {
+
+        log.info("username : {}, role : {}", username, role);
         if (role == null || !role.equals("MASTER")){
             throw new SecurityException("접근 권한이 없습니다.");
         }
@@ -36,25 +37,38 @@ public class HubController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @GetMapping("/{hubId}")
-    public ResponseEntity<ApiResponseDto<HubResponseDto>> findByHubId(@PathVariable("hubId") UUID hubId,
+    @GetMapping("/{hubId}/company")
+    public ResponseEntity<ApiResponseDto<HubResponseDto>> findByHubIdAndCompany(@PathVariable("hubId") UUID hubId,
                                                                       @RequestParam(defaultValue = "1") int page,
-                                                                      @RequestParam(defaultValue = "10")int size){
-        String role =  request.getHeader("X-Role");
+                                                                      @RequestParam(defaultValue = "10")int size,
+                                                                                @RequestHeader("X-Role") String role){
         if (role.isEmpty()){
             throw new SecurityException("접근 권한이 필요합니다.");
         }
 
-        HubResponseDto responseDto = hubService.findByHubId(hubId, page-1, size);
+        HubResponseDto responseDto = hubService.findByHubIdAndCompany(hubId, page-1, size);
         return ResponseEntity.ok()
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
+//    @GetMapping("/{hubId}")
+//    public ResponseEntity<ApiResponseDto<HubResponseDto>> findByHubId(@PathVariable("hubId") UUID hubId){
+//        String role =  request.getHeader("X-Role");
+//        if (role.isEmpty()){
+//            throw new SecurityException("접근 권한이 필요합니다.");
+//        }
+//
+//        HubResponseDto responseDto = hubService.findByHubId(hubId);
+//        return ResponseEntity.ok()
+//                .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
+//    }
+
     @GetMapping
     public ResponseEntity<ApiResponseDto<PageResponseDto<HubResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10")int size){
-        String role = request.getHeader("X-Role");
+            @RequestParam(defaultValue = "10")int size,
+            @RequestHeader("X-Role") String role){
+
         if (role.isEmpty()){
             throw new SecurityException("접근 권한이 필요합니다.");
         }
@@ -67,8 +81,9 @@ public class HubController {
     @PutMapping("{hubId}")
     public ResponseEntity<ApiResponseDto<HubResponseDto>> updateHub(@PathVariable("hubId") UUID hubId,
                                                                     @RequestBody HubRequestDto requestDto,
-                                                                    @RequestHeader("X-Username") String username){
-        String role =  request.getHeader("X-Role");
+                                                                    @RequestHeader("X-Username") String username,
+                                                                    @RequestHeader("X-Role") String role){
+
         if (role == null || !role.equals("MASTER")){
             throw new SecurityException("접근 권한이 없습니다.");
         }
@@ -79,8 +94,8 @@ public class HubController {
 
     @DeleteMapping("/{hubId}")
     public ResponseEntity<ApiResponseDto<Void>> deleteHub(@PathVariable("hubId") UUID hubId,
-                                                          @RequestHeader("X-Username") String username){
-        String role =  request.getHeader("X-Role");
+                                                          @RequestHeader("X-Username") String username,
+                                                          @RequestHeader("X-Role") String role){
         if (role == null || !role.equals("MASTER")){
             throw new SecurityException("접근 권한이 없습니다.");
         }

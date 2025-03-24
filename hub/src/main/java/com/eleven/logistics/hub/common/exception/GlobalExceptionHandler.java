@@ -1,6 +1,8 @@
-package com.eleven.logistics.hub.presentation.exception;
+package com.eleven.logistics.hub.common.exception;
 
 import com.eleven.logistics.common.dto.ApiResponseDto;
+import feign.FeignException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +75,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiResponseDto<String> handleForbiddenException(SecurityException ex) {
         return ApiResponseDto.failure(403, "접근 권한이 없습니다.", ex.getMessage());
+    }
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ApiResponseDto<?>> handleFeignException(FeignException ex) {
+        // 상태 코드에 따른 응답 생성
+        return ResponseEntity.status(ex.status())
+                .body(ApiResponseDto.failure(500,"외부 서비스 호출 중 오류: " + ex.getMessage()));
     }
 }
 
