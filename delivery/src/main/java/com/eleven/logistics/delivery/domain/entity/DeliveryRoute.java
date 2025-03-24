@@ -1,5 +1,6 @@
 package com.eleven.logistics.delivery.domain.entity;
 
+import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteFromMessageRequest;
 import com.eleven.logistics.delivery.presentation.dtos.CreateDeliveryRouteRequest;
 import com.eleven.logistics.delivery.presentation.dtos.UpdateDeliveryRouteRequest;
 import jakarta.persistence.Column;
@@ -62,6 +63,7 @@ public class DeliveryRoute extends Timestamped {
   @Enumerated(EnumType.STRING)
   private RouteStatus routeStatus;
 
+  // API 통신용 생성자
   public DeliveryRoute(Delivery delivery, CreateDeliveryRouteRequest routeDto) {
     this.delivery = delivery;
     this.sequence = routeDto.getSequence();
@@ -70,6 +72,20 @@ public class DeliveryRoute extends Timestamped {
     this.expectedDistance = routeDto.getExpectedDistance();
     this.expectedTime = routeDto.getExpectedTime();
     this.routeStatus = RouteStatus.WAITING_FOR_HUB_MOVING;
+    this.actualDistance = 0;
+    this.actualTime = 0;
+  }
+
+  // 메시지 처리용 생성자
+  public DeliveryRoute(Delivery delivery, CreateDeliveryRouteFromMessageRequest request) {
+    this.id = UUID.randomUUID();
+    this.delivery = delivery;
+    this.sequence = request.getSequence();
+    this.departureHubId = request.getDepartureHubId();
+    this.arrivalHubId = request.getArrivalHubId();
+    this.expectedDistance = request.getExpectedDistance();
+    this.expectedTime = request.getExpectedTime();
+    this.routeStatus = RouteStatus.WAITING_FOR_HUB_MOVING; // 초기 상태
     this.actualDistance = 0;
     this.actualTime = 0;
   }
@@ -96,10 +112,14 @@ public class DeliveryRoute extends Timestamped {
     throw new IllegalArgumentException("Invalid route status description: " + statusDescription);
   }
 
-  public void updateStatus(RouteStatus status, int actualDistance, int actualTime) {
+  public void updateActualTimeAndDistance(RouteStatus status, int actualDistance, int actualTime) {
     this.routeStatus = status;
     this.actualDistance = actualDistance;
     this.actualTime = actualTime;
+  }
+
+  public void updateRouteStatus(RouteStatus status) {
+    this.routeStatus = status;
   }
 
   public void assignDelivery(Delivery delivery) {

@@ -66,7 +66,6 @@ public class Delivery extends Timestamped {
     this.deliveryAddress = request.getDeliveryAddress();
     this.receiver = request.getReceiver();
     this.receiverSnsId = request.getReceiverSnsId();
-    this.companyDeliveryPersonId = request.getCompanyDeliveryPersonId();
     this.deliveryStatus = DeliveryStatus.PENDING_AT_HUB;
   }
 
