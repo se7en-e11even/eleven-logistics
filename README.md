@@ -11,10 +11,26 @@
 
 ## 서비스 구성 및 실행 방법
 
-#### 서비스 구성
+### 서비스 구성
 ![service](https://github.com/user-attachments/assets/47213331-d4aa-4964-95b2-b0e04ea46b27)
 
-#### 실행 방법
+### 실행 방법
+
+#### 1. git clone
+```shell
+git clone https://github.com/se7en-e11even/eleven-logistics.git
+```
+
+#### 2. 인프라 환경 설정
+- 도커 설치
+- 콘솔창을 열어 git clone한 프로젝트의 루트 폴더로 이동
+- docker-compose up -d
+
+#### 3. 애플리케이션 실행 순서
+1. eureka service
+2. gateway service
+3. auth service
+4. 
 
 <br><br>
 
