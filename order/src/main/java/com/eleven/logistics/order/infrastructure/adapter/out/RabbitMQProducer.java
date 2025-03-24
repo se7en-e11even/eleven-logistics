@@ -1,7 +1,7 @@
 package com.eleven.logistics.order.infrastructure.adapter.out;
 
 import com.eleven.logistics.order.application.port.out.RabbitMQBrokerPort;
-import com.eleven.logistics.order.application.dto.message.OrderMessage;
+import com.eleven.logistics.order.application.dto.message.ToDelivery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -19,7 +19,7 @@ public class RabbitMQProducer implements RabbitMQBrokerPort {
     private String orderDeliveryQueue;
 
     @Override
-    public void publishMessage(OrderMessage message) {
+    public void publishMessage(ToDelivery message) {
         log.info("publishMessage: {}", message);
         rabbitTemplate.convertAndSend(orderDeliveryQueue, message);
     }

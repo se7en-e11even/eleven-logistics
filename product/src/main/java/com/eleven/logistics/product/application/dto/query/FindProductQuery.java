@@ -21,8 +21,8 @@ public record FindProductQuery(
         String name,
         int price,
         int stockQuantity,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) implements Serializable {
     // record 타입은 기본적으로 Serializable 을 자동으로 구현하지만 커스텀 직렬화 로직이 필요한 경우나
     // 특정 직렬화 라이브러리가 이를 처리하지 못하는 경우가 있다. Redis 에서 필요하다..

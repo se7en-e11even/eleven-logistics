@@ -26,4 +26,26 @@ public record UpdateOrderCommand(
                 .orderProductList(orderProductList)
                 .build();
     }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    public record UpdateOrderProductCommand(
+            UUID orderProductId,
+            UUID productId,
+            Integer price,
+            Integer quantity
+    ) {
+        public static UpdateOrderProductCommand of(
+                UUID orderProductId,
+                UUID productId,
+                Integer price,
+                Integer quantity
+        ) {
+            return UpdateOrderProductCommand.builder()
+                    .orderProductId(orderProductId)
+                    .productId(productId)
+                    .price(price)
+                    .quantity(quantity)
+                    .build();
+        }
+    }
 }

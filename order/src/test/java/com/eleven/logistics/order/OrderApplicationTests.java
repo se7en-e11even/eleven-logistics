@@ -41,9 +41,7 @@ class OrderApplicationTests {
 	void createOrder() {
 		// given
 		var requestOrder = new CreateOrderRequest(
-				UUID.randomUUID(),
-				UUID.randomUUID(),
-				"",
+				"요청사항",
 				List.of(new CreateOrderRequest.CreateOrderProductRequest(
 						UUID.randomUUID(),
 						1000,
@@ -55,6 +53,8 @@ class OrderApplicationTests {
 		// when & then
 		webTestClient.post()
 				.uri("/api/orders")
+				.header("X-Username", "alex")
+				.header("X-Role", "MASTER")
 				.bodyValue(requestOrder)
 				.exchange()
 				.expectStatus().isCreated();

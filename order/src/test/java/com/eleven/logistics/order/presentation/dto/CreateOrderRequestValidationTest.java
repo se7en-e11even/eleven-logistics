@@ -31,8 +31,6 @@ class CreateOrderRequestValidationTest {
     void validate() {
         // given
         var order = new CreateOrderRequest(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
                 "",
                 List.of(
                         new CreateOrderRequest.CreateOrderProductRequest(
@@ -55,8 +53,6 @@ class CreateOrderRequestValidationTest {
     void validate_null() {
         // given
         var order = new CreateOrderRequest(
-                null,
-                UUID.randomUUID(),
                 "",
                 List.of(
                         new CreateOrderRequest.CreateOrderProductRequest(
@@ -71,13 +67,12 @@ class CreateOrderRequestValidationTest {
         Set<ConstraintViolation<CreateOrderRequest>> violations = validator.validate(order);
 
         // then
-        assertThat(violations).hasSize(2);
+        assertThat(violations).hasSize(1);
 
         List<String> messages = violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .toList();
         assertThat(messages).contains(
-                "supply_id 는 필수 항목입니다.",
                 "수량은 양수입니다."
         );
     }

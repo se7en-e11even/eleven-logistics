@@ -4,6 +4,8 @@ import com.eleven.logistics.product.application.dto.command.CreateProductCommand
 import com.eleven.logistics.product.application.dto.query.FindProductQuery;
 import com.eleven.logistics.product.application.service.ProductService;
 import com.eleven.logistics.product.presentation.dto.request.CreateProductRequest;
+import com.eleven.logistics.product.presentation.dto.request.OrderProductRequest;
+import com.eleven.logistics.product.presentation.dto.request.OrderRollbackRequest;
 import com.eleven.logistics.product.presentation.dto.request.UpdateProductRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -124,5 +126,27 @@ public class ProductController {
     ) {
         log.info("pageSize 검증 10, 30, 50(default 10): {}", pageable.getPageSize());
         return ResponseEntity.ok(productService.search(keyword, pageable, username, role));
+    }
+
+    /**
+     * Order Service 의 주문 API
+     */
+    @PutMapping("/orders")
+    public ResponseEntity<Void> orders(
+            @RequestBody OrderProductRequest orderRequest
+    ) {
+        productService.orders(orderRequest.toCommand());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Order Service 의 롤백 API
+     */
+    @PutMapping("/rollback")
+    public ResponseEntity<Void> rollback(
+            @RequestBody OrderRollbackRequest orderRollback
+    ) {
+        productService.rollback(orderRollback.toCommand());
+        return ResponseEntity.noContent().build();
     }
 }

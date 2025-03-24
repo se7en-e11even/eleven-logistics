@@ -39,17 +39,17 @@ class FindProductQueryJsonTest {
 
         // then
         // UUID, LocalDateTime 등의 객체는 비교 시 toString()으로 변환해 주어야 한다.
-        assertThat(jsonContent).extractingJsonPathStringValue("@.productId")
+        assertThat(jsonContent).extractingJsonPathValue("@.productId")
                 .isEqualTo(product.productId().toString());
-        assertThat(jsonContent).extractingJsonPathStringValue("@.id")
+        assertThat(jsonContent).extractingJsonPathValue("@.companyId")
                 .isEqualTo(product.companyId().toString());
-        assertThat(jsonContent).extractingJsonPathStringValue("@.hubId")
+        assertThat(jsonContent).extractingJsonPathValue("@.hubId")
                 .isEqualTo(product.hubId().toString());
         assertThat(jsonContent).extractingJsonPathStringValue("@.name")
                 .isEqualTo(product.name());
-        assertThat(jsonContent).extractingJsonPathStringValue("@.createdAt")
+        assertThat(jsonContent).extractingJsonPathValue("@.createdAt")
                 .isEqualTo(product.createdAt().toString());
-        assertThat(jsonContent).extractingJsonPathStringValue("@.updatedAt")
+        assertThat(jsonContent).extractingJsonPathValue("@.updatedAt")
                 .isEqualTo(product.updatedAt().toString());
     }
 }

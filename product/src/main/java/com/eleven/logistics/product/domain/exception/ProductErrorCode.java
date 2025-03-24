@@ -11,6 +11,8 @@ public enum ProductErrorCode implements ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "요청하신 상품을 찾을 수 없습니다."),
     PRODUCT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다"),
 
+    PRODUCT_OUT_OF_STOCK(HttpStatus.CONFLICT, "요청하신 상품의 재고가 부족합니다"),
+
     COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 업체의 상품입니다."),
 
     HUB_NOT_FOUND(HttpStatus.BAD_REQUEST, "상품의 관리허브가 존재하지 않습니다."),
