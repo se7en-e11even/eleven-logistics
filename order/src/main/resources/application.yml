@@ -55,3 +55,14 @@ message:
       exchange: delivery.err
       queue:
         order: delivery.err.order
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs
+    url: /springdoc/openapi3-product-service.json
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /api-docs-product-service
