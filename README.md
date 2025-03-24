@@ -7,7 +7,7 @@
 | [임승택](https://github.com/lime1st) | [백승규](https://github.com/seungg8361) | [오연주](https://github.com/zzu-uzz) | [한석규](https://github.com/hansg0325) |
 | BE / Order / Product | BE / Slack / Company / Hub | BE / Delivery / D_Route / D_Person | BE / User / Hub_Route / Auth |
 
-<br><br>
+<br>
 
 ## 서비스 구성 및 실행 방법
 
@@ -27,12 +27,14 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 - docker-compose up -d
 
 #### 3. 애플리케이션 실행 순서
-1. eureka service
-2. gateway service
-3. auth service
-4. 
+1. docker-compose up -d
+2. eureka service
+3. gateway service
+4. auth service
+6. gemini api, naver api, kakao api, slack api key 발급
+7. delivery, hub, hub-route, order, product, slack(slack api key, gemini api key)
 
-<br><br>
+<br>
 
 ## 프로젝트 목적
 
@@ -49,15 +51,13 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 <li>실무 수준의 협업을 경험하며, MSA의 복잡성과 운영 이슈 해결 능력 배양</li>
 </div>
 </details>
-
-
-<br><br>
+<br>
 
 ## ERD
 
 ![erd](https://github.com/user-attachments/assets/8af0a4dd-0493-4dde-a794-6fe2fe7c3931)
 
-<br><br>
+<br>
 
 ## 기술 스택
 
@@ -73,7 +73,7 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 - **버전 관리:** Git / GitHub
 - **컨테이너:** Docker
 
-<br><br>
+<br>
 
 ## 트러블 슈팅
 
