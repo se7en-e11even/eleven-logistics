@@ -20,13 +20,20 @@
 
 ## 프로젝트 목적
 
-#### MSA(Microservices Architecture) 기반의 물류 관리 및 배송 시스템 설계 및 구현
+![프로젝트목적](https://github.com/user-attachments/assets/84649f76-6836-40ce-9b22-84afe5256ffd)
 
-- Spring Cloud & Spring Boot를 활용하여 MSA 기반 시스템 구축
-- 클린 아키텍처 구성 및 DDD를 적용해 확장, 유지보수에 좋은 설계
-- API 연동, 데이터 무결성 유지, 서비스 간 통신 안정성 확보
-- Gemini API를 활용한 AI 기술 적용 경험
-- 실무 수준의 협업을 경험하며, MSA의 복잡성과 운영 이슈 해결 능력 배양
+<details>
+<summary>텍스트</summary>
+<div markdown="1">
+<h4>MSA(Microservices Architecture) 기반의 물류 관리 및 배송 시스템 설계 및 구현</h4>
+<li>Spring Cloud & Spring Boot를 활용하여 MSA 기반 시스템 구축</li>
+<li>클린 아키텍처 구성 및 DDD를 적용해 확장, 유지보수에 좋은 설계</li>
+<li>API 연동, 데이터 무결성 유지, 서비스 간 통신 안정성 확보</li>
+<li>Gemini API를 활용한 AI 기술 적용 경험</li>
+<li>실무 수준의 협업을 경험하며, MSA의 복잡성과 운영 이슈 해결 능력 배양</li>
+</div>
+</details>
+
 
 <br><br>
 
