@@ -24,6 +24,14 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
+
 # [Order Service]
 message:
   send:
@@ -47,3 +55,14 @@ message:
       exchange: delivery.err
       queue:
         order: delivery.err.order
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs
+    url: /springdoc/openapi3-order-service.json
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /api-docs-order-service

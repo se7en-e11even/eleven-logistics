@@ -77,7 +77,7 @@ class ProductControllerMvcTest {
 
     @Test
     @DisplayName("요청한 상품이 없으면 404 NotFound")
-    void read_ById_not_found() {
+    void read_ById_NotFound() {
         UUID productId = UUID.randomUUID();
         given(productService.read(productId, "tester", "TESTER"))
                 .willThrow(new CustomException(PRODUCT_NOT_FOUND));
@@ -92,7 +92,7 @@ class ProductControllerMvcTest {
 
     @Test
     @DisplayName("상품 상세 조회")
-    void readById() {
+    void read() {
         given(productService.read(randomId[0], "tester", "TESTER"))
                 .willReturn(dtos[0]);
 
