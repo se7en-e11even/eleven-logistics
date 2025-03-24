@@ -5,7 +5,6 @@ import com.eleven.logistics.hub.application.dto.UserResponseDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyResponseDto;
 import com.eleven.logistics.hub.application.external.UserService;
-import com.eleven.logistics.hub.domain.entity.Role;
 import com.eleven.logistics.hub.domain.entity.company.Company;
 import com.eleven.logistics.hub.domain.entity.hub.Hub;
 import com.eleven.logistics.hub.domain.repository.company.CompanyRepository;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service

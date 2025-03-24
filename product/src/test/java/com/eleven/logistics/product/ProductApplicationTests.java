@@ -12,8 +12,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.util.UUID;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ProductApplicationTests {
@@ -39,17 +37,18 @@ class ProductApplicationTests {
 	@DisplayName("상품 생성 성공 시 201 created")
 	void createProduct() {
 		var requestProduct = new CreateProductRequest(
-				UUID.randomUUID(),
-				UUID.randomUUID(),
 				"product1",
 				10000,
 				10
 		);
 
+		// 전체 컨텍스트를 로드하고 실제 HTTP 요청을 전송하므로
+		// 유레카 서버가 없으면 실패한다, 클라이언트 설정을 주석하던지..
+		// hub-server feign 호출관련 서버도 없으면 실패한다.
 		webTestClient.post()
 				.uri("/api/products")
-				.header("X-Username", "tester")
-				.header("X-Role", "TESTER")
+				.header("X-Username", "alex")
+				.header("X-Role", "MASTER")
 				.bodyValue(requestProduct)
 				.exchange()
 				.expectStatus().isCreated();

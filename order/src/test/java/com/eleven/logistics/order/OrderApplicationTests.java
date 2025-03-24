@@ -41,19 +41,21 @@ class OrderApplicationTests {
 	void createOrder() {
 		// given
 		var requestOrder = new CreateOrderRequest(
-				UUID.randomUUID(),
-				UUID.randomUUID(),
-				"",
+				"요청사항",
 				List.of(new CreateOrderRequest.CreateOrderProductRequest(
-						UUID.randomUUID(),
+						// 실제 호출이므로 상품 ID가 일치해야 한다.
+						UUID.fromString("62d6cbb6-2549-4ea8-a7a7-9d517310a5de"),
 						1000,
 						1)
 				)
 		);
 
+		// 서비스에서 FeignClient 호출이 켜져 있으면 테스트에 실패한다.
 		// when & then
 		webTestClient.post()
 				.uri("/api/orders")
+				.header("X-Username", "alex")
+				.header("X-Role", "MASTER")
 				.bodyValue(requestOrder)
 				.exchange()
 				.expectStatus().isCreated();

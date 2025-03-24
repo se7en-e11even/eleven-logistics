@@ -1,22 +1,14 @@
 package com.eleven.logistics.order.presentation.dto.request;
 
 import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.CreateOrderProductCommand;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Builder;
 
 import java.util.List;
 import java.util.UUID;
 
 public record CreateOrderRequest(
-        @NotNull(message = "supply_id 는 필수 항목입니다.")
-        UUID supplyId,
-
-        @NotNull(message = "receiver_id 는 필수 항목입니다.")
-        UUID receiverId,
-
         String request,
 
         @Valid // list 내부 객체도 검증이 필요할 경우
@@ -25,9 +17,7 @@ public record CreateOrderRequest(
 ) {
 
     public CreateOrderCommand toCommand() {
-        return CreateOrderCommand.create(
-                supplyId,
-                receiverId,
+        return CreateOrderCommand.of(
                 request,
                 requestList.stream()
                         .map(CreateOrderProductRequest::toCommand)
@@ -35,7 +25,6 @@ public record CreateOrderRequest(
         );
     }
 
-    @Builder
     public record CreateOrderProductRequest(
             @NotNull(message = "product_id 는 필수 항목입니다.")
             UUID productId,
@@ -48,9 +37,8 @@ public record CreateOrderRequest(
                 @Positive(message = "수량은 양수입니다.")
             Integer quantity
     ) {
-        public static CreateOrderProductCommand toCommand(CreateOrderProductRequest request) {
-            return CreateOrderProductCommand.create(
-                    null,
+        public static CreateOrderCommand.CreateOrderProductCommand toCommand(CreateOrderProductRequest request) {
+            return CreateOrderCommand.CreateOrderProductCommand.of(
                     request.productId,
                     request.price,
                     request.quantity

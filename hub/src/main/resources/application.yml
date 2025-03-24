@@ -7,6 +7,10 @@ spring:
       port: 6379
       username: default
       password: 1234
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
 
   datasource:
     url: jdbc:postgresql://localhost:5432/eleven-logistics-hub
@@ -17,15 +21,15 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
 server:
   port: 19093
 
 naver:
-  geocode-url: https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode
-  client-id: t7nmrnh2kl
-  client-secret: I0BRx0h5K4T4CzgjXQgRKSPs6m82P5qS3QMuG3Ro
+  geocode-url: ${NAVER_Url}
+  client-id: ${NAVER_Client}
+  client-secret: ${NAVER_Secret}
 
 eureka:
   client:

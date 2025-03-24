@@ -13,7 +13,7 @@ public record UpdateOrderCommand(
         String request,
         List<UpdateOrderProductCommand> orderProductList
 ) {
-    public static UpdateOrderCommand create(
+    public static UpdateOrderCommand of(
             UUID orderId,
             String orderStatus,
             String request,
@@ -25,5 +25,27 @@ public record UpdateOrderCommand(
                 .request(request)
                 .orderProductList(orderProductList)
                 .build();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    public record UpdateOrderProductCommand(
+            UUID orderProductId,
+            UUID productId,
+            Integer price,
+            Integer quantity
+    ) {
+        public static UpdateOrderProductCommand of(
+                UUID orderProductId,
+                UUID productId,
+                Integer price,
+                Integer quantity
+        ) {
+            return UpdateOrderProductCommand.builder()
+                    .orderProductId(orderProductId)
+                    .productId(productId)
+                    .price(price)
+                    .quantity(quantity)
+                    .build();
+        }
     }
 }

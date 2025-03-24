@@ -9,5 +9,4 @@ import java.util.UUID;
 
 @Repository
 public interface CompanyRepositoryImpl extends JpaRepository<Company, UUID>, CompanyRepository {
-
 }

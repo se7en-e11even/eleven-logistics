@@ -1,12 +1,9 @@
 package com.eleven.logistics.order.presentation;
 
 import com.eleven.logistics.order.application.dto.command.CreateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.ListOrderCommand;
-import com.eleven.logistics.order.application.dto.query.FindOrderProductQuery;
 import com.eleven.logistics.order.application.dto.query.FindOrderQuery;
-import com.eleven.logistics.order.application.dto.query.ListOrderQuery;
 import com.eleven.logistics.order.application.service.OrderService;
-import com.eleven.logistics.order.common.exception.CustomException;
+import com.eleven.logistics.order.domain.exception.CustomException;
 import com.eleven.logistics.order.presentation.controller.OrderController;
 import com.eleven.logistics.order.presentation.dto.request.CreateOrderRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -29,6 +28,7 @@ import java.util.UUID;
 import static com.eleven.logistics.order.domain.exception.OrderErrorCode.ORDER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(OrderController.class)
@@ -52,8 +52,6 @@ class OrderControllerMvcTest {
     void create() throws JsonProcessingException {
         UUID orderId = UUID.randomUUID();
         var createRequestOrder = new CreateOrderRequest(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
                 "",
                 List.of(new CreateOrderRequest.CreateOrderProductRequest(
                         UUID.randomUUID(),
@@ -61,15 +59,21 @@ class OrderControllerMvcTest {
                         1)
                 )
         );
+        var order = new FindOrderQuery(
+                orderId, null, null, null,
+                "", "", null, null, null
+        );
 
         var createRequest = objectMapper.writeValueAsString(createRequestOrder);
 
-        given(orderService.create(any(CreateOrderCommand.class)))
-                .willReturn(orderId);
+        given(orderService.create(any(CreateOrderCommand.class), eq("tester"), eq("TESTER")))
+                .willReturn(order);
 
         // when & then
         assertThat(mvc.post().uri("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
                 .content(createRequest)
         ).hasStatus(HttpStatus.CREATED)
                 .hasHeader("Location", String.format("/api/orders/%s", orderId.toString()));
@@ -79,38 +83,45 @@ class OrderControllerMvcTest {
     @DisplayName("요청한 주문이 없으면 404")
     void read_ById_NotFound() {
         UUID orderId = UUID.randomUUID();
-        given(orderService.read(orderId))
+        given(orderService.read(orderId, "tester", "TESTER"))
                 .willThrow(new CustomException(ORDER_NOT_FOUND));
 
         // when & then
         assertThat(mvc.get().uri("/api/orders/" + orderId)
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatus(HttpStatus.NOT_FOUND);
     }
 
     @Test
     @DisplayName("주문 상세 조회")
     void readById() {
-        given(orderService.read(uuids[0]))
+        given(orderService.read(uuids[0], "tester", "TESTER"))
                 .willReturn(dtos[0]);
 
         // when & then
         assertThat(mvc.get().uri("/api/orders/" + uuids[0])
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatusOk();
     }
 
     @Test
     @DisplayName("주문 목록 조회")
     void retreiveOrders() throws JsonProcessingException {
-        var pageRequestDto = ListOrderCommand.of(0, 10);
-        var pageResponseDto = new ListOrderQuery<>(List.of(dtos), 3L);
-        given(orderService.search("keyword", pageRequestDto))
-                .willReturn(pageResponseDto);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // TODO: 리턴 값 지정
+        given(orderService.search("keyword", pageable, "tester", "TESTER"))
+                .willReturn(null);
 
         // when & then
         assertThat(mvc.get().uri("/api/orders")
                 .accept(MediaType.APPLICATION_JSON)
+                .header("X-Username", "tester")
+                .header("X-Role", "TESTER")
         ).hasStatusOk();
 //                .bodyJson()
 //                .extractingPath("$.result")
@@ -134,7 +145,7 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 1),
-                        List.of(new FindOrderProductQuery(
+                        List.of(new FindOrderQuery.FindOrderProductQuery(
                                 uuids[6],
                                 uuids[7],
                                 10000,
@@ -150,7 +161,7 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 2),
-                        List.of(new FindOrderProductQuery(
+                        List.of(new FindOrderQuery.FindOrderProductQuery(
                                 uuids[11],
                                 uuids[12],
                                 20000,
@@ -166,7 +177,7 @@ class OrderControllerMvcTest {
                         "",
                         LocalDateTime.of(2025, 3, 17, 13, 1, 3),
                         LocalDateTime.of(2025, 3, 17, 13, 1, 3),
-                        List.of(new FindOrderProductQuery(
+                        List.of(new FindOrderQuery.FindOrderProductQuery(
                                 uuids[16],
                                 uuids[17],
                                 30000,

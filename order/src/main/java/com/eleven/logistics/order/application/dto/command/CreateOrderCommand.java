@@ -8,23 +8,36 @@ import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record CreateOrderCommand(
-        UUID supplyId,
-        UUID receiverId,
         String request,
         List<CreateOrderProductCommand> commandList
 ) {
 
-    public static CreateOrderCommand create(
-            UUID supplyId,
-            UUID receiverId,
+    public static CreateOrderCommand of(
             String request,
             List<CreateOrderProductCommand> commandList
     ) {
         return CreateOrderCommand.builder()
-                .supplyId(supplyId)
-                .receiverId(receiverId)
                 .request(request)
                 .commandList(commandList)
                 .build();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    public record CreateOrderProductCommand(
+            UUID productId,
+            Integer price,
+            Integer quantity
+    ) {
+        public static CreateOrderProductCommand of(
+                UUID productId,
+                Integer price,
+                Integer quantity
+        ) {
+            return CreateOrderProductCommand.builder()
+                    .productId(productId)
+                    .price(price)
+                    .quantity(quantity)
+                    .build();
+        }
     }
 }

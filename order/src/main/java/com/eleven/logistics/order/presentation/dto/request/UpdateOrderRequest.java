@@ -1,7 +1,6 @@
 package com.eleven.logistics.order.presentation.dto.request;
 
 import com.eleven.logistics.order.application.dto.command.UpdateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.UpdateOrderProductCommand;
 import lombok.Builder;
 
 import java.util.List;
@@ -13,7 +12,7 @@ public record UpdateOrderRequest(
         List<UpdateOrderProductRequest> updateOrderProductRequestList
 ) {
     public UpdateOrderCommand toCommandWithId(UUID orderId) {
-        return UpdateOrderCommand.create(
+        return UpdateOrderCommand.of(
                 orderId,
                 orderStatus,
                 request,
@@ -30,10 +29,10 @@ public record UpdateOrderRequest(
             Integer price,
             Integer quantity
     ) {
-        public static UpdateOrderProductCommand toCommand(
+        public static UpdateOrderCommand.UpdateOrderProductCommand toCommand(
                 UpdateOrderProductRequest request
         ) {
-            return UpdateOrderProductCommand.create(
+            return UpdateOrderCommand.UpdateOrderProductCommand.of(
                     request.orderProductId,
                     request.productId,
                     request.price,

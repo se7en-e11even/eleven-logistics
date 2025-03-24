@@ -13,7 +13,56 @@ spring:
     hibernate:
       ddl-auto: create
 
+  rabbitmq:
+    host: 129.154.192.198
+    port: 5672
+    username: eleven-logistics
+    password: eleven-logistics
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
+
+# [Order Service]
+message:
+  send:
+    exchange: order
+    queue:
+      delivery: order.delivery
+
+# [Error Handling for Order Service]
+    err:
+      exchange: order.err
+      queue:
+        delivery: order.err.delivery
+
+# [Delivery Service]
+  receive:
+    queue:
+      delivery: delivery.order
+
+# [Error Handling for Delivery Service]
+    err:
+      exchange: delivery.err
+      queue:
+        order: delivery.err.order
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs
+    url: /springdoc/openapi3-order-service.json
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /api-docs-order-service

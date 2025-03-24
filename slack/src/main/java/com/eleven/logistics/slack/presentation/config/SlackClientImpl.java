@@ -13,6 +13,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Map;
+
 @Configuration
 @Slf4j
 public class SlackClientImpl implements SlackClient {
@@ -99,5 +102,22 @@ public class SlackClientImpl implements SlackClient {
 
         request = new HttpEntity<>(jsonObject.toString(), headers);
         return restTemplate.postForObject(sendMessageUrl, request, String.class);
+    }
+
+    // Gemini API 응답에서 텍스트 추출하는 헬퍼 메서드
+    public String extractTextFromGeminiResponse(Map<String, Object> response) {
+        try {
+            List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
+            if (candidates != null && !candidates.isEmpty()) {
+                Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
+                List<Map<String, String>> parts = (List<Map<String, String>>) content.get("parts");
+                if (parts != null && !parts.isEmpty()) {
+                    return parts.get(0).get("text");
+                }
+            }
+            return "Gemini API 응답에서 텍스트를 추출할 수 없습니다.";
+        } catch (Exception e) {
+            throw new RuntimeException("Gemini API 응답 파싱 중 오류 발생", e);
+        }
     }
 }

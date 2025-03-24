@@ -1,18 +1,21 @@
 package com.eleven.logistics.product.presentation.controller;
 
-import com.eleven.logistics.product.application.dto.command.ListProductCommand;
+import com.eleven.logistics.product.application.dto.command.CreateProductCommand;
 import com.eleven.logistics.product.application.dto.query.FindProductQuery;
-import com.eleven.logistics.product.application.dto.query.ListProductQuery;
 import com.eleven.logistics.product.application.service.ProductService;
 import com.eleven.logistics.product.presentation.dto.request.CreateProductRequest;
+import com.eleven.logistics.product.presentation.dto.request.OrderProductRequest;
+import com.eleven.logistics.product.presentation.dto.request.OrderRollbackRequest;
 import com.eleven.logistics.product.presentation.dto.request.UpdateProductRequest;
-import com.eleven.logistics.product.presentation.resolver.PageSize;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -26,8 +29,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-    // TODO: 허브 관리자는 담당 허브에 대해서만 cruds 가 가능하다.
-
     /**
      * 상품 생성 API
      */
@@ -38,17 +39,16 @@ public class ProductController {
             @RequestHeader("X-Role") String role
     ) {
         // 배송 담당자는 상품을 추가할 수 없다.
-        if (role.equals("DELIVERY")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if ("DELIVERY".equals(role)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "상품 생성 권한이 없습니다."
+            );
         }
-        // 허브 관리자는 허브 소속 회사의 상품만
-        // if role.eq.HUB: username 으로 -> userid -> companyId, hubId
-
-        // 업체 담당자는 해당 업체의 상품만 생성
-        //  if role.eq.COMPANY: username -> userId -> companyId
 
         // service 에 controller 의 의존성을 없애기 위해 dto 변환
-        UUID productId = productService.create(request.toCommand());
+        CreateProductCommand command = request.toCommand();
+        UUID productId = productService.create(command, username, role).productId();
 
         URI location = UriComponentsBuilder.newInstance()
                 .path("/api/products/{product_id}")
@@ -61,8 +61,12 @@ public class ProductController {
      * 상품 조회 API
      */
     @GetMapping("/{product_id}")
-    public ResponseEntity<?> read(@PathVariable UUID product_id) {
-        return ResponseEntity.ok(productService.read(product_id));
+    public ResponseEntity<?> read(
+            @PathVariable UUID product_id,
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
+    ) {
+        return ResponseEntity.ok(productService.read(product_id, username, role));
     }
 
     /**
@@ -72,15 +76,19 @@ public class ProductController {
     public ResponseEntity<Void> update(
             @PathVariable UUID product_id,
             @RequestBody @Valid UpdateProductRequest request,
+            @RequestHeader("X-Username") String username,
             @RequestHeader("X-Role") String role
     ) {
         // 배송 담당자는 상품을 수정할 수 없다.
-        if (role.equals("DELIVERY")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if ("DELIVERY".equals(role)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "상품 수정 권한이 없습니다."
+            );
         }
 
         // service 에 controller 의 의존성을 없애기 위해 dto 변환
-        productService.update(request.toCommandWithId(product_id));
+        productService.update(request.toCommand(product_id), username, role);
         return ResponseEntity.noContent().build();
     }
 
@@ -90,9 +98,18 @@ public class ProductController {
     @DeleteMapping("/{product_id}")
     public ResponseEntity<Void> delete(
             @PathVariable UUID product_id,
-            @RequestHeader("X-Username") String username
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
     ) {
-        productService.delete(product_id, username);
+        // 배송 담당자와 업체 담당자는 상품을 삭제할 수 없다.
+        if ("DELIVERY".equals(role) || "COMPANY".equals(role)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "상품 삭제 권한이 없습니다."
+            );
+        }
+        // 허브 담당자는 담당 허브의 상품만 삭제할 수 있다.
+        productService.delete(product_id, username, role);
         return ResponseEntity.noContent().build();
     }
 
@@ -101,14 +118,35 @@ public class ProductController {
      * 페이징 처리, keyword 가 없으면 권한에 맞는 전체 목록
      */
     @GetMapping
-    public ResponseEntity<ListProductQuery<FindProductQuery>> search(
+    public ResponseEntity<Page<FindProductQuery>> search(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @PageSize int size,
-            @RequestParam(defaultValue = "desc") String orderBy
+            Pageable pageable,
+            @RequestHeader("X-Username") String username,
+            @RequestHeader("X-Role") String role
     ) {
-        log.info("pageSize 검증 10, 30, 50(default 10): {}", size);
-        ListProductCommand command = ListProductCommand.of(page-1, size, orderBy);
-        return ResponseEntity.ok(productService.search(keyword, command));
+        log.info("pageSize 검증 10, 30, 50(default 10): {}", pageable.getPageSize());
+        return ResponseEntity.ok(productService.search(keyword, pageable, username, role));
+    }
+
+    /**
+     * Order Service 의 주문 API
+     */
+    @PutMapping("/orders")
+    public ResponseEntity<Void> orders(
+            @RequestBody OrderProductRequest orderRequest
+    ) {
+        productService.orders(orderRequest.toCommand());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Order Service 의 롤백 API
+     */
+    @PutMapping("/rollback")
+    public ResponseEntity<Void> rollback(
+            @RequestBody OrderRollbackRequest orderRollback
+    ) {
+        productService.rollback(orderRollback.toCommand());
+        return ResponseEntity.noContent().build();
     }
 }

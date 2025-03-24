@@ -38,16 +38,18 @@ public class Product extends BaseTimeEntity {
         this.stockQuantity = stockQuantity;
     }
 
-    public void updateOf(UUID companyId, UUID hubId, String name, int price, int stockQuantity) {
-        this.companyId = companyId;
-        this.hubId = hubId;
+    public void updateOf(String name, int price, int stockQuantity) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
     }
 
-    public void reduceQuantity(int stockQuantity) {
+    public void decreaseQuantity(int stockQuantity) {
         this.stockQuantity -= stockQuantity;
+    }
+
+    public void increaseQuantity(int stockQuantity) {
+        this.stockQuantity += stockQuantity;
     }
 
     public void deleteOf(String deletedBy) {

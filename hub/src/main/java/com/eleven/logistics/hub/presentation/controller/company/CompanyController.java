@@ -24,24 +24,24 @@ import java.util.UUID;
 public class CompanyController {
 
     private final CompanyService companyService;
-    private final HttpServletRequest request;
 
     @PostMapping
     public ResponseEntity<ApiResponseDto<CompanyResponseDto>> createCompany(@RequestBody CompanyRequestDto requestDto,
-                                                                            @RequestHeader("X-Username") String username) {
-        String role =  request.getHeader("X-Role");
+                                                                            @RequestHeader("X-Username") String username,
+                                                                            @RequestHeader("X-Role") String role) {
+
         if (role == null || !role.equals("MASTER") && !role.equals("HUB")) {
             throw new SecurityException("접근 권한이 없습니다.");
         }
-
+            log.info(role);
         CompanyResponseDto responseDto = companyService.createCompany(username,requestDto.toDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
     @GetMapping("/{companyId}")
-    public ResponseEntity<ApiResponseDto<CompanyResponseDto>> findByCompanyId(@PathVariable("companyId") UUID companyId){
-        String role =  request.getHeader("X-Role");
+    public ResponseEntity<ApiResponseDto<CompanyResponseDto>> findByCompanyId(@PathVariable("companyId") UUID companyId,
+                                                                              @RequestHeader("X-Role") String role){
         if (role == null){
             throw new SecurityException("접근 권한이 없습니다.");
         }
@@ -50,8 +50,8 @@ public class CompanyController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
     @GetMapping("/username/{username}")
-    public ResponseEntity<ApiResponseDto<CompanyResponseDto>> findByCompanyUsername(@PathVariable("username") String username){
-        String role =  request.getHeader("X-Role");
+    public ResponseEntity<ApiResponseDto<CompanyResponseDto>> findByCompanyUsername(@PathVariable("username") String username,
+                                                                                    @RequestHeader("X-Role") String role){
         if (role == null){
             throw new SecurityException("접근 권한이 없습니다.");
         }
@@ -63,8 +63,8 @@ public class CompanyController {
     @GetMapping
     public ResponseEntity<ApiResponseDto<PageResponseDto<CompanyResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10")int size){
-        String role =  request.getHeader("X-Role");
+            @RequestParam(defaultValue = "10")int size,
+            @RequestHeader("X-Role") String role){
         if (role == null){
             throw new SecurityException("접근 권한이 없습니다.");
         }
@@ -75,10 +75,10 @@ public class CompanyController {
 
     @PutMapping("/{companyId}")
     public ResponseEntity<ApiResponseDto<CompanyResponseDto>> updateCompany(@PathVariable("companyId") UUID companyId,
-                                                                    @RequestBody CompanyRequestDto requestDto,
-                                                                            @RequestHeader("X-Username") String username) {
+                                                                            @RequestBody CompanyRequestDto requestDto,
+                                                                            @RequestHeader("X-Username") String username,
+                                                                            @RequestHeader("X-Role") String role) {
 
-        String role =  request.getHeader("X-Role");
         if (role == null || role.equals("DELIVERY")){
             throw new SecurityException("접근 권한이 없습니다.");
         }
@@ -89,8 +89,8 @@ public class CompanyController {
 
     @DeleteMapping("/{companyId}")
     public ResponseEntity<ApiResponseDto<Void>> deleteCompany(@PathVariable("companyId") UUID companyId,
-                                                              @RequestHeader("X-Username") String username) {
-        String role =  request.getHeader("X-Role");
+                                                              @RequestHeader("X-Username") String username,
+                                                              @RequestHeader("X-Role") String role) {
         if (role == null || !role.equals("MASTER") && !role.equals("COMPANY")){
             throw new SecurityException("접근 권한이 없습니다.");
         }
