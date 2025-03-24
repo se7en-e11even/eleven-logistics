@@ -27,6 +27,7 @@ public class SpringSecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
                         .anyRequest().authenticated())
 
                 .sessionManagement(session -> session

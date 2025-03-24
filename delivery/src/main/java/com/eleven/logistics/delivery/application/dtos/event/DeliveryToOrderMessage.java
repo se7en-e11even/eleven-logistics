@@ -12,14 +12,15 @@ import lombok.NoArgsConstructor;
 public class DeliveryToOrderMessage {
 
   private UUID deliveryId;
-  private String deliveryStatus;
+  private UUID orderId;
+  private String status;
   private String errorMessage;
 
-  public static DeliveryToOrderMessage toOrder(UUID deliveryId, DeliveryStatus deliveryStatus) {
-    return new DeliveryToOrderMessage(deliveryId, deliveryStatus.getDescription(), "No error occurred.");
+  public static DeliveryToOrderMessage toOrder(UUID deliveryId,UUID orderId, String status) {
+    return new DeliveryToOrderMessage(deliveryId,orderId, status, "No error occurred.");
   }
 
-  public static DeliveryToOrderMessage withError(UUID deliveryId, DeliveryStatus deliveryStatus, String errorMessage) {
-    return new DeliveryToOrderMessage(deliveryId, deliveryStatus.getDescription(), errorMessage);
+  public static DeliveryToOrderMessage withError(UUID deliveryId, UUID orderId, String status, String errorMessage) {
+    return new DeliveryToOrderMessage(deliveryId,orderId, status, errorMessage);
   }
 }

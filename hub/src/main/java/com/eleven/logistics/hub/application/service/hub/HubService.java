@@ -130,14 +130,14 @@ public class HubService {
         hub.delete(username);
     }
 
-//    public HubResponseDto findByHubId(UUID hubId) {
-//        Hub hub = hubRepository.findById(hubId)
-//                .orElseThrow(() -> new IllegalArgumentException("허브를 찾을 수 없습니다."));
-//
-//        if(hub.getDeletedAt() != null){
-//            throw new IllegalArgumentException("허브를 찾을 수 없습니다.");
-//        }
-//
-//        return HubResponseDto.of(hub);
-//    }
+    public HubResponseDto findByHubId(UUID hubId) {
+        Hub hub = hubRepository.findById(hubId)
+                .orElseThrow(() -> new IllegalArgumentException("허브를 찾을 수 없습니다."));
+
+        if(hub.getDeletedAt() != null){
+            throw new IllegalArgumentException("허브를 찾을 수 없습니다.");
+        }
+
+        return HubResponseDto.of(hub);
+    }
 }
