@@ -29,6 +29,4 @@ public class CreateDeliveryRequest {
   @NotNull
   private UUID receiverSnsId;
 
-  @NotNull
-  private UUID companyDeliveryPersonId;
 }
