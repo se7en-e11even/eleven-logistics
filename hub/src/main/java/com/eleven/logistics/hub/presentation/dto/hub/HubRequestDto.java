@@ -5,9 +5,11 @@ import com.eleven.logistics.hub.application.dto.hub.HubDto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 // 사용자의 입력을 받아 해당 데이터를 처리하고 서비스 레이어로 전달하는 역할
 public class HubRequestDto {
 

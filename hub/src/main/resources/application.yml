@@ -7,6 +7,10 @@ spring:
       port: 6379
       username: default
       password: 1234
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
 
   datasource:
     url: jdbc:postgresql://localhost:5432/eleven-logistics-hub
@@ -17,7 +21,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
 server:
   port: 19093
