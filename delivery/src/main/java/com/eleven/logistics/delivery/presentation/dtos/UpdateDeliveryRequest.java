@@ -15,9 +15,8 @@ public class UpdateDeliveryRequest {
   private String receiver;
 
   @NotNull
-  private UUID receiverSnsId;
+  private String receiverSnsId;
 
-  @NotNull
   private UUID companyDeliveryPersonId;
 
 }

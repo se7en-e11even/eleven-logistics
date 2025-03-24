@@ -11,4 +11,10 @@ public interface DeliveryEventPublisher {
   void sendMessagesToHubRoute(DeliveryToHubRouteMessage message);
 
   void sendMessagesToSlack(DeliveryToSlackMessage message);
+
+  void sendErrorMessagesToOrder(DeliveryToOrderMessage message);
+
+  void sendErrorMessagesToHubRoute(DeliveryToHubRouteMessage message);
+
+  void sendErrorMessagesToSlack(DeliveryToSlackMessage message);
 }

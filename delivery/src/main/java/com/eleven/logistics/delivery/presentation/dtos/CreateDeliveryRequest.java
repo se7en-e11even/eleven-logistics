@@ -27,6 +27,6 @@ public class CreateDeliveryRequest {
   private String receiver;
 
   @NotNull
-  private UUID receiverSnsId;
+  private String receiverSnsId;
 
 }

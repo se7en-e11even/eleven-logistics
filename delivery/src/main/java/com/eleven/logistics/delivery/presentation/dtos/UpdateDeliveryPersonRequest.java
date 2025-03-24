@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class UpdateDeliveryPersonRequest {
 
   @NotNull
-  private UUID snsId;
+  private String snsId;
 
   @NotNull
   private UUID hubId;

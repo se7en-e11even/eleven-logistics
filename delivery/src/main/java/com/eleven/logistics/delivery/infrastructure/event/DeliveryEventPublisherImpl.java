@@ -3,6 +3,9 @@ package com.eleven.logistics.delivery.infrastructure.event;
 import com.eleven.logistics.delivery.application.dtos.event.DeliveryToHubRouteMessage;
 import com.eleven.logistics.delivery.application.dtos.event.DeliveryToOrderMessage;
 import com.eleven.logistics.delivery.application.dtos.event.DeliveryToSlackMessage;
+import com.eleven.logistics.delivery.application.dtos.event.HubRouteToDeliveryMessage;
+import com.eleven.logistics.delivery.application.dtos.event.OrderToDeliveryMessage;
+import com.eleven.logistics.delivery.application.dtos.event.SlackToDeliveryMessage;
 import com.eleven.logistics.delivery.application.event.DeliveryEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +29,17 @@ public class DeliveryEventPublisherImpl implements DeliveryEventPublisher {
   @Value("${message.queue.hubroute}")
   private String deliveryHubRouteQueue;
 
-  // RabbitMQ publish
+  @Value("${err.queue.order}")
+  private String deliveryErrOrderQueue;
+
+  @Value("${err.queue.hubroute}")
+  private String deliveryErrHubRouteQueue;
+
+  @Value("${err.queue.slack}")
+  private String deliveryErrSlackQueue;
+
+
+  // 메시지 발행
   public void sendMessagesToOrder(DeliveryToOrderMessage message) {
     rabbitTemplate.convertAndSend(deliveryOrderQueue, message);
 
@@ -49,5 +62,31 @@ public class DeliveryEventPublisherImpl implements DeliveryEventPublisher {
     log.info(
         "From Delivery to Slack: Event published! message: deliveryId={}, username={}",
         message.getDeliveryId(), message.getUsername());
+  }
+
+  // Error 메시지 발행
+  public void sendErrorMessagesToOrder(DeliveryToOrderMessage message) {
+    rabbitTemplate.convertAndSend(deliveryErrOrderQueue, message);
+
+    log.error(
+        "Error sent to Order: delivery.err.order queue, message: deliveryId={}, errorMessage={}",
+        message.getDeliveryId(), message.getErrorMessage()
+    );
+  }
+
+  public void sendErrorMessagesToHubRoute(DeliveryToHubRouteMessage message) {
+    rabbitTemplate.convertAndSend(deliveryErrHubRouteQueue, message);
+
+    log.error(
+        "Error sent to HubRoute: delivery.err.hubroute queue, message: deliveryId={}, errorMessage={}",
+        message.getDeliveryId(), message.getErrorMessage());
+  }
+
+  public void sendErrorMessagesToSlack(DeliveryToSlackMessage message) {
+    rabbitTemplate.convertAndSend(deliveryErrSlackQueue, message);
+
+    log.error(
+        "Error sent to HubRoute: delivery.err.slack queue, message: deliveryId={}, errMessage={}",
+        message.getDeliveryId(), message.getErrorMessage());
   }
 }

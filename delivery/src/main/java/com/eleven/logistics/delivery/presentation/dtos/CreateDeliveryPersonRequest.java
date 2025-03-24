@@ -16,7 +16,7 @@ public class CreateDeliveryPersonRequest {
   private String username;
 
   @NotNull
-  private UUID snsId;
+  private String snsId;
 
   private UUID hubId;
 

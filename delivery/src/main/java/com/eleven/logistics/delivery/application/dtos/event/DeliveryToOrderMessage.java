@@ -13,8 +13,13 @@ public class DeliveryToOrderMessage {
 
   private UUID deliveryId;
   private String deliveryStatus;
+  private String errorMessage;
 
   public static DeliveryToOrderMessage toOrder(UUID deliveryId, DeliveryStatus deliveryStatus) {
-    return new DeliveryToOrderMessage(deliveryId, deliveryStatus.getDescription());
+    return new DeliveryToOrderMessage(deliveryId, deliveryStatus.getDescription(), "No error occurred.");
+  }
+
+  public static DeliveryToOrderMessage withError(UUID deliveryId, DeliveryStatus deliveryStatus, String errorMessage) {
+    return new DeliveryToOrderMessage(deliveryId, deliveryStatus.getDescription(), errorMessage);
   }
 }

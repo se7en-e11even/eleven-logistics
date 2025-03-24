@@ -13,9 +13,16 @@ public class DeliveryToHubRouteMessage {
   private UUID deliveryId;
   private UUID originHubId;
   private UUID destinationHubId;
+  private String errorMessage;
 
   public static DeliveryToHubRouteMessage toHubRoute(
-      UUID id, UUID departureHubId, UUID destinationHubId) {
-    return new DeliveryToHubRouteMessage(id, departureHubId, destinationHubId);
+      UUID deliveryId, UUID departureHubId, UUID destinationHubId) {
+    return new DeliveryToHubRouteMessage(deliveryId, departureHubId, destinationHubId, "No error occurred.");
   }
+
+  public static DeliveryToHubRouteMessage withError(
+      UUID deliveryId, UUID departureHubId, UUID destinationHubId, String errorMessage) {
+    return new DeliveryToHubRouteMessage(deliveryId, departureHubId, destinationHubId, errorMessage);
+  }
+
 }

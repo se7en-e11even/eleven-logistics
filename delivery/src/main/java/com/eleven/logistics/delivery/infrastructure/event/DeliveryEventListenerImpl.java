@@ -17,7 +17,7 @@ public class DeliveryEventListenerImpl implements DeliveryEventListener {
 
   private final DeliveryService deliveryService;
 
-  //RabbitMQ consumer
+  // 메시지 수신
   @RabbitListener(queues = "order.delivery")
   public void receiveOrderMessage(OrderToDeliveryMessage message) {
     log.info(
@@ -37,25 +37,26 @@ public class DeliveryEventListenerImpl implements DeliveryEventListener {
     deliveryService.handleHubRouteUpdate(message);
   }
 
+  // Error 메시지 수신
   @RabbitListener(queues = "delivery.err.order")
   public void receiveOrderErrorMessages(OrderToDeliveryMessage message) {
     log.error(
         "Error Message From order: orderId={}, errType={}",
-        message.getOrderId(), message.getErrType());
+        message.getOrderId(), message.getErrorMessage());
   }
 
   @RabbitListener(queues = "delivery.err.slack")
   public void receiveSlackErrorMessages(SlackToDeliveryMessage message) {
     log.error(
         "Error Message From slack: orderId={}, errType={}",
-        message.getOrderId(), message.getErrType());
+        message.getDeliveryId(), message.getErrorMessage());
   }
 
   @RabbitListener(queues = "delivery.err.hubroute")
   public void receiveHubRouteErrorMessages(HubRouteToDeliveryMessage message) {
     log.error(
         "Error Message From hubroute: deliveryId={}, errType={}",
-        message.getDeliveryId(), message.getErrType());
+        message.getDeliveryId(), message.getErrorMessage());
 
   }
 }

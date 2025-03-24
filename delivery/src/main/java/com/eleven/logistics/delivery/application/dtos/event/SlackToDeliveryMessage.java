@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SlackToDeliveryMessage {
 
-  private UUID orderId;
-  private String errType;
+  private UUID deliveryId;
+  private String errorMessage;
 }

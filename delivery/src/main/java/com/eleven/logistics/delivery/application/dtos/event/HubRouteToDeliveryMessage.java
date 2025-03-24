@@ -19,6 +19,6 @@ public class HubRouteToDeliveryMessage {
   private UUID arrivalHubId;
   private int expectedTime;
   private int expectedDistance;
-  private String errType;
+  private String errorMessage;
 
 }

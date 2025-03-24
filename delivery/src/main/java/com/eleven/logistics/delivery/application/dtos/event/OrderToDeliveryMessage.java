@@ -15,7 +15,7 @@ public class OrderToDeliveryMessage {
   private UUID destinationHubId;
   private String deliveryAddress;
   private String receiver;
-  private UUID receiverSnsId;
-  private String errType;
+  private String receiverSnsId;
+  private String errorMessage;
 }
 

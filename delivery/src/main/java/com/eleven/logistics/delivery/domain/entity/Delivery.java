@@ -47,9 +47,9 @@ public class Delivery extends Timestamped {
   private String receiver;
 
   @Column(name = "receiver_sns_id", nullable = false)
-  private UUID receiverSnsId;
+  private String receiverSnsId;
 
-  @Column(name = "company_delivery_person_id", nullable = false)
+  @Column(name = "company_delivery_person_id")
   private UUID companyDeliveryPersonId;
 
   @Column(name = "delivery_status")

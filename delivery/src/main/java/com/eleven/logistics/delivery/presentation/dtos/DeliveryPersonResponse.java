@@ -14,7 +14,7 @@ public class DeliveryPersonResponse {
 
   private UUID id;
   private String username;
-  private UUID snsId;
+  private String snsId;
   private UUID hubId;
   private DeliveryPersonType deliveryPersonType;
 
