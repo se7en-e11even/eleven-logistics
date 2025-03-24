@@ -34,6 +34,7 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 6. gemini api, naver api, kakao api, slack api key 발급
 7. delivery, hub, hub-route, order, product, slack(slack api key, gemini api key)
 
+#### 4. [Service EndPoint](https://github.com/se7en-e11even/eleven-logistics/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C)
 <br>
 
 ## 프로젝트 목적
