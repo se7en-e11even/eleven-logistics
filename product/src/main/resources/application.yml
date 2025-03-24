@@ -31,3 +31,16 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+# 모놀리식에서 문서를 출력할 경우 아래 설정을 해주어야하지만,
+# MSA 환경에서는 각 서비스가 swagger-ui를 생성할 필요는 없기 때문에 아래 설정이 하지 않아도 됩니다.
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs
+    url: /springdoc/openapi3-user-service.json
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /api-docs-user-service
