@@ -52,8 +52,6 @@ class OrderControllerMvcTest {
     void create() throws JsonProcessingException {
         UUID orderId = UUID.randomUUID();
         var createRequestOrder = new CreateOrderRequest(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
                 "",
                 List.of(new CreateOrderRequest.CreateOrderProductRequest(
                         UUID.randomUUID(),

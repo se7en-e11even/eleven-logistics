@@ -5,7 +5,8 @@ public enum OrderStatus {
     APPROVED,
     DELIVERING,
     COMPLETED,
-    CANCELED
+    CANCELED,
+    FAIL,
     ;
 
     public static OrderStatus of(String status) {

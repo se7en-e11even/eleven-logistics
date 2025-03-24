@@ -41,9 +41,7 @@ class OrderApplicationTests {
 	void createOrder() {
 		// given
 		var requestOrder = new CreateOrderRequest(
-				UUID.randomUUID(),
-				UUID.randomUUID(),
-				"빠른 배송 바랍니다.",
+				"요청사항",
 				List.of(new CreateOrderRequest.CreateOrderProductRequest(
 						// 실제 호출이므로 상품 ID가 일치해야 한다.
 						UUID.fromString("62d6cbb6-2549-4ea8-a7a7-9d517310a5de"),

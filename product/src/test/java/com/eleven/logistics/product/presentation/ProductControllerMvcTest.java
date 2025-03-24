@@ -93,13 +93,13 @@ class ProductControllerMvcTest {
     @Test
     @DisplayName("상품 상세 조회")
     void read() {
-        given(productService.read(randomId[0], "test", "TESTER"))
+        given(productService.read(randomId[0], "tester", "TESTER"))
                 .willReturn(dtos[0]);
 
         // when & then
         assertThat(mvc.get().uri("/api/products/" + randomId[0])
                 .accept(MediaType.APPLICATION_JSON)
-                .header("X-Username", "test")
+                .header("X-Username", "tester")
                 .header("X-Role", "TESTER")
         ).hasStatusOk();
     }

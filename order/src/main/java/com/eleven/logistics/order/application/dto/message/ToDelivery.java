@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
-public record OrderMessage(
+public record ToDelivery(
         UUID orderId,
 
         UUID departureHubId,
@@ -16,7 +16,7 @@ public record OrderMessage(
         String receiver,
         String receiverSnsId
 ) {
-    public static OrderMessage of(
+    public static ToDelivery of(
             UUID orderId,
             UUID departureHubId,
             UUID destinationHubId,
@@ -25,7 +25,7 @@ public record OrderMessage(
             String receiver,
             String receiverSnsId
     ) {
-        return OrderMessage.builder()
+        return ToDelivery.builder()
                 .orderId(orderId)
                 .departureHubId(departureHubId)
                 .destinationHubId(destinationHubId)

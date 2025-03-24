@@ -48,7 +48,7 @@ message:
 # [Delivery Service]
   receive:
     queue:
-      order: delivery.order
+      delivery: delivery.order
 
 # [Error Handling for Delivery Service]
     err:

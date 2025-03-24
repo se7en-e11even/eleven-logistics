@@ -54,8 +54,12 @@ public class Order extends BaseTimeEntity {
         this.request = request;
     }
 
-    public void changeOrderStatus(String orderStatus) {
-        this.orderStatus = OrderStatus.valueOf(orderStatus);
+    public void updateDeliveryId(UUID deliveryId) {
+        this.deliveryId = deliveryId;
+    }
+
+    public void changeOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
     public void deleteOf(String deletedBy) {

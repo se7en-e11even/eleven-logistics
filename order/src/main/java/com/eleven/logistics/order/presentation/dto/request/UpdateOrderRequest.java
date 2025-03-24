@@ -1,7 +1,6 @@
 package com.eleven.logistics.order.presentation.dto.request;
 
 import com.eleven.logistics.order.application.dto.command.UpdateOrderCommand;
-import com.eleven.logistics.order.application.dto.command.UpdateOrderProductCommand;
 import lombok.Builder;
 
 import java.util.List;
@@ -30,10 +29,10 @@ public record UpdateOrderRequest(
             Integer price,
             Integer quantity
     ) {
-        public static UpdateOrderProductCommand toCommand(
+        public static UpdateOrderCommand.UpdateOrderProductCommand toCommand(
                 UpdateOrderProductRequest request
         ) {
-            return UpdateOrderProductCommand.of(
+            return UpdateOrderCommand.UpdateOrderProductCommand.of(
                     request.orderProductId,
                     request.productId,
                     request.price,

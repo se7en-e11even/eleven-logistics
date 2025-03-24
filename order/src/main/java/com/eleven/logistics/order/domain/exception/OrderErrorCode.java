@@ -10,6 +10,7 @@ public enum OrderErrorCode implements ErrorCode {
 
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "요청하신 주문을 찾을 수 없습니다."),
     ORDER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
+    ORDER_NOT_CANCEL(HttpStatus.CONFLICT, "주문을 취소할 수 없는 상태입니다. 관리자에게 문의해 주세요."),
 
     COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "업체가 존재하지 않습입니다."),
 
