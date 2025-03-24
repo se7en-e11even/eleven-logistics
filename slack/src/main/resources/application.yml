@@ -42,6 +42,13 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
 
 message:
   exchange:
@@ -77,3 +84,10 @@ feign:
       enabled: true
     response:
       enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /slack-service/v3/api-docs
+  swagger-ui:
+    path: /slack-service/swagger-ui.html

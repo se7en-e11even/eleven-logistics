@@ -5,8 +5,8 @@ import com.eleven.logistics.common.dto.ApiResponseDto;
 import com.eleven.logistics.hub.application.dto.PageResponseDto;
 import com.eleven.logistics.hub.application.dto.hub.HubResponseDto;
 import com.eleven.logistics.hub.application.service.hub.HubService;
+import com.eleven.logistics.hub.presentation.docs.HubControllerDocs;
 import com.eleven.logistics.hub.presentation.dto.hub.HubRequestDto;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/hub")
-public class HubController {
+public class HubController implements HubControllerDocs {
 
     private final HubService hubService;
 
@@ -28,7 +28,6 @@ public class HubController {
                                                                     @RequestHeader("X-Username") String username,
                                                                     @RequestHeader("X-Role") String role) {
 
-        log.info("username : {}, role : {}", username, role);
         if (role == null || !role.equals("MASTER")){
             throw new SecurityException("접근 권한이 없습니다.");
         }
@@ -51,18 +50,6 @@ public class HubController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-//    @GetMapping("/{hubId}")
-//    public ResponseEntity<ApiResponseDto<HubResponseDto>> findByHubId(@PathVariable("hubId") UUID hubId){
-//        String role =  request.getHeader("X-Role");
-//        if (role.isEmpty()){
-//            throw new SecurityException("접근 권한이 필요합니다.");
-//        }
-//
-//        HubResponseDto responseDto = hubService.findByHubId(hubId);
-//        return ResponseEntity.ok()
-//                .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
-//    }
-
     @GetMapping
     public ResponseEntity<ApiResponseDto<PageResponseDto<HubResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
@@ -78,7 +65,7 @@ public class HubController {
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
     }
 
-    @PutMapping("{hubId}")
+    @PutMapping("/{hubId}")
     public ResponseEntity<ApiResponseDto<HubResponseDto>> updateHub(@PathVariable("hubId") UUID hubId,
                                                                     @RequestBody HubRequestDto requestDto,
                                                                     @RequestHeader("X-Username") String username,

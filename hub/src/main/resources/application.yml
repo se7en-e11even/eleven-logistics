@@ -26,6 +26,14 @@ spring:
 server:
   port: 19093
 
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
+
 naver:
   geocode-url: ${NAVER_Url}
   client-id: ${NAVER_Client}
@@ -35,3 +43,11 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+springdoc:
+  api-docs:
+    enabled: true
+    path: /hub-service/v3/api-docs
+  swagger-ui:
+    path: /hub-service/swagger-ui.html
+
+

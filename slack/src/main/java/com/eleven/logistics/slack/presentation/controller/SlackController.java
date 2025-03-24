@@ -4,6 +4,7 @@ import com.eleven.logistics.common.dto.ApiResponseDto;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
 import com.eleven.logistics.slack.application.service.SlackService;
 import com.eleven.logistics.slack.application.slackdto.SlackMessageResponse;
+import com.eleven.logistics.slack.presentation.docs.SlackControllerDocs;
 import com.eleven.logistics.slack.presentation.dto.UpdateSlackMessageRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/slack")
-public class SlackController {
+public class SlackController implements SlackControllerDocs {
 
     private final SlackService slackService;
 
