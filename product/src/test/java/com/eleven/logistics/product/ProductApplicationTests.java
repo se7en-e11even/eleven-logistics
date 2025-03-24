@@ -44,8 +44,8 @@ class ProductApplicationTests {
 
 		webTestClient.post()
 				.uri("/api/products")
-				.header("X-Username", "tester")
-				.header("X-Role", "TESTER")
+				.header("X-Username", "alex")
+				.header("X-Role", "MASTER")
 				.bodyValue(requestProduct)
 				.exchange()
 				.expectStatus().isCreated();
