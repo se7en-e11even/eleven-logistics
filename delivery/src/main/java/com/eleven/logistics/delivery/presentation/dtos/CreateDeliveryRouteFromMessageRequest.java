@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateDeliveryRouteRequest {
+public class CreateDeliveryRouteFromMessageRequest {
+
+  private int sequence;
 
   @NotNull
   private UUID departureHubId;
@@ -17,10 +19,9 @@ public class UpdateDeliveryRouteRequest {
   @NotNull
   private UUID arrivalHubId;
 
-  private int distance;
+  @NotNull
+  private int expectedDistance;
 
-  private int time;
-
-  private String status;
-
+  @NotNull
+  private int expectedTime;
 }

@@ -20,10 +20,45 @@ spring:
         format_sql: true
         show_sql: true
 
+  rabbitmq:
+    host: 129.154.192.198
+    port: 5672
+    username: eleven-logistics
+    password: eleven-logistics
+    listener:
+      simple:
+        default-requeue-rejected: false
+#
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+# [Delivery Service]
+message:
+  exchange: delivery
+  queue:
+    order: delivery.order
+    slack: delivery.slack
+    hubroute: delivery.hubroute
+  receive:
+    order-delivery: order.delivery
+    hubroute-delivery: hubroute.delivery
+
+# [Error Handling for Delivery Service]
+err:
+  exchange: delivery.err
+  queue:
+    order: delivery.err.order
+    slack: delivery.err.slack
+    hubroute: delivery.err.hubroute
+
 
 logging:
   level:

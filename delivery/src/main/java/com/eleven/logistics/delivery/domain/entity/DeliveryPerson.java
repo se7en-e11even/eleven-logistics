@@ -31,7 +31,7 @@ public class DeliveryPerson extends Timestamped {
   private String username;
 
   @Column(name = "slack_id", nullable = false)
-  private UUID snsId;
+  private String snsId;
 
   @Column(name = "hub_id")
   private UUID hubId;

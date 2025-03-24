@@ -18,7 +18,7 @@ public class DeliveryResponse {
   private UUID destinationHubId;
   private String deliveryAddress;
   private String receiver;
-  private UUID receiverSnsId;
+  private String receiverSnsId;
   private UUID companyDeliveryPersonId;
   private DeliveryStatus deliveryStatus;
 

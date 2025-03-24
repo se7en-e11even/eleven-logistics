@@ -47,9 +47,9 @@ public class Delivery extends Timestamped {
   private String receiver;
 
   @Column(name = "receiver_sns_id", nullable = false)
-  private UUID receiverSnsId;
+  private String receiverSnsId;
 
-  @Column(name = "company_delivery_person_id", nullable = false)
+  @Column(name = "company_delivery_person_id")
   private UUID companyDeliveryPersonId;
 
   @Column(name = "delivery_status")
@@ -66,7 +66,6 @@ public class Delivery extends Timestamped {
     this.deliveryAddress = request.getDeliveryAddress();
     this.receiver = request.getReceiver();
     this.receiverSnsId = request.getReceiverSnsId();
-    this.companyDeliveryPersonId = request.getCompanyDeliveryPersonId();
     this.deliveryStatus = DeliveryStatus.PENDING_AT_HUB;
   }
 
