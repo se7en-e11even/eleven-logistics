@@ -1,7 +1,9 @@
 package com.eleven.logistics.delivery.infrastructure.event;
 
+import com.eleven.logistics.delivery.application.dtos.event.DeliveryToHubRouteMessage;
+import com.eleven.logistics.delivery.application.dtos.event.DeliveryToOrderMessage;
+import com.eleven.logistics.delivery.application.dtos.event.DeliveryToSlackMessage;
 import com.eleven.logistics.delivery.application.event.DeliveryEventPublisher;
-import com.eleven.logistics.delivery.application.dtos.event.DeliveryMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,7 +27,7 @@ public class DeliveryEventPublisherImpl implements DeliveryEventPublisher {
   private String deliveryHubRouteQueue;
 
   // RabbitMQ publish
-  public void sendMessagesToOrder(DeliveryMessage message) {
+  public void sendMessagesToOrder(DeliveryToOrderMessage message) {
     rabbitTemplate.convertAndSend(deliveryOrderQueue, message);
 
     log.info(
@@ -33,7 +35,7 @@ public class DeliveryEventPublisherImpl implements DeliveryEventPublisher {
         message.getDeliveryId(), message.getDeliveryStatus());
   }
 
-  public void sendMessagesToHubRoute(DeliveryMessage message) {
+  public void sendMessagesToHubRoute(DeliveryToHubRouteMessage message) {
     rabbitTemplate.convertAndSend(deliveryHubRouteQueue, message);
 
     log.info(
@@ -41,7 +43,7 @@ public class DeliveryEventPublisherImpl implements DeliveryEventPublisher {
         message.getDeliveryId(), message.getOriginHubId(), message.getDestinationHubId());
   }
 
-  public void sendMessagesToSlack(DeliveryMessage message) {
+  public void sendMessagesToSlack(DeliveryToSlackMessage message) {
     rabbitTemplate.convertAndSend(deliverySlackQueue, message);
 
     log.info(

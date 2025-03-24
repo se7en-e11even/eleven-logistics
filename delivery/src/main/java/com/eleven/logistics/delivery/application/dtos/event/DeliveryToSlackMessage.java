@@ -8,8 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SlackMessage {
+public class DeliveryToSlackMessage {
 
-  private UUID orderId;
-  private String errType;
+  private UUID deliveryId;
+  private String username;
+
+  public static DeliveryToSlackMessage toSlack(UUID id, String username) {
+    return new DeliveryToSlackMessage(id, username);
+  }
 }

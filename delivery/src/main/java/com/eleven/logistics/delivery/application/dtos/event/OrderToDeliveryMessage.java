@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryMessage {
+public class OrderToDeliveryMessage {
 
-  private UUID deliveryId;
-  private UUID originHubId;
+  private UUID orderId;
+  private UUID departureHubId;
   private UUID destinationHubId;
-  private String deliveryStatus;
-  private String username;
-
+  private String deliveryAddress;
+  private String receiver;
+  private UUID receiverSnsId;
+  private String errType;
 }
+
