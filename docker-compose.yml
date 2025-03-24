@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+
+  postgres:
+    image: "postgres:16.3"
+    container_name: "postgres"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=eleven-logistics
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=eleven-logistics
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: "rabbitmq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  redis:
+    image: redis/redis-stack
+    container_name: "redis"
+    ports:
+      - "8001:8001"
+      - "6379:6379"
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: "zipkin"
+    ports:
+      - "9411:9411"
+
+volumes:
+  postgres_data:
