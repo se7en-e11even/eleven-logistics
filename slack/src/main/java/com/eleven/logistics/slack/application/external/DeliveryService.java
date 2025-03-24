@@ -1,0 +1,21 @@
+package com.eleven.logistics.slack.application.external;
+
+import com.eleven.logistics.slack.application.deliverydto.DeliveryPersonResponse;
+import com.eleven.logistics.slack.application.deliverydto.DeliveryResponse;
+import com.eleven.logistics.slack.application.deliverydto.DeliveryRouteResponse;
+import com.eleven.logistics.slack.application.dto.PageResponseDto;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface DeliveryService {
+
+    DeliveryResponse getDelivery(@PathVariable UUID deliveryId);
+
+    PageResponseDto<DeliveryResponse> searchDeliveries();
+
+    PageResponseDto<DeliveryPersonResponse> searchDeliveryPersons();
+
+    List<DeliveryRouteResponse> getDeliveryRoutes(@PathVariable UUID deliveryId);
+}

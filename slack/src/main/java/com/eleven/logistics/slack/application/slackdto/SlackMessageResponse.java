@@ -1,4 +1,4 @@
-package com.eleven.logistics.slack.application.dto;
+package com.eleven.logistics.slack.application.slackdto;
 
 import com.eleven.logistics.slack.domain.entity.Slack;
 import lombok.*;
@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PUBLIC)
 public class SlackMessageResponse {
 
     private UUID id;
