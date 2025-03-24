@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "delivery-service", configuration = FeignConfig.class)
+@FeignClient(name = "delivery-service")
 public interface DeliveryServiceClient extends DeliveryService {
 
     @GetMapping("/api/deliveries/search")

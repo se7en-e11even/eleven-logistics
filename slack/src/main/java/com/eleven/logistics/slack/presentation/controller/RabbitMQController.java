@@ -61,10 +61,8 @@ public class RabbitMQController {
             errorBuilder.addErrorMessage("Username 이 비어 있거나 null 입니다.");
         }
         DeliveryErrorMessage errorMessage = errorBuilder;
-        if (!errorMessage.getErrorMessages().isEmpty()) {
-            log.info("에러 메시지 :  {}", errorMessage.getErrorMessages());
-        } else {
-            log.info("메시지 에러");
-        }
+//        if (!errorMessage.getErrorMessages().isEmpty()) {
+//            log.info("에러 메시지 :  {}", errorMessage.getErrorMessages());
+//        }
     }
 }

@@ -9,7 +9,7 @@ spring:
       password: 1234
   sql:
     init:
-      mode: always
+      mode: never
       schema-locations: classpath:db/schema.sql
 
   datasource:
