@@ -133,7 +133,7 @@ docker-compose up -d
 
 <br>
 
-## 트러블 슈팅
+## [트러블 슈팅](https://github.com/se7en-e11even/eleven-logistics/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
 
 <details>
 <summary>확장</summary>
