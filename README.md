@@ -1,6 +1,6 @@
 # 📦 eleven-logistics
 
-물류 관리 및 배송 시스템을 위한 MSA 기반 플랫폼
+국내 B2B 물류 관리 및 배송 시스템을 위한 MSA 기반 플랫폼입니다. 도별 공급 허브를 통해 주문이 발생하면 물류 처리 및 재고 이동으로 주문한 업체가 최종 수령할 수 있습니다.
 <br>
 ## 📌 팀원 역할분담
 | <img src="https://img.shields.io/badge/Leader-%2310069F%20" /> | <img src="https://img.shields.io/badge/Member-%2310069F%20" /> | <img src="https://img.shields.io/badge/Member-%2310069F%20" /> | <img src="https://img.shields.io/badge/Member-%2310069F%20" /> |   
