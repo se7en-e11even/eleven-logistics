@@ -16,7 +16,7 @@
 
 - ### 실행 방법
 
-#### - GoogleAI(Gemini) token, Slack token, Naver OpenAPI secret key 발급이 필요합니다.
+- #### GoogleAI(Gemini) token, Slack token, Naver OpenAPI secret key 발급이 필요합니다.
 #### 1. docker를 설치합니다.
 #### 2. 아래의 명령어로 git clone을 진행합니다.
 #### 3. 해당 프로젝트의 루트 폴더로 이동합니다.
@@ -77,6 +77,8 @@ docker-compose up -d
 - delivery, hub, hub-route, order, product, slack 실행
 
 #### 7. [Service EndPoint](https://github.com/se7en-e11even/eleven-logistics/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C)
+
+#### 8. http://localhost:19091/docs
 
 <br>
 
