@@ -35,7 +35,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
-        if (path.equals("/auth/signIn") || path.equals("/auth/signUp") || path.equals("/auth/signOut")) {
+        if (path.contains("/v3/api-docs") || path.contains("/swagger-ui") ||
+                path.equals("/auth/signIn") || path.equals("/auth/signUp") || path.equals("/auth/signOut")) {
             return chain.filter(exchange);  // 위의 경로는 필터를 적용하지 않음
         }
 

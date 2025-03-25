@@ -1,27 +1,24 @@
 package com.eleven.logistics.hub.presentation.controller.company;
 
 import com.eleven.logistics.common.dto.ApiResponseDto;
-
 import com.eleven.logistics.hub.application.dto.PageResponseDto;
 import com.eleven.logistics.hub.application.dto.company.CompanyResponseDto;
 import com.eleven.logistics.hub.application.service.company.CompanyService;
+import com.eleven.logistics.hub.presentation.docs.CompanyControllerDocs;
 import com.eleven.logistics.hub.presentation.dto.company.CompanyRequestDto;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/company")
-public class CompanyController {
+public class CompanyController implements CompanyControllerDocs {
 
     private final CompanyService companyService;
 
@@ -33,7 +30,6 @@ public class CompanyController {
         if (role == null || !role.equals("MASTER") && !role.equals("HUB")) {
             throw new SecurityException("접근 권한이 없습니다.");
         }
-            log.info(role);
         CompanyResponseDto responseDto = companyService.createCompany(username,requestDto.toDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));
