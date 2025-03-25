@@ -1,6 +1,6 @@
-# eleven-logistics
+# 📦 eleven-logistics
 
-## 팀원 역할분담
+## 📌 팀원 역할분담
 | <img src="https://img.shields.io/badge/Leader-%2310069F%20" /> | <img src="https://img.shields.io/badge/Member-%2310069F%20" /> | <img src="https://img.shields.io/badge/Member-%2310069F%20" /> | <img src="https://img.shields.io/badge/Member-%2310069F%20" /> |   
 | :---: | :---: | :---: | :---: |
 | <img src="https://avatars.githubusercontent.com/u/109949465?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/140582940?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/109337974?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/115226460?v=4" width="120px;" alt=""/> |
