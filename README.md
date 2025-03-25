@@ -148,6 +148,9 @@ docker-compose up -d
   <li>
     <a href="https://github.com/se7en-e11even/eleven-logistics/wiki/Redis-%EC%BA%90%EC%8B%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0">Redis 캐싱을 통한 성능 개선</a>
   </li>
+  <li>
+    <a href="https://github.com/se7en-e11even/eleven-logistics/wiki/JWT-%EC%9D%B8%EC%A6%9D-%EB%B0%8F-%EC%97%AD%ED%95%A0-%ED%99%95%EC%9D%B8-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0">JWT 인증 및 역할 확인 문제 해결</a>
+  </li>  
 </ul>
 <br>
 
