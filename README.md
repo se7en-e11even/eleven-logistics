@@ -105,7 +105,8 @@ docker-compose up -d
 <br>
 
 ## 📌 메시징 시스템 아키텍처
-![image](https://github.com/user-attachments/assets/249e4484-612d-4a02-91d6-a894913179a2)
+
+![image](https://github.com/user-attachments/assets/62ea6bac-8931-414b-8170-88b137999685)
 
 <br>
 
