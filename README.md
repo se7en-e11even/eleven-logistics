@@ -25,7 +25,7 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 ```
 
 #### 4. docker-compose.yml 파일을 알맞은 위치에 작성합니다.
-- .docker-compose.yml
+- docker-compose.yml
 ```
 version: "3.8"
 services:
