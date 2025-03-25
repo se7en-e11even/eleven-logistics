@@ -117,7 +117,7 @@ docker-compose up -d
 
 <br>
 
-## 기술 스택
+## 📌 기술 스택
 
 - **백엔드:** Spring Boot 3.4.3
 - **데이터베이스:** PostgreSQL
