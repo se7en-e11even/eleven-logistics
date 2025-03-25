@@ -135,10 +135,6 @@ docker-compose up -d
 
 ## 📌 [트러블 슈팅](https://github.com/se7en-e11even/eleven-logistics/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85) ##
 
-<details>
-<summary>목록</summary>
-<div markdown="1">
-<br>
 <ul>
   <li>
     <a href="https://github.com/se7en-e11even/eleven-logistics/wiki/SQL%EC%9D%84-%EB%8F%99%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%82%BD%EC%9E%85%ED%95%B4-NAVER-API%EC%97%90-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0">SQL을 동적으로 삽입해 NAVER API에 적용하기</a>
@@ -151,11 +147,8 @@ docker-compose up -d
   </li>
   <li>
     <a href="https://github.com/se7en-e11even/eleven-logistics/wiki/Redis-%EC%BA%90%EC%8B%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0">Redis 캐싱을 통한 성능 개선</a>
-  <li>
+  </li>
 </ul>
-</div>
-</details>
-
 <br>
 
 ## 📌 API docs
