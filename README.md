@@ -76,7 +76,7 @@ docker-compose up -d
 - auth service 실행
 - delivery, hub, hub-route, order, product, slack 실행
 
-#### 4. [Service EndPoint](https://github.com/se7en-e11even/eleven-logistics/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C)
+#### 7. [Service EndPoint](https://github.com/se7en-e11even/eleven-logistics/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C)
 
 <br>
 
@@ -105,6 +105,8 @@ docker-compose up -d
 <br>
 
 ## 📌 메시징 시스템 아키텍처
+
+[메시지 시스템 도입에 관한 고민](https://github.com/se7en-e11even/eleven-logistics/wiki/%EB%A9%94%EC%8B%9C%EC%A7%95-%ED%81%90-%EB%8F%84%EC%9E%85%EC%97%90-%EA%B4%80%ED%95%9C-%EA%B3%A0%EB%AF%BC)
 
 ![image](https://github.com/user-attachments/assets/62ea6bac-8931-414b-8170-88b137999685)
 
