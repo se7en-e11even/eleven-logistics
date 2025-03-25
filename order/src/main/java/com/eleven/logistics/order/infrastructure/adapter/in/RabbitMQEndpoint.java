@@ -27,8 +27,8 @@ public class RabbitMQEndpoint {
         Order byOrderId = orderRepository.findByOrderId(message.orderId());
         if ("APPROVED".equals(message.status())) {
             byOrderId.updateDeliveryId(message.deliveryId());
+            byOrderId.changeOrderStatus(OrderStatus.valueOf(message.status()));
         }
-        byOrderId.changeOrderStatus(OrderStatus.valueOf(message.status()));
         orderRepository.save(byOrderId);
     }
 

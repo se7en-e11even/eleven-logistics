@@ -45,7 +45,7 @@ public class DeliveryEventPublisherImpl implements DeliveryEventPublisher {
 
     log.info(
         "From Delivery to Order: Event published! message: deliveryId={}, status={}",
-        message.getDeliveryId(), message.getDeliveryStatus());
+        message.getDeliveryId(), message.getStatus());
   }
 
   public void sendMessagesToHubRoute(DeliveryToHubRouteMessage message) {

@@ -24,8 +24,19 @@ public interface DeliveryPersonRepository {
       @Param("type") DeliveryPersonType type,
       @Param("hubId") UUID hubId, Pageable pageable);
 
-  @Query("SELECT dp FROM DeliveryPerson dp WHERE dp.sequence = :sequence")
-  Optional<DeliveryPerson> findBySequence(int sequence);
+  @Query("SELECT dp FROM DeliveryPerson dp WHERE dp.sequence = :sequence AND (:type IS NULL OR dp.deliveryPersonType = :type)")
+  DeliveryPerson findBySequenceAndType(int sequence, DeliveryPersonType type);
+
+  @Query("SELECT dp FROM DeliveryPerson dp " +
+          "WHERE (:type IS NULL OR dp.deliveryPersonType = :type) " +
+          "AND (:hubId IS NULL OR dp.hubId = :hubId) " +
+          "AND (:sequence IS NULL OR dp.sequence = :sequence) " +
+          "AND dp.deletedAt IS NULL")
+  Optional<DeliveryPerson> findByTypeAndHubIdAndSequence(
+          @Param("type") DeliveryPersonType type,
+          @Param("hubId") UUID hubId,
+          @Param("sequence") int sequence);
+
 
 
 

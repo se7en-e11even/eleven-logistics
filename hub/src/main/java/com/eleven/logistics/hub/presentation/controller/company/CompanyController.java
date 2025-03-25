@@ -59,11 +59,11 @@ public class CompanyController implements CompanyControllerDocs {
     @GetMapping
     public ResponseEntity<ApiResponseDto<PageResponseDto<CompanyResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10")int size,
-            @RequestHeader("X-Role") String role){
-        if (role == null){
-            throw new SecurityException("접근 권한이 없습니다.");
-        }
+            @RequestParam(defaultValue = "10")int size
+            ){
+//        if (role == null){
+//            throw new SecurityException("접근 권한이 없습니다.");
+//        }
         PageResponseDto<CompanyResponseDto> responseDto = companyService.findByAll(page-1, size);
         return ResponseEntity.ok()
                 .body(ApiResponseDto.success(responseDto, "요청이 성공적으로 처리되었습니다."));

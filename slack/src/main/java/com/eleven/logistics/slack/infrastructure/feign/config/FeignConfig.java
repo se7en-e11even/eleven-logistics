@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.rabbitmq.client.AMQP;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -63,22 +64,23 @@ public class FeignConfig implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) {
-            requestTemplate.header("X-Role", "권한을 찾지 못했습니다.");
-            requestTemplate.header("X-Username", "사용자를 찾지 못했습니다.");
-        } else if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
-            HttpServletRequest request = servletRequestAttributes.getRequest();
 
-            String username = request.getHeader("X-Username");
-            String role = request.getHeader("X-Role");
-
-            if (username != null) {
-                requestTemplate.header("X-Username", username);
-            }
-            if (role != null) {
-                requestTemplate.header("X-Role", role);
-            }
-        }
+//        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+//        if (requestAttributes == null) {
+//            requestTemplate.header("X-Role", "권한을 찾지 못했습니다.");
+//            requestTemplate.header("X-Username", "사용자를 찾지 못했습니다.");
+//        } else if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
+//            HttpServletRequest request = servletRequestAttributes.getRequest();
+//
+//            String username = request.getHeader("X-Username");
+//            String role = request.getHeader("X-Role");
+//
+//            if (username != null) {
+//                requestTemplate.header("X-Username", username);
+//            }
+//            if (role != null) {
+//                requestTemplate.header("X-Role", role);
+//            }
+//        }
     }
 }

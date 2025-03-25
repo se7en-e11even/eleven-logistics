@@ -88,7 +88,7 @@ public class DeliveryService {
 
     // 메시지 발행
     DeliveryToOrderMessage orderMessage =
-        DeliveryToOrderMessage.toOrder(delivery.getId(), delivery.getDeliveryStatus());
+        DeliveryToOrderMessage.toOrder(delivery.getId(),delivery.getOrderId(), "APPROVED");
     eventPublisher.sendMessagesToOrder(orderMessage);
 
     DeliveryToHubRouteMessage hubRouteMessage =
@@ -112,6 +112,7 @@ public class DeliveryService {
     Delivery delivery = deliveryRepository.findById(deliveryId)
         .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
 
+
     List<UUID> routeIdList = new ArrayList<>();
     // DeliveryRoute 객체 생성 및 Delivery에 추가
     routeDtos.forEach(routeDto -> {
@@ -119,8 +120,8 @@ public class DeliveryService {
       delivery.addRoute(route);
       route.updateCreatedBy(delivery.getCreatedBy());
 
-      DeliveryPerson dp = deliveryPersonRepository.findBySequence(routeDto.getSequence())
-          .orElseThrow(() -> new IllegalArgumentException("delivery Person not found"));
+      DeliveryPerson dp = deliveryPersonRepository.findBySequenceAndType(routeDto.getSequence(), DeliveryPersonType.HUB_DELIVERY_PERSON);
+
 
       route.updateDeliveryPerson(dp.getId());
       routeIdList.add(route.getId());
@@ -148,6 +149,8 @@ public class DeliveryService {
       log.info(logMessage);
     });
 
+
+
     // Delivery 상태 변경
     if (delivery.getDeliveryStatus() == null
         || delivery.getDeliveryStatus() == DeliveryStatus.PENDING_AT_HUB) {
@@ -156,21 +159,34 @@ public class DeliveryService {
 
     deliveryRepository.save(delivery);
 
+
+    UUID DHubId = routeDtos.get(routeDtos.size() - 1).getDepartureHubId();
+    int sequence = routeDtos.get(routeDtos.size() - 1).getSequence();
+    log.info("DHubId: " + DHubId);
+
+    DeliveryPerson dp = deliveryPersonRepository.findByTypeAndHubIdAndSequence(DeliveryPersonType.COMPANY_DELIVERY_PERSON, DHubId, sequence)
+            .orElseThrow(() -> new IllegalArgumentException("delivery Person not found"));
+
+    String dpUsername = dp.getUsername();
+
     // 메시지 발행
-    DeliveryPerson dp = deliveryPersonRepository.findBySequence(routeDtos.get(0).getSequence())
-        .orElseThrow(() -> new IllegalArgumentException("Delivery Person not found"));
     DeliveryToSlackMessage slackMessage = DeliveryToSlackMessage.toSlack(
-        delivery.getId(), dp.getUsername());
+            delivery.getId(), dpUsername);
     eventPublisher.sendMessagesToSlack(slackMessage);
+//    DeliveryPerson dp = deliveryPersonRepository.findBySequence(routeDtos.get(0).getSequence())
+//        .orElseThrow(() -> new IllegalArgumentException("Delivery Person not found"));
+//    DeliveryToSlackMessage slackMessage = DeliveryToSlackMessage.toSlack(
+//        delivery.getId(), dp.getUsername());
+//    eventPublisher.sendMessagesToSlack(slackMessage);
+//
+//    DeliveryToOrderMessage orderMessage =
+//        DeliveryToOrderMessage.toOrder(delivery.getId(), delivery.getDeliveryStatus());
+//    eventPublisher.sendMessagesToOrder(orderMessage);
 
-    DeliveryToOrderMessage orderMessage =
-        DeliveryToOrderMessage.toOrder(delivery.getId(), delivery.getDeliveryStatus());
-    eventPublisher.sendMessagesToOrder(orderMessage);
-
-    DeliveryToHubRouteMessage hubRouteMessage =
-        DeliveryToHubRouteMessage.toHubRoute(delivery.getId(), delivery.getDepartureHubId(),
-            delivery.getDestinationHubId());
-    eventPublisher.sendMessagesToHubRoute(hubRouteMessage);
+//    DeliveryToHubRouteMessage hubRouteMessage =
+//        DeliveryToHubRouteMessage.toHubRoute(delivery.getId(), delivery.getDepartureHubId(),
+//            delivery.getDestinationHubId());
+//    eventPublisher.sendMessagesToHubRoute(hubRouteMessage);
 
     return routeIdList;
   }
@@ -270,22 +286,22 @@ public class DeliveryService {
     // 새로운 값으로 경로 업데이트
     route.updateRoute(routeDto);
 
-    // 상태 전이
-    switch (RouteStatus.valueOf(routeDto.getStatus())) {
-      case MOVING_TO_HUB:
-        delivery.updateStatus(DeliveryStatus.MOVING_TO_HUB_);
-        break;
-      case ARRIVED_AT_DESTINATION_HUB:
-        delivery.updateStatus(DeliveryStatus.ARRIVED_AT_DESTINATION_HUB);
-        break;
-      case IN_DELIVERY:
-        delivery.updateStatus(DeliveryStatus.IN_DELIVERY);
-        break;
-      default:
-        // WAITING_FOR_HUB_MOVING일 경우
-        delivery.updateStatus(DeliveryStatus.PENDING_AT_HUB);
-        break;
-    }
+//    // 상태 전이
+//    switch (RouteStatus.valueOf(routeDto.getStatus())) {
+//      case MOVING_TO_HUB:
+//        delivery.updateStatus(DeliveryStatus.MOVING_TO_HUB_);
+//        break;
+//      case ARRIVED_AT_DESTINATION_HUB:
+//        delivery.updateStatus(DeliveryStatus.ARRIVED_AT_DESTINATION_HUB);
+//        break;
+//      case IN_DELIVERY:
+//        delivery.updateStatus(DeliveryStatus.IN_DELIVERY);
+//        break;
+//      default:
+//        // WAITING_FOR_HUB_MOVING일 경우
+//        delivery.updateStatus(DeliveryStatus.PENDING_AT_HUB);
+//        break;
+//    }
 
     String logMessage = String.format(
         "Updated DeliveryRoute:%n" +
@@ -312,13 +328,13 @@ public class DeliveryService {
 
     // 메시지 발행
     DeliveryToOrderMessage orderMessage =
-        DeliveryToOrderMessage.toOrder(delivery.getId(), delivery.getDeliveryStatus());
+        DeliveryToOrderMessage.toOrder(delivery.getId(), delivery.getOrderId(),"APPROVED");
     eventPublisher.sendMessagesToOrder(orderMessage);
 
-    DeliveryToHubRouteMessage hubRouteMessage =
-        DeliveryToHubRouteMessage.toHubRoute(delivery.getId(), delivery.getDepartureHubId(),
-            delivery.getDestinationHubId());
-    eventPublisher.sendMessagesToHubRoute(hubRouteMessage);
+//    DeliveryToHubRouteMessage hubRouteMessage =
+//        DeliveryToHubRouteMessage.toHubRoute(delivery.getId(), delivery.getDepartureHubId(),
+//            delivery.getDestinationHubId());
+//    eventPublisher.sendMessagesToHubRoute(hubRouteMessage);
   }
 
   // 배송경로 삭제
@@ -365,7 +381,7 @@ public class DeliveryService {
 
     // 메시지 발행
     DeliveryToOrderMessage orderMessage = DeliveryToOrderMessage.toOrder(
-        delivery.getId(), delivery.getDeliveryStatus());
+        delivery.getId(), delivery.getOrderId(),"APPROVED");
     eventPublisher.sendMessagesToOrder(orderMessage);
 
     DeliveryToHubRouteMessage hubRouteMessage =
@@ -382,89 +398,91 @@ public class DeliveryService {
     Delivery delivery = deliveryRepository.findById(message.getDeliveryId())
         .orElseThrow(() -> new IllegalArgumentException("Delivery not found"));
 
-    // HubRouteToDeliveryMessage에서 경로 정보 추출
-    CreateDeliveryRouteFromMessageRequest routeDto = new CreateDeliveryRouteFromMessageRequest(
-        message.getSequence(),
-        message.getDepartureHubId(),
-        message.getArrivalHubId(),
-        message.getExpectedDistance(),
-        message.getExpectedTime()
-    );
+    delivery.updateStatusByDescription(message.getDescription());
 
-    // DeliveryRoute 생성
-    DeliveryRoute route = new DeliveryRoute(delivery, routeDto);
-    delivery.addRoute(route);
-    route.updateCreatedBy(delivery.getCreatedBy());
-
-    DeliveryPerson dp = deliveryPersonRepository.findBySequence(routeDto.getSequence())
-        .orElseThrow(() -> new IllegalArgumentException("Delivery Person not found"));
-    route.updateDeliveryPerson(dp.getId());
-
-    // 로깅 (createRoute 스타일)
-    String logMessage = String.format(
-        "Created DeliveryRoute:%n" +
-            "  Route ID: %s%n" +
-            "  Delivery ID: %s%n" +
-            "  Sequence: %d%n" +
-            "  Departure Hub ID: %s%n" +
-            "  Arrival Hub ID: %s%n" +
-            "  Expected Distance: %d%n" +
-            "  Expected Time: %d%n" +
-            "  Actual Distance: %d%n" +
-            "  Actual Time: %d%n" +
-            "  Route Status: %s%n" +
-            "  Delivery Person ID: %s",
-        route.getId(), route.getDelivery().getId(), route.getSequence(),
-        route.getDepartureHubId(), route.getArrivalHubId(),
-        route.getExpectedDistance(), route.getExpectedTime(),
-        route.getActualDistance(), route.getActualTime(),
-        route.getRouteStatus().getDescription(), route.getDeliveryPersonId()
-    );
-    log.info(logMessage);
-
-    // 상태 업데이트
-    switch (message.getDescription()) {
-      case "허브 이동 중":
-        route.updateRouteStatus(RouteStatus.MOVING_TO_HUB);
-        delivery.updateStatus(DeliveryStatus.MOVING_TO_HUB_);
-        break;
-      case "허브 도착":
-        route.updateRouteStatus(RouteStatus.ARRIVED_AT_DESTINATION_HUB);
-        delivery.updateStatus(DeliveryStatus.ARRIVED_AT_DESTINATION_HUB);
-        break;
-      case "배송 중":
-        route.updateRouteStatus(RouteStatus.IN_DELIVERY);
-        delivery.updateStatus(DeliveryStatus.IN_DELIVERY);
-        break;
-      case "배송 완료":
-        delivery.updateStatus(DeliveryStatus.DELIVERED);
-        break;
-      default:
-        // 기본적으로 경로 생성 시 상태 유지
-        route.updateRouteStatus(RouteStatus.WAITING_FOR_HUB_MOVING);
-        delivery.updateStatus(DeliveryStatus.PENDING_AT_HUB);
-        break;
-    }
-
-    deliveryRepository.save(delivery);
+//    // HubRouteToDeliveryMessage에서 경로 정보 추출
+//    CreateDeliveryRouteFromMessageRequest routeDto = new CreateDeliveryRouteFromMessageRequest(
+//        message.getSequence(),
+//        message.getDepartureHubId(),
+//        message.getArrivalHubId(),
+//        message.getExpectedDistance(),
+//        message.getExpectedTime()
+//    );
+//
+//    // DeliveryRoute 생성
+//    DeliveryRoute route = new DeliveryRoute(delivery, routeDto);
+//    delivery.addRoute(route);
+//    route.updateCreatedBy(delivery.getCreatedBy());
+//
+//    DeliveryPerson dp = deliveryPersonRepository.findBySequence(routeDto.getSequence())
+//        .orElseThrow(() -> new IllegalArgumentException("Delivery Person not found"));
+//    route.updateDeliveryPerson(dp.getId());
+//
+//    // 로깅 (createRoute 스타일)
+//    String logMessage = String.format(
+//        "Created DeliveryRoute:%n" +
+//            "  Route ID: %s%n" +
+//            "  Delivery ID: %s%n" +
+//            "  Sequence: %d%n" +
+//            "  Departure Hub ID: %s%n" +
+//            "  Arrival Hub ID: %s%n" +
+//            "  Expected Distance: %d%n" +
+//            "  Expected Time: %d%n" +
+//            "  Actual Distance: %d%n" +
+//            "  Actual Time: %d%n" +
+//            "  Route Status: %s%n" +
+//            "  Delivery Person ID: %s",
+//        route.getId(), route.getDelivery().getId(), route.getSequence(),
+//        route.getDepartureHubId(), route.getArrivalHubId(),
+//        route.getExpectedDistance(), route.getExpectedTime(),
+//        route.getActualDistance(), route.getActualTime(),
+//        route.getRouteStatus().getDescription(), route.getDeliveryPersonId()
+//    );
+//    log.info(logMessage);
+//
+//    // 상태 업데이트
+//    switch (message.getDescription()) {
+//      case "허브 이동 중":
+//        route.updateRouteStatus(RouteStatus.MOVING_TO_HUB);
+//        delivery.updateStatus(DeliveryStatus.MOVING_TO_HUB_);
+//        break;
+//      case "허브 도착":
+//        route.updateRouteStatus(RouteStatus.ARRIVED_AT_DESTINATION_HUB);
+//        delivery.updateStatus(DeliveryStatus.ARRIVED_AT_DESTINATION_HUB);
+//        break;
+//      case "배송 중":
+//        route.updateRouteStatus(RouteStatus.IN_DELIVERY);
+//        delivery.updateStatus(DeliveryStatus.IN_DELIVERY);
+//        break;
+//      case "배송 완료":
+//        delivery.updateStatus(DeliveryStatus.DELIVERED);
+//        break;
+//      default:
+//        // 기본적으로 경로 생성 시 상태 유지
+//        route.updateRouteStatus(RouteStatus.WAITING_FOR_HUB_MOVING);
+//        delivery.updateStatus(DeliveryStatus.PENDING_AT_HUB);
+//        break;
+//    }
+//
+//    deliveryRepository.save(delivery);
 
     // 메시지 발행
-    DeliveryToSlackMessage slackMessage = DeliveryToSlackMessage.toSlack(
-        delivery.getId(), dp.getUsername());
-    eventPublisher.sendMessagesToSlack(slackMessage);
+//    DeliveryToSlackMessage slackMessage = DeliveryToSlackMessage.toSlack(
+//        delivery.getId(), dp.getUsername());
+//    eventPublisher.sendMessagesToSlack(slackMessage);
 
     DeliveryToOrderMessage orderMessage = DeliveryToOrderMessage.toOrder(
-        delivery.getId(), delivery.getDeliveryStatus());
+        delivery.getId(),delivery.getOrderId(), "APPROVED");
     eventPublisher.sendMessagesToOrder(orderMessage);
 
-    DeliveryToHubRouteMessage hubRouteMessage = DeliveryToHubRouteMessage.toHubRoute(
-        delivery.getId(), delivery.getDepartureHubId(), delivery.getDepartureHubId());
-    eventPublisher.sendMessagesToHubRoute(hubRouteMessage);
+//    DeliveryToHubRouteMessage hubRouteMessage = DeliveryToHubRouteMessage.toHubRoute(
+//        delivery.getId(), delivery.getDepartureHubId(), delivery.getDepartureHubId());
+//    eventPublisher.sendMessagesToHubRoute(hubRouteMessage);
 
-    if (delivery.getDeliveryStatus() == DeliveryStatus.DELIVERED) {
-      DeliveryToOrderMessage completedMessage = DeliveryToOrderMessage.toOrder(
-          delivery.getId(), delivery.getDeliveryStatus());
-      eventPublisher.sendMessagesToOrder(completedMessage);
-    }
+//    if (delivery.getDeliveryStatus() == DeliveryStatus.DELIVERED) {
+//      DeliveryToOrderMessage completedMessage = DeliveryToOrderMessage.toOrder(
+//          delivery.getId(), delivery.getDeliveryStatus());
+//      eventPublisher.sendMessagesToOrder(completedMessage);
+//    }
   }
 }
