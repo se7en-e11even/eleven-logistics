@@ -31,8 +31,7 @@ public interface HubControllerDocs {
     @Operation(summary = "허브 전체 검색", description = "전체 허브를 검색하는 API 입니다.")
     ResponseEntity<ApiResponseDto<PageResponseDto<HubResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestHeader("X-Role") String role);
+            @RequestParam(defaultValue = "10") int size);
 
     @PutMapping("/api/hub/{hubId}")
     @Operation(summary = "허브 수정", description = "허브를 수정하는 API 입니다.")

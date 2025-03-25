@@ -36,8 +36,7 @@ public interface CompanyControllerDocs {
     @Operation(summary = "업체 전체 검색", description = "전체 업체를 검색하는 API 입니다.")
     ResponseEntity<ApiResponseDto<PageResponseDto<CompanyResponseDto>>> findByAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestHeader("X-Role") String role);
+            @RequestParam(defaultValue = "10") int size);
 
 
 
