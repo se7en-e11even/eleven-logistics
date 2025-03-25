@@ -150,7 +150,7 @@ docker-compose up -d
     <a href="https://github.com/se7en-e11even/eleven-logistics/wiki/%EB%A9%94%EC%8B%9C%EC%A7%80-%ED%83%80%EC%9E%85-%EB%AC%B8%EC%A0%9C">메시지 타입 문제</a>
   </li>
   <li>
-    <a href="https://github.com/se7en-e11even/eleven-logistics/wiki/Redis-%EC%BA%90%EC%8B%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0"></a>
+    <a href="https://github.com/se7en-e11even/eleven-logistics/wiki/Redis-%EC%BA%90%EC%8B%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0">Redis 캐싱을 통한 성능 개선</a>
   <li>
 </ul>
 </div>
