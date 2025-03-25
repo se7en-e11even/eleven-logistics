@@ -1,4 +1,4 @@
-package com.eleven.logistics.slack.application.querydto;
+package com.eleven.logistics.slack.application.orderProduct;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

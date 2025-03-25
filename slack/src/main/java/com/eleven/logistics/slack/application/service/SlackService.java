@@ -1,8 +1,6 @@
 package com.eleven.logistics.slack.application.service;
 
 import com.eleven.logistics.common.dto.ApiResponseDto;
-import com.eleven.logistics.slack.application.companydto.CompanyResponseDto;
-import com.eleven.logistics.slack.application.deliverydto.DeliveryPersonResponse;
 import com.eleven.logistics.slack.application.deliverydto.DeliveryResponse;
 import com.eleven.logistics.slack.application.deliverydto.DeliveryRouteResponse;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
@@ -11,15 +9,13 @@ import com.eleven.logistics.slack.application.external.HubService;
 import com.eleven.logistics.slack.application.external.OrderService;
 import com.eleven.logistics.slack.application.external.ProductService;
 import com.eleven.logistics.slack.application.hubdto.HubResponseDto;
-import com.eleven.logistics.slack.application.querydto.FindOrderQuery;
-import com.eleven.logistics.slack.application.querydto.FindProductQuery;
+import com.eleven.logistics.slack.application.orderProduct.FindOrderQuery;
 import com.eleven.logistics.slack.application.slackdto.MessageResponse;
 import com.eleven.logistics.slack.application.slackdto.SlackDto;
 import com.eleven.logistics.slack.application.slackdto.SlackMessageResponse;
 import com.eleven.logistics.slack.domain.config.SlackClient;
 import com.eleven.logistics.slack.domain.entity.Slack;
 import com.eleven.logistics.slack.domain.repository.SlackRepository;
-import com.eleven.logistics.slack.infrastructure.feign.config.JpaAuditorAware;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -49,7 +44,6 @@ public class SlackService {
     private final DeliveryService deliveryService;
     private final HubService hubService;
     private final ProductService productService;
-    private final JpaAuditorAware jpaAuditorAware;
 
     @Value("${gemini.api.key}")
     private String gemini_key;
@@ -101,13 +95,22 @@ public class SlackService {
                     .distinct()
                     .toList();
 
+            UUID productId = order.orderProductQueryList().stream()
+                    .map(FindOrderQuery.FindOrderProductQuery::productId)
+                    .findFirst() // 첫 번째 제품 ID 선택
+                    .orElseThrow(() -> new IllegalStateException("No product found in order"));
+
+            log.info("productId: {}", productId);
+
+            String productName = productService.read(productId, "user1", "MASTER").getBody().name();
+
             // 메시지 객체 생성
             MessageResponse message = new MessageResponse();
             message.setId(order.orderId());
             message.setRequest(order.request());
             message.setDepartureHubId(startHub.getBody().getData().getAddress()); // 출발지
             message.setDeliveryAddress(delivery.getDeliveryAddress());
-            message.setProductName(""); // 필요 시 orderProductQueryList에서 추출 가능
+            message.setProductName(productName); // 필요 시 orderProductQueryList에서 추출 가능
             message.setDestinationHubId(deliveryRoute); // 전체 경로
             message.setSupplyUsername(order.supplyId().toString());
             message.setCompanyDeliveryManagerId(name);
