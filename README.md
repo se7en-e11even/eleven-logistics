@@ -9,36 +9,78 @@
 
 <br>
 
-## 서비스 구성 및 실행 방법
+## 📌 서비스 구성 및 실행 방법
 
-### 서비스 구성
+### - 서비스 구성
 ![service](https://github.com/user-attachments/assets/47213331-d4aa-4964-95b2-b0e04ea46b27)
 
-### 실행 방법
+### - 실행 방법
 
-#### 1. git clone
+#### - GoogleAI(Gemini) token, Slack token, Naver OpenAPI secret key 발급이 필요합니다.
+#### 1. docker를 설치합니다.
+#### 2. 아래의 명령어로 git clone을 진행합니다.
+#### 3. 해당 프로젝트의 루트 폴더로 이동합니다.
 ```shell
 git clone https://github.com/se7en-e11even/eleven-logistics.git
 ```
 
-#### 2. 인프라 환경 설정
-- 도커 설치
-- 콘솔창을 열어 git clone한 프로젝트의 루트 폴더로 이동
-- docker-compose up -d
+#### 4. docker-compose.yml 파일을 알맞은 위치에 작성합니다.
+- .docker-compose.yml
+```
+version: "3.8"
+services:
 
-#### 3. 애플리케이션 실행 순서
-1. docker-compose up -d
-2. eureka service
-3. gateway service
-4. auth service
-6. gemini api, naver api, kakao api, slack api key 발급하여 각 서비스에 넣기
-7. delivery, hub, hub-route, order, product, slack
+  db:
+    image: "postgres:16.3"
+    container_name: "postgres"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=eleven-logistics
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=eleven-logistics
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: "rabbitmq"
+    ports:
+      - "15672:15672"
+
+  redis:
+    image: redis/redis-stack
+    container_name: "redis"
+    ports:
+      - "8001:8001"
+      - "6379:6379"
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: "zipkin"
+    ports:
+      - "9411:9411"
+
+volumes:
+  postgres_data:
+```
+#### 5. 아래의 명령어를 실행합니다.
+```shell
+docker-compose up -d
+```
+
+#### 6. key와 token설정을 마친 뒤, 다음의 순서대로 애플리케이션을 실행합니다.
+- eureka service 실행
+- gateway service 실행
+- auth service 실행
+- delivery, hub, hub-route, order, product, slack 실행
 
 #### 4. [Service EndPoint](https://github.com/se7en-e11even/eleven-logistics/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C)
 
 <br>
 
-## 프로젝트 목적
+## 📌 프로젝트 목적
 
 - MSA(Microservices Architecture) 기반의 물류 관리 및 배송 시스템 설계 및 구현
 - Spring Cloud & Spring Boot를 활용하여 MSA 기반 시스템 구축
@@ -50,10 +92,20 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 
 ![프로젝트목적](https://github.com/user-attachments/assets/84649f76-6836-40ce-9b22-84afe5256ffd)
 <br>
+<br>
+## 📌 System Architecture
+<img width="7424" alt="인프라 아키텍처" src="https://github.com/user-attachments/assets/b1cf8e3f-92c3-4318-962a-c60c7b188965" />
 
-## ERD
+<br>
+
+## 📌 ERD
 
 ![erd](https://github.com/user-attachments/assets/8af0a4dd-0493-4dde-a794-6fe2fe7c3931)
+
+<br>
+
+## 📌 메시징 시스템 아키텍처
+![image](https://github.com/user-attachments/assets/249e4484-612d-4a02-91d6-a894913179a2)
 
 <br>
 
