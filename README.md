@@ -11,10 +11,10 @@
 
 ## 📌 서비스 구성 및 실행 방법
 
-### - 서비스 구성
+- ### 서비스 구성
 ![service](https://github.com/user-attachments/assets/47213331-d4aa-4964-95b2-b0e04ea46b27)
 
-### - 실행 방법
+- ### 실행 방법
 
 #### - GoogleAI(Gemini) token, Slack token, Naver OpenAPI secret key 발급이 필요합니다.
 #### 1. docker를 설치합니다.
