@@ -91,10 +91,11 @@ docker-compose up -d
 - Gemini API를 활용한 AI 기술 적용 경험
 - Github의 이슈발행, 프로젝트 관리 기능 등을 활용한 실무 수준의 협업 경험
 - MSA의 복잡성과 운영 이슈 해결 능력 배양
+![프로젝트목적](https://github.com/user-attachments/assets/faeb5336-d701-4eb1-b0b4-1d586c94a2ca)
 
-![프로젝트목적](https://github.com/user-attachments/assets/84649f76-6836-40ce-9b22-84afe5256ffd)
+
 <br>
-<br>
+
 ## 📌 System Architecture
 <img width="7424" alt="인프라 아키텍처" src="https://github.com/user-attachments/assets/b1cf8e3f-92c3-4318-962a-c60c7b188965" />
 
