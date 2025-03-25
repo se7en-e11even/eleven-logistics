@@ -18,7 +18,7 @@
 
 - ### 실행 방법
 
-- #### GoogleAI(Gemini) token, Slack token, Naver OpenAPI secret key 발급이 필요합니다.
+#### - GoogleAI(Gemini) token, Slack token, Naver OpenAPI secret key 발급이 필요합니다.
 #### 1. docker를 설치합니다.
 #### 2. 아래의 명령어로 git clone을 진행합니다.
 #### 3. 해당 프로젝트의 루트 폴더로 이동합니다.
