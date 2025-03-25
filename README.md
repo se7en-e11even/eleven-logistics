@@ -14,7 +14,7 @@
 ## 📌 서비스 구성 및 실행 방법
 
 - ### 서비스 구성
-![service](https://github.com/user-attachments/assets/47213331-d4aa-4964-95b2-b0e04ea46b27)
+![서비스구성](https://github.com/user-attachments/assets/c637a345-a73c-40d1-9572-ad7f342f7cad)
 
 - ### 실행 방법
 
