@@ -5,8 +5,8 @@ import com.eleven.logistics.slack.application.deliverydto.DeliveryResponse;
 import com.eleven.logistics.slack.application.deliverydto.DeliveryRouteResponse;
 import com.eleven.logistics.slack.application.dto.PageResponseDto;
 import com.eleven.logistics.slack.application.external.DeliveryService;
-import com.eleven.logistics.slack.infrastructure.feign.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -29,5 +29,5 @@ public interface DeliveryServiceClient extends DeliveryService {
     PageResponseDto<DeliveryPersonResponse> searchDeliveryPersons();
 
     @GetMapping("/api/deliveries/{deliveryId}/routes")
-    List<DeliveryRouteResponse> getDeliveryRoutes(@PathVariable UUID deliveryId);
+    ResponseEntity<List<DeliveryRouteResponse>> getDeliveryRoutes(@PathVariable UUID deliveryId);
 }

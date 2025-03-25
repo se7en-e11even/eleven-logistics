@@ -79,37 +79,38 @@ public class SlackService {
 
             // 배송 정보 조회
             DeliveryResponse delivery = deliveryService.getDelivery(deliveryId);
-            // TODO : username, role 하드코딩 X
-            ResponseEntity<FindOrderQuery> orderResponse = orderService.read(delivery.getOrderId(), "testuser", "MASTER");
+            ResponseEntity<FindOrderQuery> orderResponse = orderService.read(delivery.getOrderId(), "user1", "MASTER");
 
             // Slack 사용자 검증
             if (!delivery.getReceiverSnsId().equals(slackUsername)) {
                 throw new IllegalArgumentException("메시지를 보낼 담당자가 존재하지 않습니다.");
             }
 
+            String name = delivery.getReceiver();
             // 주문 및 허브 정보 추출
+            ResponseEntity<List<DeliveryRouteResponse>> route = deliveryService.getDeliveryRoutes(deliveryId);
             FindOrderQuery order = orderResponse.getBody();
             ResponseEntity<ApiResponseDto<HubResponseDto>> startHub = hubService.findByHubId(delivery.getDepartureHubId());
-            ResponseEntity<ApiResponseDto<HubResponseDto>> endHub = hubService.findByHubId(delivery.getDestinationHubId());
-
             // 배송 경로 설정
-            List<String> deliveryRoute = Stream.of(startHub.getBody().getData().getAddress(), endHub.getBody().getData().getAddress())
+            List<String> deliveryRoute = route.getBody().stream()
+                    .flatMap(r -> Stream.of(
+                            hubService.findByHubId(r.getDepartureHubId()).getBody().getData().getAddress(),
+                            hubService.findByHubId(r.getArrivalHubId()).getBody().getData().getAddress()
+                    ))
                     .filter(Objects::nonNull)
                     .distinct()
                     .toList();
-
-            String currentUser = jpaAuditorAware.getCurrentAuditor().orElse("unknown");
 
             // 메시지 객체 생성
             MessageResponse message = new MessageResponse();
             message.setId(order.orderId());
             message.setRequest(order.request());
-            message.setDepartureHubId(deliveryRoute.get(0)); // 출발지
+            message.setDepartureHubId(startHub.getBody().getData().getAddress()); // 출발지
             message.setDeliveryAddress(delivery.getDeliveryAddress());
             message.setProductName(""); // 필요 시 orderProductQueryList에서 추출 가능
             message.setDestinationHubId(deliveryRoute); // 전체 경로
             message.setSupplyUsername(order.supplyId().toString());
-            message.setCompanyDeliveryManagerId(currentUser);
+            message.setCompanyDeliveryManagerId(name);
 
             // 메시지 포맷팅
             String rawMessage = String.format(
@@ -138,7 +139,7 @@ public class SlackService {
             Map<String, Object> contents = new HashMap<>();
             Map<String, String> parts = new HashMap<>();
             parts.put("text", "발송지, 경유지, 도착지를 참고하여 메시지를 발송하는 시각을 기준으로 최종 발송 시한을 계산해 추가하고," +
-                    "주문 번호는 짧은 번호로 변환한 뒤, 기존 메시지의 형태를 유지해 줘:\n" + rawMessage);
+                    "주문 번호는 짧은 번호로 변환한 뒤, 기존 메시지의 형태를 유지해 줘, 대답하지말고 참고 내용도 말 하지마:\n" + rawMessage);
             contents.put("parts", parts);
             geminiRequest.put("contents", contents);
 
@@ -153,7 +154,7 @@ public class SlackService {
 
             // Slack 메시지 저장
             Slack slack = Slack.create(slackUsername, improvedMessage);
-            slack.setCreatedBy(currentUser);
+            slack.setCreatedBy(name);
             slackRepository.save(slack);
 
             return SlackMessageResponse.of(slack);
