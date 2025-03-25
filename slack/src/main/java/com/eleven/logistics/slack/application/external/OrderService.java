@@ -1,6 +1,6 @@
 package com.eleven.logistics.slack.application.external;
 
-import com.eleven.logistics.slack.application.querydto.FindOrderQuery;
+import com.eleven.logistics.slack.application.orderProduct.FindOrderQuery;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;

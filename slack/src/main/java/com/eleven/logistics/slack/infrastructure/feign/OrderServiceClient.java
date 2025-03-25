@@ -1,7 +1,7 @@
 package com.eleven.logistics.slack.infrastructure.feign;
 
 import com.eleven.logistics.slack.application.external.OrderService;
-import com.eleven.logistics.slack.application.querydto.FindOrderQuery;
+import com.eleven.logistics.slack.application.orderProduct.FindOrderQuery;
 import com.eleven.logistics.slack.infrastructure.feign.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
