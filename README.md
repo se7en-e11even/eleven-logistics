@@ -31,27 +31,24 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 2. eureka service
 3. gateway service
 4. auth service
-6. gemini api, naver api, kakao api, slack api key 발급
-7. delivery, hub, hub-route, order, product, slack(slack api key, gemini api key)
+6. gemini api, naver api, kakao api, slack api key 발급하여 각 서비스에 넣기
+7. delivery, hub, hub-route, order, product, slack
 
 #### 4. [Service EndPoint](https://github.com/se7en-e11even/eleven-logistics/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C)
+
 <br>
 
 ## 프로젝트 목적
 
-![프로젝트목적](https://github.com/user-attachments/assets/84649f76-6836-40ce-9b22-84afe5256ffd)
+- MSA(Microservices Architecture) 기반의 물류 관리 및 배송 시스템 설계 및 구현
+- Spring Cloud & Spring Boot를 활용하여 MSA 기반 시스템 구축
+- 클린 아키텍처 구성 및 DDD를 적용해 확장, 유지보수에 좋은 설계
+- API 연동, 데이터 무결성 유지, 서비스 간 통신 안정성 확보
+- Gemini API를 활용한 AI 기술 적용 경험
+- Github의 이슈발행, 프로젝트 관리 기능 등을 활용한 실무 수준의 협업 경험
+- MSA의 복잡성과 운영 이슈 해결 능력 배양
 
-<details>
-<summary>텍스트</summary>
-<div markdown="1">
-<h4>MSA(Microservices Architecture) 기반의 물류 관리 및 배송 시스템 설계 및 구현</h4>
-<li>Spring Cloud & Spring Boot를 활용하여 MSA 기반 시스템 구축</li>
-<li>클린 아키텍처 구성 및 DDD를 적용해 확장, 유지보수에 좋은 설계</li>
-<li>API 연동, 데이터 무결성 유지, 서비스 간 통신 안정성 확보</li>
-<li>Gemini API를 활용한 AI 기술 적용 경험</li>
-<li>실무 수준의 협업을 경험하며, MSA의 복잡성과 운영 이슈 해결 능력 배양</li>
-</div>
-</details>
+![프로젝트목적](https://github.com/user-attachments/assets/84649f76-6836-40ce-9b22-84afe5256ffd)
 <br>
 
 ## ERD
@@ -88,6 +85,10 @@ git clone https://github.com/se7en-e11even/eleven-logistics.git
 
 <br><br>
 
-## API docs(선택)
+## API docs
 
+**Swagger 문서 자동화**: Swagger + RestDocs
+
+각 서비스의 Swagger 문서를 gateway로 통합하여 제공
+http://localhost:19091/docs
 
